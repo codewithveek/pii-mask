@@ -24,14 +24,11 @@ export function MaskPII({
   style,
 }: MaskPIIProps) {
   const masker = useMemo(
-    () => createMasker({ mode, only: detect }),
+    () => createMasker({ mode, ...(detect != null && { only: detect }) }),
     [mode, detect?.join(',')],
   );
 
-  const masked = useMemo(
-    () => masker.maskString(children).result,
-    [masker, children],
-  );
+  const masked = useMemo(() => masker.maskString(children).result, [masker, children]);
 
   return (
     <span className={className} style={style} data-pii-masked={!reveal}>

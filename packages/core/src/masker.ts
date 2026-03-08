@@ -6,11 +6,7 @@ import { MaskMode } from './types.js';
 export function createMasker(options: MaskOptions = {}) {
   const mode = options.mode ?? MaskMode.MASK;
   const keyNameOnly = options.keyNameOnly ?? false;
-  const detectors = registry.resolve({
-    disable: options.disable,
-    only: options.only,
-    extend: options.extend,
-  });
+  const detectors = registry.resolve(options);
 
   function maskString(input: string, key?: string): MaskResult {
     const ctx = createContext(mode);
@@ -45,7 +41,7 @@ export function createMasker(options: MaskOptions = {}) {
   function restore(masked: string, tokenMap: Record<string, string>): string {
     let result = masked;
     for (const [token, original] of Object.entries(tokenMap)) {
-      result = result.replaceAll(token, original);
+      result = result.split(token).join(original);
     }
     return result;
   }

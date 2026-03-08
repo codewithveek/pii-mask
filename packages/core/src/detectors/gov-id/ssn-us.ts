@@ -23,9 +23,10 @@ const ssnUsDetector: PIIDetector = {
       return getOrCreateLabel('SSN', value, ctx, PIICategory.GOV_ID);
     }
     if (mode === MaskMode.SUBSTITUTE) {
-      return ctx.faker?.string.numeric({ length: 3 }) + '-' +
-        ctx.faker?.string.numeric({ length: 2 }) + '-' +
-        ctx.faker?.string.numeric({ length: 4 }) ?? '[SSN]';
+      const p1 = ctx.faker?.string.numeric({ length: 3 });
+      const p2 = ctx.faker?.string.numeric({ length: 2 });
+      const p3 = ctx.faker?.string.numeric({ length: 4 });
+      return p1 != null && p2 != null && p3 != null ? `${p1}-${p2}-${p3}` : '[SSN]';
     }
     // Default mask: ***-**-1234
     return `***-**-${value.slice(-4)}`;

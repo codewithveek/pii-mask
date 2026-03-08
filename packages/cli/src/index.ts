@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { defineCommand, runMain } from 'citty';
 import { maskCommand } from './commands/mask.js';
 

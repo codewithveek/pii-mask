@@ -10,16 +10,17 @@
     "dev": "turbo dev"
   },
   "devDependencies": {
-    "turbo": "^2.4.4",
-    "typescript": "^5.7.3",
-    "tsup": "^8.4.0",
-    "vitest": "^2.1.8",
-    "@vitest/coverage-v8": "^2.1.8",
     "@changesets/cli": "^2.27.12",
+    "@types/node": "^25.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "@vitest/coverage-v8": "^2.1.8",
     "eslint": "^9.17.0",
     "prettier": "^3.4.2",
-    "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "@typescript-eslint/parser": "^8.19.1"
+    "tsup": "^8.4.0",
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
   },
   "packageManager": "pnpm@9.15.4",
   "engines": {

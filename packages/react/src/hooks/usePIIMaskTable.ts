@@ -23,7 +23,7 @@ export function usePIIMaskTable<T extends Record<string, unknown>>(
     () =>
       createMasker({
         mode: options.mode ?? 'mask',
-        disable: options.disable,
+        ...(options.disable != null && { disable: options.disable }),
       }),
     [options.mode, options.disable?.join(',')],
   );

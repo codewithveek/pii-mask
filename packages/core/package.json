@@ -4,30 +4,32 @@
   "type": "module",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "require": "./dist/index.cjs",
-      "types": "./dist/index.d.ts"
+      "require": "./dist/index.cjs"
     },
     "./lexicon/africa": {
+      "types": "./dist/lexicon/africa.d.ts",
       "import": "./dist/lexicon/africa.js",
-      "require": "./dist/lexicon/africa.cjs",
-      "types": "./dist/lexicon/africa.d.ts"
+      "require": "./dist/lexicon/africa.cjs"
     },
     "./lexicon/south-asia": {
+      "types": "./dist/lexicon/south-asia.d.ts",
       "import": "./dist/lexicon/south-asia.js",
-      "require": "./dist/lexicon/south-asia.cjs",
-      "types": "./dist/lexicon/south-asia.d.ts"
+      "require": "./dist/lexicon/south-asia.cjs"
     },
     "./lexicon/east-asia": {
+      "types": "./dist/lexicon/east-asia.d.ts",
       "import": "./dist/lexicon/east-asia.js",
-      "require": "./dist/lexicon/east-asia.cjs",
-      "types": "./dist/lexicon/east-asia.d.ts"
+      "require": "./dist/lexicon/east-asia.cjs"
     }
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

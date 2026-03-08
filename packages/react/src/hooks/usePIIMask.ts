@@ -15,16 +15,13 @@ export interface UsePIIMaskReturn {
   restore: (masked: string) => string;
 }
 
-export function usePIIMask(
-  value: string,
-  options: UsePIIMaskOptions = {},
-): UsePIIMaskReturn {
+export function usePIIMask(value: string, options: UsePIIMaskOptions = {}): UsePIIMaskReturn {
   const masker = useMemo(
     () =>
       createMasker({
         mode: options.mode ?? 'mask',
-        only: options.detect,
-        disable: options.disable,
+        ...(options.detect != null && { only: options.detect }),
+        ...(options.disable != null && { disable: options.disable }),
       }),
     [options.mode, options.detect?.join(','), options.disable?.join(',')],
   );
