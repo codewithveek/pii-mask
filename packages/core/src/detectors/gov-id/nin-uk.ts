@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // UK National Insurance Number: 2 letters, 6 digits, 1 letter (A-D)
 const NIN_UK_RE = /^[A-Z]{2}\d{6}[A-D]$/;
@@ -27,9 +27,11 @@ const ninUkDetector: PIIDetector = {
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const suffixes = 'ABCD';
       const randLetter = () => letters[Math.floor(Math.random() * 26)] ?? 'A';
-      return `${randLetter()}${randLetter()}` +
+      return (
+        `${randLetter()}${randLetter()}` +
         `${ctx.faker?.string.numeric({ length: 6 }) ?? '000000'}` +
-        `${suffixes[Math.floor(Math.random() * 4)] ?? 'A'}`;
+        `${suffixes[Math.floor(Math.random() * 4)] ?? 'A'}`
+      );
     }
     // Default mask
     const upper = value.replace(/\s/g, '').toUpperCase();

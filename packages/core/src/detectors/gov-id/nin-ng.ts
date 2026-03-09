@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel, generateToken } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel, generateToken } from '@/engine';
 
 // NIN: exactly 11 digits (no spaces/dashes in canonical form)
 const NIN_RE = /^\d{11}$/;

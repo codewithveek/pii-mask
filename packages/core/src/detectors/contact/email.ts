@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
 

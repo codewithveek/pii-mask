@@ -1,6 +1,6 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory } from '../../types.js';
-import { registry } from '../../registry.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory } from '@/types';
+import { registry } from '@/registry';
 
 // JWTs: three base64url segments separated by dots
 const JWT_RE = /^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$/;

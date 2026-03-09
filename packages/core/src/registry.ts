@@ -1,4 +1,4 @@
-import type { PIIDetector, MaskOptions } from './types.js';
+import type { PIIDetector, MaskOptions } from './types';
 
 class DetectorRegistry {
   private detectors = new Map<string, PIIDetector>();

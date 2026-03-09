@@ -1,6 +1,6 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory } from '../../types.js';
-import { registry } from '../../registry.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory } from '@/types';
+import { registry } from '@/registry';
 
 // 32-char (MD5) or 64-char (SHA256) hex strings
 const HEX_SECRET_RE = /^[a-fA-F0-9]{32}$|^[a-fA-F0-9]{64}$/;

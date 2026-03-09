@@ -1,7 +1,7 @@
-import { registry } from './registry.js';
-import { walk, maskValue, createContext, extractTokenMap } from './engine.js';
-import type { MaskOptions, MaskResult } from './types.js';
-import { MaskMode } from './types.js';
+import { registry } from './registry';
+import { walk, maskValue, createContext, extractTokenMap } from './engine';
+import type { MaskOptions, MaskResult } from './types';
+import { MaskMode } from './types';
 
 export function createMasker(options: MaskOptions = {}) {
   const mode = options.mode ?? MaskMode.MASK;

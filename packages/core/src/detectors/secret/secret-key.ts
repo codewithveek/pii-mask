@@ -1,6 +1,6 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory } from '../../types.js';
-import { registry } from '../../registry.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory } from '@/types';
+import { registry } from '@/registry';
 
 const SECRET_KEY_RE =
   /^pin$|pass(?:word)?(?:hash)?$|hash$|secret|token|^api.?key$|private.?key|bearer/i;

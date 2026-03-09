@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // PAN: 5 letters + 4 digits + 1 letter
 const PAN_RE = /^[A-Z]{5}\d{4}[A-Z]$/;
@@ -25,8 +25,10 @@ const panInDetector: PIIDetector = {
     if (mode === MaskMode.SUBSTITUTE) {
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
       const randLetter = () => letters[Math.floor(Math.random() * 26)] ?? 'A';
-      return `${randLetter()}${randLetter()}${randLetter()}${randLetter()}${randLetter()}` +
-        `${ctx.faker?.string.numeric({ length: 4 }) ?? '0000'}${randLetter()}`;
+      return (
+        `${randLetter()}${randLetter()}${randLetter()}${randLetter()}${randLetter()}` +
+        `${ctx.faker?.string.numeric({ length: 4 }) ?? '0000'}${randLetter()}`
+      );
     }
     // Default mask: ABCX****Z
     const upper = value.trim().toUpperCase();

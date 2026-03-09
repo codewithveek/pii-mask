@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // IBAN: 2 letter country code + 2 check digits + up to 30 alphanumeric BBAN
 const IBAN_RE = /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/;

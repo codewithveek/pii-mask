@@ -1,5 +1,5 @@
 import { defineCommand, runMain } from 'citty';
-import { maskCommand } from './commands/mask.js';
+import { maskCommand } from './commands/mask';
 
 const main = defineCommand({
   meta: {

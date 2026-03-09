@@ -1,10 +1,10 @@
 // Import all detectors — triggers self-registration
-import './detectors/index.js';
+import './detectors/index';
 
 // Public API
-export { createMasker } from './masker.js';
-export { registry } from './registry.js';
-export { generateToken, getOrCreateToken, getOrCreateLabel } from './engine.js';
+export { createMasker } from './masker';
+export { registry } from './registry';
+export { generateToken, getOrCreateToken, getOrCreateLabel } from './engine';
 export {
   PIICategory,
   MaskMode,
@@ -13,4 +13,4 @@ export {
   type MaskResult,
   type MaskOptions,
   type NLPOptions,
-} from './types.js';
+} from './types';

@@ -1,6 +1,6 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory } from '../../types.js';
-import { registry } from '../../registry.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory } from '@/types';
+import { registry } from '@/registry';
 
 // bcrypt hashes: $2a$, $2b$, or $2y$ prefix
 const BCRYPT_RE = /^\$2[aby]\$\d+\$.{53}$/;

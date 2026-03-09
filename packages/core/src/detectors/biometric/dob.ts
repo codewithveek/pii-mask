@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // Supports MM/DD/YYYY, DD/MM/YYYY, and YYYY-MM-DD
 const DOB_MDY_RE = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
@@ -17,9 +17,7 @@ const dobDetector: PIIDetector = {
     const matchesFormat = DOB_MDY_RE.test(trimmed) || DOB_ISO_RE.test(trimmed);
     if (!matchesFormat) return false;
     // Boost: only fire on date-like key names to reduce false positives
-    const keyHint = key
-      ? /\bdob\b|birth|date.?of.?birth|birthday/i.test(key)
-      : false;
+    const keyHint = key ? /\bdob\b|birth|date.?of.?birth|birthday/i.test(key) : false;
     // If key hint exists, always fire. Otherwise still fire for date formats.
     return keyHint || matchesFormat;
   },

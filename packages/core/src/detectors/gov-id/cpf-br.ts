@@ -1,7 +1,7 @@
-import type { PIIDetector } from '../../types.js';
-import { PIICategory, MaskMode } from '../../types.js';
-import { registry } from '../../registry.js';
-import { getOrCreateToken, getOrCreateLabel } from '../../engine.js';
+import type { PIIDetector } from '@/types';
+import { PIICategory, MaskMode } from '@/types';
+import { registry } from '@/registry';
+import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // CPF: 000.000.000-00 format with check digits
 const CPF_RE = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
@@ -52,10 +52,12 @@ const cpfBrDetector: PIIDetector = {
       return getOrCreateLabel('CPF', value, ctx, PIICategory.GOV_ID);
     }
     if (mode === MaskMode.SUBSTITUTE) {
-      return `${ctx.faker?.string.numeric({ length: 3 }) ?? '000'}.` +
+      return (
+        `${ctx.faker?.string.numeric({ length: 3 }) ?? '000'}.` +
         `${ctx.faker?.string.numeric({ length: 3 }) ?? '000'}.` +
         `${ctx.faker?.string.numeric({ length: 3 }) ?? '000'}-` +
-        `${ctx.faker?.string.numeric({ length: 2 }) ?? '00'}`;
+        `${ctx.faker?.string.numeric({ length: 2 }) ?? '00'}`
+      );
     }
     // Default mask
     return `***.***.${value.slice(8, 11)}-**`;

@@ -3,10 +3,10 @@ import { resolve, extname, basename, join } from 'node:path';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createMasker } from '@pii-mask/core';
 import type { MaskMode } from '@pii-mask/core';
-import { readStdin } from '../utils/stdin.js';
-import { parseCSV, csvToString } from '../adapters/csv.js';
-import { parseJSONL, jsonlToString } from '../adapters/jsonl.js';
-import { persistTokenMap } from '../utils/token-map.js';
+import { readStdin } from '../utils/stdin';
+import { parseCSV, csvToString } from '../adapters/csv';
+import { parseJSONL, jsonlToString } from '../adapters/jsonl';
+import { persistTokenMap } from '../utils/token-map';
 
 export const maskCommand = defineCommand({
   meta: { description: 'Mask PII in a file or stdin' },
@@ -23,7 +23,11 @@ export const maskCommand = defineCommand({
     disable: { type: 'string', description: 'Comma-separated detector IDs to disable' },
     only: { type: 'string', description: 'Comma-separated categories or IDs to run' },
     'token-map-out': { type: 'string', description: 'File path to persist token map' },
-    report: { type: 'boolean', default: false, description: 'Print detection report without masking' },
+    report: {
+      type: 'boolean',
+      default: false,
+      description: 'Print detection report without masking',
+    },
     config: { type: 'string', description: 'Path to .pii-mask.json config file' },
   },
 
@@ -45,8 +49,8 @@ export const maskCommand = defineCommand({
       raw = readFileSync(resolve(opts.file as string), 'utf-8');
     }
 
-    const format = (opts.format as string) ??
-      (isStdin ? 'json' : extname((opts.file as string) ?? '').slice(1));
+    const format =
+      (opts.format as string) ?? (isStdin ? 'json' : extname((opts.file as string) ?? '').slice(1));
     const masker = createMasker({
       mode: (opts.mode as MaskMode) ?? 'mask',
       disable: typeof opts.disable === 'string' ? opts.disable.split(',') : undefined,

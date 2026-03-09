@@ -1,35 +1,35 @@
 // Contact detectors
-import './contact/email.js';
-import './contact/phone.js';
+import './contact/email';
+import './contact/phone';
 
 // Gov ID detectors
-import './gov-id/ssn-us.js';
-import './gov-id/nin-ng.js';
-import './gov-id/bvn-ng.js';
-import './gov-id/aadhaar-in.js';
-import './gov-id/pan-in.js';
-import './gov-id/said-za.js';
-import './gov-id/nin-uk.js';
-import './gov-id/nik-id.js';
-import './gov-id/cpf-br.js';
+import './gov-id/ssn-us';
+import './gov-id/nin-ng';
+import './gov-id/bvn-ng';
+import './gov-id/aadhaar-in';
+import './gov-id/pan-in';
+import './gov-id/said-za';
+import './gov-id/nin-uk';
+import './gov-id/nik-id';
+import './gov-id/cpf-br';
 
 // Financial detectors
-import './financial/credit-card.js';
-import './financial/iban.js';
+import './financial/credit-card';
+import './financial/iban';
 
 // Network detectors
-import './network/ip-address.js';
-import './network/ipv6.js';
+import './network/ip-address';
+import './network/ipv6';
 
 // Biometric detectors
-import './biometric/dob.js';
+import './biometric/dob';
 
 // Identity detectors
-import './identity/person-name.js';
-import './identity/address.js';
+import './identity/person-name';
+import './identity/address';
 
 // Secret detectors
-import './secret/secret-key.js';
-import './secret/jwt.js';
-import './secret/bcrypt-hash.js';
-import './secret/hex-secret.js';
+import './secret/secret-key';
+import './secret/jwt';
+import './secret/bcrypt-hash';
+import './secret/hex-secret';

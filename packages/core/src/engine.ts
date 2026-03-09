@@ -1,7 +1,7 @@
 import { Faker, en } from '@faker-js/faker';
 import { randomBytes } from 'node:crypto';
-import type { PIIDetector, MaskContext, MaskResult } from './types.js';
-import { MaskMode, PIICategory } from './types.js';
+import type { PIIDetector, MaskContext, MaskResult } from '@/types';
+import { MaskMode, PIICategory } from '@/types';
 
 // ── Token / label helpers ──────────────────────────────────────────────────
 
@@ -104,7 +104,7 @@ export function createContext(mode: MaskMode): MaskContext {
     tokenMap: new Map(),
     detections: [],
   };
-  if (mode === MaskMode.SUBSTITUTE) {
+  if (mode === MaskMode.SUBSTITUTE && !ctx.faker) {
     // faker is lazy-loaded only when substitute mode is active
     ctx.faker = new Faker({ locale: [en] });
   }
