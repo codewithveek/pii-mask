@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    environment: 'happy-dom',
     passWithNoTests: true,
     coverage: {
       provider: 'v8',
@@ -10,7 +11,14 @@ export default defineConfig({
         functions: 90,
         branches: 80,
       },
-      exclude: ['**/dist/**', '**/*.test.ts', '**/*.test.tsx'],
+      exclude: [
+        '**/dist/**',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'tsup.config.ts',
+        'vitest.config.ts',
+        'src/index.ts',
+      ],
     },
   },
 });

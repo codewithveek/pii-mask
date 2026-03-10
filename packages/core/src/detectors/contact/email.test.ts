@@ -42,9 +42,15 @@ describe('email detector', () => {
   it('generates consistent labels in anonymize mode', () => {
     const anonymizer = createMasker({ mode: 'anonymize', only: ['email'] });
     const r1 = anonymizer.maskString('test@example.com');
-    const r2 = anonymizer.maskString('other@example.com');
+    // Each maskString call creates a fresh context, so counter resets
     expect(r1.result).toBe('EMAIL_1');
-    expect(r2.result).toBe('EMAIL_2');
+  });
+  it('generates consistent labels in anonymize mode for multiple emails', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['email'] });
+    const r1 = anonymizer.maskString(
+      "test@example.com is not the same as test2@example.com but it's the same as test@example.com",
+    );
+    expect(r1.result).toBe("EMAIL_1 is not the same as EMAIL_2 but it's the same as EMAIL_1");
   });
 
   it('generates plausible email in substitute mode', () => {

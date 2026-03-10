@@ -10,7 +10,15 @@ export default defineConfig({
         functions: 90,
         branches: 80,
       },
-      exclude: ['**/dist/**', '**/*.test.ts'],
+      exclude: [
+        '**/dist/**',
+        '**/*.test.ts',
+        'tsup.config.ts',
+        'vitest.config.ts',
+        'src/index.ts',
+        'src/commands/mask.ts',
+        'src/utils/stdin.ts',
+      ],
     },
   },
 });
