@@ -31,4 +31,23 @@ describe('nin-uk detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('AB123456C');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['nin-uk'] });
+    const { result } = pseudonymizer.maskString('AB123456C');
+    expect(result).toBe('NIN_UK_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['nin-uk'] });
+    const { result } = anonymizer.maskString('AB123456C');
+    expect(result).toBe('NIN_UK_1');
+  });
+
+  it('generates plausible NIN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['nin-uk'] });
+    const { result } = substitutor.maskString('AB123456C');
+    expect(result).not.toBe('AB123456C');
+    expect(result).toMatch(/^[A-Z]{2}\d{6}[A-D]$/);
+  });
 });

@@ -30,4 +30,16 @@ describe('jwt detector', () => {
     const { result } = redacter.maskString(validJWT);
     expect(result).toBe('[REDACTED]');
   });
+
+  it('redacts in substitute mode (secrets always redact)', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['jwt'] });
+    const { result } = substitutor.maskString(validJWT);
+    expect(result).toBe('[REDACTED]');
+  });
+
+  it('redacts in pseudonymize mode (secrets always redact)', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['jwt'] });
+    const { result } = pseudonymizer.maskString(validJWT);
+    expect(result).toBe('[REDACTED]');
+  });
 });

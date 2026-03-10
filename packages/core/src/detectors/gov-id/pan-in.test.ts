@@ -31,4 +31,23 @@ describe('pan-in detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('BNZPM2501F');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['pan-in'] });
+    const { result } = pseudonymizer.maskString('BNZPM2501F');
+    expect(result).toBe('PAN_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['pan-in'] });
+    const { result } = anonymizer.maskString('BNZPM2501F');
+    expect(result).toBe('PAN_1');
+  });
+
+  it('generates plausible PAN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['pan-in'] });
+    const { result } = substitutor.maskString('BNZPM2501F');
+    expect(result).not.toBe('BNZPM2501F');
+    expect(result).toMatch(/^[A-Z]{5}\d{4}[A-Z]$/);
+  });
 });

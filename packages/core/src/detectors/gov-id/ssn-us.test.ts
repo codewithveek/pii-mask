@@ -31,4 +31,23 @@ describe('ssn-us detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('123-45-6789');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['ssn-us'] });
+    const { result } = pseudonymizer.maskString('123-45-6789');
+    expect(result).toBe('SSN_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['ssn-us'] });
+    const { result } = anonymizer.maskString('123-45-6789');
+    expect(result).toBe('SSN_1');
+  });
+
+  it('generates plausible SSN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['ssn-us'] });
+    const { result } = substitutor.maskString('123-45-6789');
+    expect(result).not.toBe('123-45-6789');
+    expect(result).toMatch(/^\d{3}-\d{2}-\d{4}$/);
+  });
 });

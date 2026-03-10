@@ -31,4 +31,23 @@ describe('iban detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('GB29NWBK60161331926819');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['iban'] });
+    const { result } = pseudonymizer.maskString('GB29NWBK60161331926819');
+    expect(result).toBe('IBAN_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['iban'] });
+    const { result } = anonymizer.maskString('GB29NWBK60161331926819');
+    expect(result).toBe('IBAN_1');
+  });
+
+  it('generates plausible IBAN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['iban'] });
+    const { result } = substitutor.maskString('GB29NWBK60161331926819');
+    expect(result).not.toBe('GB29NWBK60161331926819');
+    expect(result.length).toBeGreaterThan(10);
+  });
 });

@@ -38,4 +38,19 @@ describe('email detector', () => {
     const { result } = pseudonymizer.maskString('test@example.com');
     expect(result).toBe('EMAIL_1');
   });
+
+  it('generates consistent labels in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['email'] });
+    const r1 = anonymizer.maskString('test@example.com');
+    const r2 = anonymizer.maskString('other@example.com');
+    expect(r1.result).toBe('EMAIL_1');
+    expect(r2.result).toBe('EMAIL_2');
+  });
+
+  it('generates plausible email in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['email'] });
+    const { result } = substitutor.maskString('test@example.com');
+    expect(result).not.toBe('test@example.com');
+    expect(result).toContain('@');
+  });
 });

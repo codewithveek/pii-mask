@@ -31,4 +31,23 @@ describe('nin-ng detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('12345678901');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['nin-ng'] });
+    const { result } = pseudonymizer.maskString('12345678901', 'nin');
+    expect(result).toBe('NIN_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['nin-ng'] });
+    const { result } = anonymizer.maskString('12345678901', 'nin');
+    expect(result).toBe('NIN_1');
+  });
+
+  it('generates plausible NIN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['nin-ng'] });
+    const { result } = substitutor.maskString('12345678901', 'nin');
+    expect(result).not.toBe('12345678901');
+    expect(result).toMatch(/^\d{11}$/);
+  });
 });

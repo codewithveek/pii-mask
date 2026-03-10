@@ -32,4 +32,23 @@ describe('phone-global detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('+14155552671');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['phone-global'] });
+    const { result } = pseudonymizer.maskString('+14155552671');
+    expect(result).toBe('PHONE_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['phone-global'] });
+    const { result } = anonymizer.maskString('+14155552671');
+    expect(result).toBe('PHONE_1');
+  });
+
+  it('generates plausible phone in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['phone-global'] });
+    const { result } = substitutor.maskString('+14155552671');
+    expect(result).not.toBe('+14155552671');
+    expect(result.length).toBeGreaterThan(5);
+  });
 });

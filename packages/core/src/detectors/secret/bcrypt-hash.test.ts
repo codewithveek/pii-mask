@@ -25,4 +25,16 @@ describe('bcrypt-hash detector', () => {
     const { result } = redacter.maskString(validHash);
     expect(result).toBe('[REDACTED]');
   });
+
+  it('redacts in substitute mode (secrets always redact)', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['bcrypt-hash'] });
+    const { result } = substitutor.maskString(validHash);
+    expect(result).toBe('[REDACTED]');
+  });
+
+  it('redacts in pseudonymize mode (secrets always redact)', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['bcrypt-hash'] });
+    const { result } = pseudonymizer.maskString(validHash);
+    expect(result).toBe('[REDACTED]');
+  });
 });

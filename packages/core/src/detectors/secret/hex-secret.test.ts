@@ -31,4 +31,16 @@ describe('hex-secret detector', () => {
     const { result } = redacter.maskString(sha256);
     expect(result).toBe('[REDACTED]');
   });
+
+  it('redacts in substitute mode (secrets always redact)', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['hex-secret'] });
+    const { result } = substitutor.maskString(md5);
+    expect(result).toBe('[REDACTED]');
+  });
+
+  it('redacts in pseudonymize mode (secrets always redact)', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['hex-secret'] });
+    const { result } = pseudonymizer.maskString(sha256);
+    expect(result).toBe('[REDACTED]');
+  });
 });

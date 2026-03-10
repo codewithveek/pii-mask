@@ -29,4 +29,16 @@ describe('secret-key detector', () => {
     const { result } = tokenizer.maskString('my-secret', 'secret');
     expect(result).toBe('[REDACTED]');
   });
+
+  it('redacts in substitute mode (secrets always redact)', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['secret-key'] });
+    const { result } = substitutor.maskString('my-api-key', 'api_key');
+    expect(result).toBe('[REDACTED]');
+  });
+
+  it('redacts in pseudonymize mode (secrets always redact)', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['secret-key'] });
+    const { result } = pseudonymizer.maskString('my-secret', 'password');
+    expect(result).toBe('[REDACTED]');
+  });
 });

@@ -31,4 +31,23 @@ describe('ip-address detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('192.168.1.1');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['ip-address'] });
+    const { result } = pseudonymizer.maskString('192.168.1.1');
+    expect(result).toBe('IP_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['ip-address'] });
+    const { result } = anonymizer.maskString('192.168.1.1');
+    expect(result).toBe('IP_1');
+  });
+
+  it('generates plausible IP in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['ip-address'] });
+    const { result } = substitutor.maskString('192.168.1.1');
+    expect(result).not.toBe('192.168.1.1');
+    expect(result).toMatch(/^\d+\.\d+\.\d+\.\d+$/);
+  });
 });

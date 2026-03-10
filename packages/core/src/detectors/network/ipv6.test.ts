@@ -31,4 +31,23 @@ describe('ipv6 detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['ipv6'] });
+    const { result } = pseudonymizer.maskString('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
+    expect(result).toBe('IPV6_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['ipv6'] });
+    const { result } = anonymizer.maskString('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
+    expect(result).toBe('IPV6_1');
+  });
+
+  it('generates plausible IPv6 in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['ipv6'] });
+    const { result } = substitutor.maskString('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
+    expect(result).not.toBe('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
+    expect(result).toContain(':');
+  });
 });

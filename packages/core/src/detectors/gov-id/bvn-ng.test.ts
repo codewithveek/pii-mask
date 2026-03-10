@@ -31,4 +31,23 @@ describe('bvn-ng detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('12345678901');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['bvn-ng'] });
+    const { result } = pseudonymizer.maskString('12345678901', 'bvn');
+    expect(result).toBe('BVN_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['bvn-ng'] });
+    const { result } = anonymizer.maskString('12345678901', 'bvn');
+    expect(result).toBe('BVN_1');
+  });
+
+  it('generates plausible BVN in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['bvn-ng'] });
+    const { result } = substitutor.maskString('12345678901', 'bvn');
+    expect(result).not.toBe('12345678901');
+    expect(result).toMatch(/^\d{11}$/);
+  });
 });

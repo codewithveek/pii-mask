@@ -36,4 +36,23 @@ describe('address detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('123 Main Street');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['address'] });
+    const { result } = pseudonymizer.maskString('123 Main Street', 'address');
+    expect(result).toBe('ADDRESS_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['address'] });
+    const { result } = anonymizer.maskString('123 Main Street', 'address');
+    expect(result).toBe('ADDRESS_1');
+  });
+
+  it('generates plausible address in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['address'] });
+    const { result } = substitutor.maskString('123 Main Street', 'address');
+    expect(result).not.toBe('123 Main Street');
+    expect(result.length).toBeGreaterThan(5);
+  });
 });

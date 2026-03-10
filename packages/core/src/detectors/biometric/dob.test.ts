@@ -36,4 +36,23 @@ describe('dob detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('1990-01-15');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['dob'] });
+    const { result } = pseudonymizer.maskString('1990-01-15', 'dob');
+    expect(result).toBe('DOB_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['dob'] });
+    const { result } = anonymizer.maskString('1990-01-15', 'dob');
+    expect(result).toBe('DOB_1');
+  });
+
+  it('generates plausible date in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['dob'] });
+    const { result } = substitutor.maskString('1990-01-15', 'dob');
+    expect(result).not.toBe('1990-01-15');
+    expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
 });

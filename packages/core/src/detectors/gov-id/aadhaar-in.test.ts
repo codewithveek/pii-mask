@@ -31,4 +31,23 @@ describe('aadhaar-in detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('276403465037');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['aadhaar-in'] });
+    const { result } = pseudonymizer.maskString('276403465037');
+    expect(result).toBe('AADHAAR_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['aadhaar-in'] });
+    const { result } = anonymizer.maskString('276403465037');
+    expect(result).toBe('AADHAAR_1');
+  });
+
+  it('generates plausible number in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['aadhaar-in'] });
+    const { result } = substitutor.maskString('276403465037');
+    expect(result).not.toBe('276403465037');
+    expect(result).toMatch(/^\d{12}$/);
+  });
 });

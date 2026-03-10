@@ -31,4 +31,23 @@ describe('said-za detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('8001015009087');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['said-za'] });
+    const { result } = pseudonymizer.maskString('8001015009087');
+    expect(result).toBe('SAID_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['said-za'] });
+    const { result } = anonymizer.maskString('8001015009087');
+    expect(result).toBe('SAID_1');
+  });
+
+  it('generates plausible SA ID in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['said-za'] });
+    const { result } = substitutor.maskString('8001015009087');
+    expect(result).not.toBe('8001015009087');
+    expect(result).toMatch(/^\d{13}$/);
+  });
 });

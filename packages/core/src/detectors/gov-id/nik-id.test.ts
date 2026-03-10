@@ -31,4 +31,23 @@ describe('nik-id detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('3201234567890001');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['nik-id'] });
+    const { result } = pseudonymizer.maskString('3201234567890001');
+    expect(result).toBe('NIK_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['nik-id'] });
+    const { result } = anonymizer.maskString('3201234567890001');
+    expect(result).toBe('NIK_1');
+  });
+
+  it('generates plausible NIK in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['nik-id'] });
+    const { result } = substitutor.maskString('3201234567890001');
+    expect(result).not.toBe('3201234567890001');
+    expect(result).toMatch(/^\d{16}$/);
+  });
 });

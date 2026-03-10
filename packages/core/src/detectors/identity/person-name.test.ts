@@ -31,4 +31,23 @@ describe('person-name detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('John Doe');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['person-name'] });
+    const { result } = pseudonymizer.maskString('John Doe', 'name');
+    expect(result).toBe('NAME_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['person-name'] });
+    const { result } = anonymizer.maskString('John Doe', 'name');
+    expect(result).toBe('NAME_1');
+  });
+
+  it('generates plausible name in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['person-name'] });
+    const { result } = substitutor.maskString('John Doe', 'name');
+    expect(result).not.toBe('John Doe');
+    expect(result.length).toBeGreaterThan(2);
+  });
 });

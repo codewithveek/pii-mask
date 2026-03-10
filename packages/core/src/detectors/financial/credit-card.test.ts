@@ -32,4 +32,23 @@ describe('credit-card detector', () => {
     expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('4532015112830366');
   });
+
+  it('generates label in pseudonymize mode', () => {
+    const pseudonymizer = createMasker({ mode: 'pseudonymize', only: ['credit-card'] });
+    const { result } = pseudonymizer.maskString('4532015112830366');
+    expect(result).toBe('CARD_1');
+  });
+
+  it('generates label in anonymize mode', () => {
+    const anonymizer = createMasker({ mode: 'anonymize', only: ['credit-card'] });
+    const { result } = anonymizer.maskString('4532015112830366');
+    expect(result).toBe('CARD_1');
+  });
+
+  it('generates plausible card number in substitute mode', () => {
+    const substitutor = createMasker({ mode: 'substitute', only: ['credit-card'] });
+    const { result } = substitutor.maskString('4532015112830366');
+    expect(result).not.toBe('4532015112830366');
+    expect(result.length).toBeGreaterThan(10);
+  });
 });
