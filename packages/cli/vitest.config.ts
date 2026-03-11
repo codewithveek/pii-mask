@@ -16,7 +16,7 @@ export default defineConfig({
         'tsup.config.ts',
         'vitest.config.ts',
         'src/index.ts',
-        'src/commands/mask.ts',
+        'src/commands/**',
         'src/utils/stdin.ts',
       ],
     },

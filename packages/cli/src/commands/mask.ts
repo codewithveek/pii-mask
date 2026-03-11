@@ -3,13 +3,16 @@ import { resolve, extname, basename, join } from 'node:path';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { createMasker } from '@pii-mask/core';
 import type { MaskMode } from '@pii-mask/core';
-import { readStdin } from '../utils/stdin';
-import { parseCSV, csvToString } from '../adapters/csv';
-import { parseJSONL, jsonlToString } from '../adapters/jsonl';
-import { persistTokenMap } from '../utils/token-map';
+import { readStdin } from '../utils/stdin.js';
+import { parseCSV, csvToString } from '../adapters/csv.js';
+import { parseJSONL, jsonlToString } from '../adapters/jsonl.js';
+import { persistTokenMap } from '../utils/token-map.js';
 
 export const maskCommand = defineCommand({
-  meta: { description: 'Mask PII in a file or stdin' },
+  meta: {
+    name: 'pii-mask',
+    description: 'Mask PII in CSV, JSON, JSONL, and TXT files',
+  },
   args: {
     file: { type: 'positional', required: false, description: 'Input file path' },
     mode: {

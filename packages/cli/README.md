@@ -9,13 +9,13 @@ Command-line tool for masking PII in CSV, JSON, JSONL, and plain text files. Wra
 pnpm add -g @pii-mask/cli
 
 # Or run directly with npx/pnpm dlx
-pnpm dlx @pii-mask/cli mask data.json --mode redact
+pnpm dlx @pii-mask/cli data.json --mode redact
 ```
 
 ## Usage
 
 ```
-pii-mask mask [file] [options]
+pii-mask [file] [options]
 ```
 
 If no file is provided, reads from **stdin**.
@@ -24,19 +24,19 @@ If no file is provided, reads from **stdin**.
 
 ```bash
 # Mask a JSON file (default 'mask' mode)
-pii-mask mask users.json
+pii-mask users.json
 
 # Redact all PII in a CSV
-pii-mask mask customers.csv --mode redact
+pii-mask customers.csv --mode redact
 
 # Tokenize and save the token map for later restoration
-pii-mask mask records.json --mode tokenize --token-map-out tokens.json
+pii-mask records.json --mode tokenize --token-map-out tokens.json
 
 # Pseudonymize JSONL data
-pii-mask mask events.jsonl --mode pseudonymize
+pii-mask events.jsonl --mode pseudonymize
 
 # Generate fake replacement data
-pii-mask mask users.json --mode substitute
+pii-mask users.json --mode substitute
 ```
 
 ### Stdin / Stdout
@@ -45,13 +45,13 @@ Pipe data through the CLI for use in shell pipelines:
 
 ```bash
 # Pipe JSON through stdin
-cat users.json | pii-mask mask --format json --mode redact
+cat users.json | pii-mask --format json --mode redact
 
 # Pipe from another command
-curl -s https://api.example.com/users | pii-mask mask --format json --mode redact > masked.json
+curl -s https://api.example.com/users | pii-mask --format json --mode redact > masked.json
 
 # Inline JSON
-echo '{"email":"test@example.com","ssn":"123-45-6789"}' | pii-mask mask --format json --mode redact
+echo '{"email":"test@example.com","ssn":"123-45-6789"}' | pii-mask --format json --mode redact
 # → {"email":"[REDACTED]","ssn":"[REDACTED]"}
 ```
 
@@ -77,7 +77,7 @@ When reading from stdin, use `--format` to specify the format (defaults to `json
 Use `--report` to scan for PII without masking. The report prints to stderr:
 
 ```bash
-pii-mask mask users.json --report
+pii-mask users.json --report
 ```
 
 ```
@@ -101,7 +101,7 @@ Create a `.pii-mask.json` config file to set defaults:
 ```
 
 ```bash
-pii-mask mask users.json --config .pii-mask.json
+pii-mask users.json --config .pii-mask.json
 ```
 
 CLI flags override config file values.
@@ -113,7 +113,7 @@ CLI flags override config file values.
 Objects and arrays are walked recursively. All string values are checked against detectors.
 
 ```bash
-pii-mask mask data.json --mode redact
+pii-mask data.json --mode redact
 ```
 
 ### CSV
@@ -121,7 +121,7 @@ pii-mask mask data.json --mode redact
 The first row is treated as headers. Headers are passed as the `key` parameter to detectors, enabling key-name heuristics (e.g., a column named "password" triggers the secret-key detector).
 
 ```bash
-pii-mask mask customers.csv --mode mask
+pii-mask customers.csv --mode mask
 ```
 
 ### JSONL
@@ -129,7 +129,7 @@ pii-mask mask customers.csv --mode mask
 Each line is parsed as a separate JSON object.
 
 ```bash
-pii-mask mask events.jsonl --mode pseudonymize
+pii-mask events.jsonl --mode pseudonymize
 ```
 
 ### Plain Text
@@ -137,7 +137,7 @@ pii-mask mask events.jsonl --mode pseudonymize
 The entire file content is treated as a single string and processed through freeform text scanning.
 
 ```bash
-pii-mask mask notes.txt --mode redact
+pii-mask notes.txt --mode redact
 ```
 
 ## Token Map Persistence
@@ -146,10 +146,10 @@ In `tokenize` mode, the CLI can persist the token map to a file. The map accumul
 
 ```bash
 # First run
-pii-mask mask batch1.json --mode tokenize --token-map-out tokens.json
+pii-mask batch1.json --mode tokenize --token-map-out tokens.json
 
 # Second run — merges into existing tokens.json
-pii-mask mask batch2.json --mode tokenize --token-map-out tokens.json
+pii-mask batch2.json --mode tokenize --token-map-out tokens.json
 ```
 
 The token map file is a JSON object mapping tokens to original values:
