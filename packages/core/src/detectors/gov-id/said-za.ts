@@ -5,6 +5,7 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // South African ID: 13 digits, DOB encoded in first 6, Luhn check digit
 const SAID_RE = /^\d{13}$/;
+const SAID_PATTERN = /\b\d{13}\b/g;
 
 function luhn(digits: string): boolean {
   let sum = 0;
@@ -35,6 +36,7 @@ const saidZaDetector: PIIDetector = {
   label: 'South African ID Number',
   category: PIICategory.GOV_ID,
   regions: ['ZA'],
+  pattern: SAID_PATTERN,
 
   detect(value) {
     const trimmed = value.replace(/\s/g, '');

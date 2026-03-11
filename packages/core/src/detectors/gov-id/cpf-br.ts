@@ -5,6 +5,7 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // CPF: 000.000.000-00 format with check digits
 const CPF_RE = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+const CPF_PATTERN = /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g;
 
 function validateCPF(cpf: string): boolean {
   const digits = cpf.replace(/\D/g, '');
@@ -38,6 +39,7 @@ const cpfBrDetector: PIIDetector = {
   label: 'Brazilian CPF',
   category: PIICategory.GOV_ID,
   regions: ['BR'],
+  pattern: CPF_PATTERN,
 
   detect(value) {
     const trimmed = value.trim();

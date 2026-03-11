@@ -5,6 +5,7 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // NIK (Indonesia): 16 digits, province code + DOB encoded
 const NIK_RE = /^\d{16}$/;
+const NIK_PATTERN = /\b\d{16}\b/g;
 
 function hasValidProvince(value: string): boolean {
   const prov = parseInt(value.slice(0, 2), 10);
@@ -17,6 +18,7 @@ const nikIdDetector: PIIDetector = {
   label: 'Indonesian NIK',
   category: PIICategory.GOV_ID,
   regions: ['ID'],
+  pattern: NIK_PATTERN,
 
   detect(value) {
     const trimmed = value.replace(/\s/g, '');

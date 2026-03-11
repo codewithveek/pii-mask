@@ -97,6 +97,33 @@ function usesKeyHeuristic(detector: PIIDetector): boolean {
   return ['secret-key', 'person-name', 'address'].includes(detector.id);
 }
 
+// ── Freeform text scanning (used by public maskString) ─────────────────────
+
+export function maskText(
+  input: string,
+  detectors: PIIDetector[],
+  ctx: MaskContext,
+): { masked: string } {
+  let result = input;
+
+  for (const detector of detectors) {
+    if (!detector.pattern) continue;
+
+    // Reset lastIndex — patterns must have the 'g' flag
+    detector.pattern.lastIndex = 0;
+
+    result = result.replace(detector.pattern, (match) => {
+      // Run the atomic detect() as a secondary validation gate
+      if (!detector.detect(match)) return match;
+
+      ctx.detections.push(detector.id);
+      return detector.mask(match, ctx.mode, ctx);
+    });
+  }
+
+  return { masked: result };
+}
+
 export function createContext(mode: MaskMode): MaskContext {
   const ctx: MaskContext = {
     mode,

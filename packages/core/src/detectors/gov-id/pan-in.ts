@@ -5,12 +5,14 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // PAN: 5 letters + 4 digits + 1 letter
 const PAN_RE = /^[A-Z]{5}\d{4}[A-Z]$/;
+const PAN_PATTERN = /\b[A-Z]{5}\d{4}[A-Z]\b/g;
 
 const panInDetector: PIIDetector = {
   id: 'pan-in',
   label: 'Indian PAN',
   category: PIICategory.GOV_ID,
   regions: ['IN'],
+  pattern: PAN_PATTERN,
 
   detect(value) {
     return PAN_RE.test(value.trim().toUpperCase());

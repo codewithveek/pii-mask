@@ -4,11 +4,13 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const IPV4_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+const IPV4_PATTERN = /\b(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})\b/g;
 
 const ipAddressDetector: PIIDetector = {
   id: 'ip-address',
   label: 'IPv4 Address',
   category: PIICategory.NETWORK,
+  pattern: IPV4_PATTERN,
 
   detect(value) {
     const match = IPV4_RE.exec(value.trim());

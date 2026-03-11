@@ -6,11 +6,13 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 // Supports MM/DD/YYYY, DD/MM/YYYY, and YYYY-MM-DD
 const DOB_MDY_RE = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
 const DOB_ISO_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+const DOB_PATTERN = /\b(?:(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}|\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))\b/g;
 
 const dobDetector: PIIDetector = {
   id: 'dob',
   label: 'Date of Birth',
   category: PIICategory.BIOMETRIC,
+  pattern: DOB_PATTERN,
 
   detect(value, key) {
     const trimmed = value.trim();

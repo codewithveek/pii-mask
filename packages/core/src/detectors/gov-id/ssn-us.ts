@@ -4,12 +4,14 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const SSN_RE = /^\d{3}-\d{2}-\d{4}$/;
+const SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
 
 const ssnUsDetector: PIIDetector = {
   id: 'ssn-us',
   label: 'US Social Security Number',
   category: PIICategory.GOV_ID,
   regions: ['US'],
+  pattern: SSN_PATTERN,
 
   detect(value, key) {
     const trimmed = value.trim();

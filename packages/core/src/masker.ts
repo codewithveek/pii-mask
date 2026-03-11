@@ -1,5 +1,5 @@
 import { registry } from './registry';
-import { walk, maskValue, createContext, extractTokenMap } from './engine';
+import { walk, maskValue, maskText, createContext, extractTokenMap } from './engine';
 import type { MaskOptions, MaskResult } from './types';
 import { MaskMode } from './types';
 
@@ -10,9 +10,20 @@ export function createMasker(options: MaskOptions = {}) {
 
   function maskString(input: string, key?: string): MaskResult {
     const ctx = createContext(mode);
-    const { masked } = maskValue(input, key, detectors, ctx, keyNameOnly);
+    // First try atomic detection (whole-value match)
+    const { masked: atomicResult } = maskValue(input, key, detectors, ctx, keyNameOnly);
+    // If atomic detection fired, use its result
+    if (ctx.detections.length > 0) {
+      return {
+        result: atomicResult,
+        tokenMap: extractTokenMap(ctx),
+        detections: ctx.detections,
+      };
+    }
+    // Otherwise, scan for inline PII using pattern-based detection
+    const { masked: textResult } = maskText(input, detectors, ctx);
     return {
-      result: masked,
+      result: textResult,
       tokenMap: extractTokenMap(ctx),
       detections: ctx.detections,
     };

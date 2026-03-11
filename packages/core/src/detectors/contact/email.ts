@@ -4,11 +4,13 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
+const EMAIL_PATTERN = /\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g;
 
 const emailDetector: PIIDetector = {
   id: 'email',
   label: 'Email Address',
   category: PIICategory.CONTACT,
+  pattern: EMAIL_PATTERN,
 
   detect: (value) => EMAIL_RE.test(value.trim()),
 

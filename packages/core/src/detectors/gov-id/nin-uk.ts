@@ -5,12 +5,14 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // UK National Insurance Number: 2 letters, 6 digits, 1 letter (A-D)
 const NIN_UK_RE = /^[A-Z]{2}\d{6}[A-D]$/;
+const NIN_UK_PATTERN = /\b[A-Z]{2}\d{6}[A-D]\b/gi;
 
 const ninUkDetector: PIIDetector = {
   id: 'nin-uk',
   label: 'UK National Insurance Number',
   category: PIICategory.GOV_ID,
   regions: ['UK'],
+  pattern: NIN_UK_PATTERN,
 
   detect(value) {
     const trimmed = value.replace(/\s/g, '').toUpperCase();

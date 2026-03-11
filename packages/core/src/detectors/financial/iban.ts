@@ -5,6 +5,7 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // IBAN: 2 letter country code + 2 check digits + up to 30 alphanumeric BBAN
 const IBAN_RE = /^[A-Z]{2}\d{2}[A-Z0-9]{11,30}$/;
+const IBAN_PATTERN = /\b[A-Z]{2}\d{2}[A-Z0-9]{11,30}\b/g;
 
 function validateIBAN(iban: string): boolean {
   // Move first 4 chars to end, convert letters to numbers (A=10, B=11...)
@@ -31,6 +32,7 @@ const ibanDetector: PIIDetector = {
   id: 'iban',
   label: 'IBAN',
   category: PIICategory.FINANCIAL,
+  pattern: IBAN_PATTERN,
 
   detect(value) {
     const trimmed = value.replace(/\s/g, '').toUpperCase();

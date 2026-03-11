@@ -5,6 +5,7 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // Aadhaar: 12 digits with Verhoeff checksum
 const AADHAAR_RE = /^\d{12}$/;
+const AADHAAR_PATTERN = /\b\d{12}\b/g;
 
 // Verhoeff algorithm tables
 const d = [
@@ -55,6 +56,7 @@ const aadhaarInDetector: PIIDetector = {
   label: 'Indian Aadhaar Number',
   category: PIICategory.GOV_ID,
   regions: ['IN'],
+  pattern: AADHAAR_PATTERN,
 
   detect(value) {
     const trimmed = value.replace(/\s/g, '');

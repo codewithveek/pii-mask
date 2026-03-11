@@ -43,6 +43,13 @@ export interface PIIDetector {
    * Substitute mode receives a faker instance for type-appropriate generation.
    */
   mask: (value: string, mode: MaskMode, ctx: MaskContext) => string;
+  /**
+   * Optional. A global regex that locates all occurrences of this PII type
+   * within freeform text. When present, maskText() uses it to find and replace
+   * inline. When absent, the detector only works on atomic field values.
+   * Must have the `g` flag.
+   */
+  pattern?: RegExp;
 }
 
 // ── Masking context passed to every mask() call ─────────────────────────────
