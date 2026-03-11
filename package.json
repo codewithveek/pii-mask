@@ -10,17 +10,17 @@
     "dev": "turbo dev"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.27.12",
-    "@types/node": "^25.3.5",
-    "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "@typescript-eslint/parser": "^8.19.1",
-    "@vitest/coverage-v8": "^2.1.8",
-    "eslint": "^9.17.0",
-    "prettier": "^3.4.2",
-    "tsup": "^8.4.0",
-    "turbo": "^2.4.4",
-    "typescript": "^5.7.3",
-    "vitest": "^2.1.8"
+    "@changesets/cli": "^2.30.0",
+    "@types/node": "^25.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.57.0",
+    "@typescript-eslint/parser": "^8.57.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "eslint": "^10.0.3",
+    "prettier": "^3.8.1",
+    "tsup": "^8.5.1",
+    "turbo": "^2.8.16",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "packageManager": "pnpm@9.15.4",
   "engines": {

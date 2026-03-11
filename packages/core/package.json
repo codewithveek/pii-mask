@@ -38,17 +38,17 @@
     "lint": "eslint src/**/*.ts"
   },
   "dependencies": {
-    "libphonenumber-js": "^1.12.0"
+    "libphonenumber-js": "^1.12.39"
   },
   "devDependencies": {
-    "@faker-js/faker": "^9.3.0",
-    "tsup": "^8.4.0",
-    "typescript": "^5.7.3",
-    "vitest": "^2.1.8",
-    "@vitest/coverage-v8": "^2.1.8"
+    "@faker-js/faker": "^10.3.0",
+    "@vitest/coverage-v8": "^4.0.18",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "peerDependencies": {
-    "@faker-js/faker": "^9.0.0"
+    "@faker-js/faker": ">=9.0.0"
   },
   "peerDependenciesMeta": {
     "@faker-js/faker": {
