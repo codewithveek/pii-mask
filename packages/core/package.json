@@ -40,7 +40,7 @@
     "dev": "tsup --watch",
     "test": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/**/*.ts"
+    "lint": "eslint src/"
   },
   "dependencies": {
     "libphonenumber-js": "^1.12.39"

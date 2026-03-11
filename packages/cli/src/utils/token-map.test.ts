@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { writeFileSync, readFileSync, existsSync, mkdirSync, rmSync } from 'node:fs';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { writeFileSync, readFileSync, mkdirSync, rmSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 import { persistTokenMap } from './token-map';
 

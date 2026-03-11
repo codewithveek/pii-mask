@@ -1,6 +1,6 @@
 import nlp from 'compromise';
 import { getOrCreateToken, getOrCreateLabel } from '@pii-mask/core';
-import type { PIIDetector, MaskContext } from '@pii-mask/core';
+import type { PIIDetector } from '@pii-mask/core';
 import { PIICategory, MaskMode } from '@pii-mask/core';
 
 export function buildPlaceDetector(): PIIDetector {

@@ -3,8 +3,8 @@ import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
-const EMAIL_RE = /^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$/;
-const EMAIL_PATTERN = /\b[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}\b/g;
+const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
+const EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
 
 const emailDetector: PIIDetector = {
   id: 'email',

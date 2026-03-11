@@ -23,7 +23,6 @@ function luhn(digits: string): boolean {
 }
 
 function hasValidDOB(value: string): boolean {
-  const yy = parseInt(value.slice(0, 2), 10);
   const mm = parseInt(value.slice(2, 4), 10);
   const dd = parseInt(value.slice(4, 6), 10);
   if (mm < 1 || mm > 12) return false;

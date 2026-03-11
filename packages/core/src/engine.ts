@@ -1,6 +1,6 @@
 import { Faker, en } from '@faker-js/faker';
 import { randomBytes } from 'node:crypto';
-import type { PIIDetector, MaskContext, MaskResult } from '@/types';
+import type { PIIDetector, MaskContext } from '@/types';
 import { MaskMode, PIICategory } from '@/types';
 
 // ── Token / label helpers ──────────────────────────────────────────────────

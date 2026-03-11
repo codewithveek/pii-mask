@@ -1,6 +1,6 @@
 import nlp from 'compromise';
 import { getOrCreateToken, getOrCreateLabel } from '@pii-mask/core';
-import type { PIIDetector, MaskContext, NLPOptions } from '@pii-mask/core';
+import type { PIIDetector, NLPOptions } from '@pii-mask/core';
 import { PIICategory, MaskMode } from '@pii-mask/core';
 
 export function buildCompromiseDetectors(options: NLPOptions = {}): PIIDetector[] {

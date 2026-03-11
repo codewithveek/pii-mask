@@ -13,7 +13,7 @@ const ssnUsDetector: PIIDetector = {
   regions: ['US'],
   pattern: SSN_PATTERN,
 
-  detect(value, key) {
+  detect(value, _key) {
     const trimmed = value.trim();
     return SSN_RE.test(trimmed);
   },
