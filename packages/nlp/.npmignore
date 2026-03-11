@@ -1,0 +1,19 @@
+# Source code (consumers use dist/)
+src/
+tsconfig.json
+tsup.config.ts
+
+# Tests
+*.test.ts
+*.test.tsx
+*.spec.ts
+vitest.config.ts
+coverage/
+
+# Source maps
+*.map
+
+# Dev tooling
+.eslintrc.*
+.prettierrc*
+.editorconfig
