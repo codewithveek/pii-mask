@@ -24,10 +24,10 @@ const { result } = masker.maskString('Emeka Okafor lives in Lagos');
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `entities` | `Array<'Person' \| 'Place' \| 'Organization'>` | `['Person', 'Place']` | Entity types to detect |
-| `confidence` | `number` | `0.5` | Minimum confidence threshold |
-| `customLexicon` | `Record<string, string>` | `{}` | Custom words to add to the NLP model |
+| Option          | Type                                           | Default               | Description                          |
+| --------------- | ---------------------------------------------- | --------------------- | ------------------------------------ |
+| `entities`      | `Array<'Person' \| 'Place' \| 'Organization'>` | `['Person', 'Place']` | Entity types to detect               |
+| `confidence`    | `number`                                       | `0.5`                 | Minimum confidence threshold         |
+| `customLexicon` | `Record<string, string>`                       | `{}`                  | Custom words to add to the NLP model |
 
 [Try it in the browser ↗](https://app.pii-mask.dev)

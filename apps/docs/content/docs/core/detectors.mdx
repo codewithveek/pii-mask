@@ -22,8 +22,8 @@ All detectors self-register on import. The registry is a singleton shared across
 ```ts
 import { registry } from '@pii-mask/core';
 
-const allDetectors = registry.all();
-console.log(allDetectors.map(d => d.id));
+const allDetectors = registry.list();
+console.log(allDetectors.map((d) => d.id));
 ```
 
 ## Custom detectors

@@ -19,21 +19,23 @@ function UserProfile({ email }: { email: string }) {
 
 ## Props
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `children` | `string` | required | The string to mask |
-| `mode` | `MaskMode` | `'mask'` | Masking mode |
-| `detect` | `string[]` | all | Detector IDs or categories to run |
-| `reveal` | `boolean` | `false` | Show original value (for role-gated UIs) |
-| `className` | `string` | — | CSS class for the wrapper span |
-| `style` | `CSSProperties` | — | Inline styles |
+| Prop        | Type            | Default  | Description                              |
+| ----------- | --------------- | -------- | ---------------------------------------- |
+| `children`  | `string`        | required | The string to mask                       |
+| `mode`      | `MaskMode`      | `'mask'` | Masking mode                             |
+| `detect`    | `string[]`      | all      | Detector IDs or categories to run        |
+| `reveal`    | `boolean`       | `false`  | Show original value (for role-gated UIs) |
+| `className` | `string`        | —        | CSS class for the wrapper span           |
+| `style`     | `CSSProperties` | —        | Inline styles                            |
 
 ## Reveal prop
 
 The `reveal` prop renders the raw unmasked value. It is the caller's responsibility to gate this on authorization:
 
 ```tsx
-<MaskPII mode="mask" reveal={isAdmin}>{email}</MaskPII>
+<MaskPII mode="mask" reveal={isAdmin}>
+  {email}
+</MaskPII>
 ```
 
 [Try it in the browser ↗](https://app.pii-mask.dev)

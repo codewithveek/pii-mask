@@ -19,6 +19,14 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["app", "lib", "content", ".source", "next-env.d.ts", ".next/types/**/*.ts", "source.config.ts"],
+  "include": [
+    "app",
+    "lib",
+    "content",
+    ".source",
+    "next-env.d.ts",
+    ".next/types/**/*.ts",
+    "source.config.ts"
+  ],
   "exclude": ["node_modules"]
 }

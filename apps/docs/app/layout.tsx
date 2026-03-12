@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { RootProvider } from 'fumadocs-ui/provider';
 import { Analytics } from '@vercel/analytics/react';
 import './global.css';
 
@@ -19,7 +20,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           fontFamily: "'Inter', sans-serif",
         }}
       >
-        {children}
+        <RootProvider>{children}</RootProvider>
         <Analytics />
       </body>
     </html>

@@ -17,9 +17,7 @@ function MaskedEmail({ email }: { email: string }) {
     <div>
       <p>Masked: {masked}</p>
       <p>Detections: {detections.join(', ')}</p>
-      <button onClick={() => console.log(restore(masked))}>
-        Reveal
-      </button>
+      <button onClick={() => console.log(restore(masked))}>Reveal</button>
     </div>
   );
 }
@@ -27,19 +25,19 @@ function MaskedEmail({ email }: { email: string }) {
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `mode` | `MaskMode` | `'mask'` | Masking mode |
-| `detect` | `string[]` | all | Run only these detectors |
-| `disable` | `string[]` | none | Disable these detectors |
+| Option    | Type       | Default  | Description              |
+| --------- | ---------- | -------- | ------------------------ |
+| `mode`    | `MaskMode` | `'mask'` | Masking mode             |
+| `detect`  | `string[]` | all      | Run only these detectors |
+| `disable` | `string[]` | none     | Disable these detectors  |
 
 ## Return value
 
-| Property | Type | Description |
-|---|---|---|
-| `masked` | `string` | The masked result |
-| `tokenMap` | `Record<string, string>` | Token → original map |
-| `detections` | `string[]` | Fired detector IDs |
-| `restore` | `(masked: string) => string` | Reverse tokenization |
+| Property     | Type                         | Description          |
+| ------------ | ---------------------------- | -------------------- |
+| `masked`     | `string`                     | The masked result    |
+| `tokenMap`   | `Record<string, string>`     | Token → original map |
+| `detections` | `string[]`                   | Fired detector IDs   |
+| `restore`    | `(masked: string) => string` | Reverse tokenization |
 
 [Try it in the browser ↗](https://app.pii-mask.dev)

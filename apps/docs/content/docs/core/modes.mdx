@@ -7,14 +7,14 @@ description: The six masking modes and when to use each.
 
 pii-mask supports six masking modes. Each mode controls how detected PII values are transformed.
 
-| Mode | Behaviour | Reversible |
-|---|---|---|
-| `mask` | Partial obscure — preserve type shape | No |
-| `redact` | Full `[REDACTED]` replacement | No |
-| `pseudonymize` | Consistent label (`EMAIL_1`) per session | No |
-| `anonymize` | Consistent label (`EMAIL_1`) per session | No |
-| `tokenize` | Random token, stored in tokenMap, restorable | Yes |
-| `substitute` | Plausible fake via `@faker-js/faker` | No |
+| Mode           | Behaviour                                    | Reversible |
+| -------------- | -------------------------------------------- | ---------- |
+| `mask`         | Partial obscure — preserve type shape        | No         |
+| `redact`       | Full `[REDACTED]` replacement                | No         |
+| `pseudonymize` | Consistent label (`EMAIL_1`) per session     | No         |
+| `anonymize`    | Consistent label (`EMAIL_1`) per session     | No         |
+| `tokenize`     | Random token, stored in tokenMap, restorable | Yes        |
+| `substitute`   | Plausible fake via `@faker-js/faker`         | No         |
 
 ## Examples
 

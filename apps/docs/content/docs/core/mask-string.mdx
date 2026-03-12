@@ -16,17 +16,17 @@ const { result } = masker.maskString('chidi@example.com');
 
 // Freeform text — inline PII detection
 const { result: textResult } = masker.maskString(
-  'Contact Emeka at emeka@example.com or +2348012345678'
+  'Contact Emeka at emeka@example.com or +2348012345678',
 );
 // → 'Contact Emeka at em***a@example.com or ***-***-5678'
 ```
 
 ## Parameters
 
-| Parameter | Type | Required | Description |
-|---|---|---|---|
-| `input` | `string` | Yes | The string to scan and mask |
-| `key` | `string` | No | Object key hint for context-aware detection |
+| Parameter | Type     | Required | Description                                 |
+| --------- | -------- | -------- | ------------------------------------------- |
+| `input`   | `string` | Yes      | The string to scan and mask                 |
+| `key`     | `string` | No       | Object key hint for context-aware detection |
 
 ## Return value
 

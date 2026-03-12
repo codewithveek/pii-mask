@@ -16,13 +16,13 @@ const masker = createMasker({
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `mode` | `MaskMode` | `'mask'` | Masking mode to use |
-| `disable` | `string[]` | `[]` | Detector IDs to disable |
-| `only` | `string[]` | `undefined` | Run only these detectors |
-| `extend` | `PIIDetector[]` | `[]` | Additional custom detectors |
-| `keyNameOnly` | `boolean` | `false` | Skip regex detection, use key heuristics only |
+| Option        | Type            | Default     | Description                                   |
+| ------------- | --------------- | ----------- | --------------------------------------------- |
+| `mode`        | `MaskMode`      | `'mask'`    | Masking mode to use                           |
+| `disable`     | `string[]`      | `[]`        | Detector IDs to disable                       |
+| `only`        | `string[]`      | `undefined` | Run only these detectors                      |
+| `extend`      | `PIIDetector[]` | `[]`        | Additional custom detectors                   |
+| `keyNameOnly` | `boolean`       | `false`     | Skip regex detection, use key heuristics only |
 
 ## Return value
 
