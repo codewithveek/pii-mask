@@ -1,0 +1,55 @@
+---
+title: Masking Modes
+description: The six masking modes and when to use each.
+---
+
+## Overview
+
+pii-mask supports six masking modes. Each mode controls how detected PII values are transformed.
+
+| Mode | Behaviour | Reversible |
+|---|---|---|
+| `mask` | Partial obscure — preserve type shape | No |
+| `redact` | Full `[REDACTED]` replacement | No |
+| `pseudonymize` | Consistent label (`EMAIL_1`) per session | No |
+| `anonymize` | Consistent label (`EMAIL_1`) per session | No |
+| `tokenize` | Random token, stored in tokenMap, restorable | Yes |
+| `substitute` | Plausible fake via `@faker-js/faker` | No |
+
+## Examples
+
+### Mask
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'mask' });
+const { result } = masker.maskString('emeka@example.com');
+// → 'em***a@example.com'
+```
+
+### Redact
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'redact' });
+const { result } = masker.maskString('emeka@example.com');
+// → '[REDACTED]'
+```
+
+### Tokenize
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'tokenize' });
+const { result, tokenMap } = masker.maskString('emeka@example.com');
+// result: '<<PII_a1b2c3d4>>'
+// tokenMap: { '<<PII_a1b2c3d4>>': 'emeka@example.com' }
+
+const restored = masker.restore(result, tokenMap);
+// → 'emeka@example.com'
+```
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

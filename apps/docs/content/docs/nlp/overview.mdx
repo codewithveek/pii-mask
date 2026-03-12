@@ -1,0 +1,26 @@
+---
+title: NLP Overview
+description: When to use NLP detection for person names and places.
+---
+
+## When to use NLP
+
+The built-in detectors use regex patterns and key-name heuristics. They work well for structured values like emails, phone numbers, and government IDs.
+
+For **freeform text** containing person names and place names that don't follow a pattern, use `@pii-mask/nlp`. It wraps the `compromise` NLP library to detect entities.
+
+## Accuracy caveats
+
+NLP detection is probabilistic, not deterministic. It may:
+
+- Miss uncommon names
+- Falsely detect common words as names
+- Perform differently across languages
+
+Always test with representative data before deploying.
+
+## Installation
+
+```bash
+npm install @pii-mask/nlp compromise
+```

@@ -1,0 +1,42 @@
+---
+title: CLI Commands
+description: Full command reference for the pii-mask CLI.
+---
+
+## mask
+
+The primary command. Reads input, masks PII, writes output.
+
+```bash
+pii-mask mask <file> [options]
+```
+
+### Options
+
+| Flag | Description | Default |
+|---|---|---|
+| `--mode` | Masking mode | `mask` |
+| `--format` | Input format (`json`, `csv`, `jsonl`, `txt`) | auto-detect |
+| `--output` | Output file path | stdout |
+| `--disable` | Comma-separated detector IDs to disable | none |
+
+### Examples
+
+```bash
+# Mask a JSON file
+pii-mask mask data.json --mode redact
+
+# Mask CSV, output to file
+pii-mask mask users.csv --mode mask --output masked-users.csv
+
+# Pipe from stdin
+cat data.json | pii-mask mask --format json --mode tokenize
+```
+
+### Exit codes
+
+| Code | Meaning |
+|---|---|
+| `0` | Success |
+| `1` | User error (bad arguments, unsupported format) |
+| `2` | Unexpected runtime error |

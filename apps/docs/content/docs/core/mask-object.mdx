@@ -1,0 +1,33 @@
+---
+title: maskObject
+description: Deep-walk an object and mask all string values containing PII.
+---
+
+## Usage
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'mask' });
+
+const { result, detections } = masker.maskObject({
+  user: {
+    name: 'Priya Sharma',
+    email: 'priya@example.com',
+    phone: '+919876543210',
+    address: {
+      street: '42 MG Road',
+      city: 'Mumbai',
+    },
+  },
+});
+
+console.log(JSON.parse(result));
+// All PII values are masked; non-PII passes through unchanged
+```
+
+## Deep nesting
+
+`maskObject` recursively walks all nested objects and arrays. There is no depth limit. Circular references are handled via `WeakSet`.
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

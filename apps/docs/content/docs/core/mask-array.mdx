@@ -1,0 +1,25 @@
+---
+title: maskArray
+description: Deep-walk an array and mask all string values containing PII.
+---
+
+## Usage
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'redact' });
+
+const { result } = masker.maskArray([
+  { email: 'emeka@example.com', phone: '+2348012345678' },
+  { email: 'priya@example.com', phone: '+919876543210' },
+]);
+
+console.log(JSON.parse(result));
+// → [
+//   { email: '[REDACTED]', phone: '[REDACTED]' },
+//   { email: '[REDACTED]', phone: '[REDACTED]' },
+// ]
+```
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

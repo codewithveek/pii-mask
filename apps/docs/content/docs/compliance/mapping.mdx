@@ -1,0 +1,20 @@
+---
+title: Compliance Mapping
+description: Map pii-mask detectors to GDPR, HIPAA, PCI-DSS, NDPR, and DPDP.
+---
+
+## Regulation coverage
+
+pii-mask detectors map to fields required by major data protection regulations.
+
+| Regulation | Jurisdiction | Key PII fields | Relevant detectors |
+|---|---|---|---|
+| **GDPR** | EU/EEA | Name, email, phone, IP, DOB, national IDs | `person-name`, `email`, `phone`, `ip-address`, `dob`, `ssn-us`, `nino-gb`, `nhs-gb` |
+| **HIPAA** | US | Name, DOB, SSN, phone, email, IP | `person-name`, `dob`, `ssn-us`, `phone`, `email`, `ip-address` |
+| **PCI-DSS** | Global | Credit card numbers, account numbers | `credit-card`, `iban` |
+| **NDPR** | Nigeria | Name, NIN, BVN, phone, email | `person-name`, `nin-ng`, `bvn-ng`, `phone`, `email` |
+| **DPDP** | India | Name, Aadhaar, PAN, phone, email | `person-name`, `aadhaar-in`, `pan-in`, `phone`, `email` |
+
+## Important note
+
+pii-mask is a technical tool, not legal advice. Detector coverage helps with compliance but does not guarantee it. Consult legal counsel for your specific jurisdiction and use case.

@@ -1,0 +1,44 @@
+---
+title: Installation
+description: How to install pii-mask packages.
+---
+
+## Install the core package
+
+```bash
+npm install @pii-mask/core
+```
+
+Or with pnpm:
+
+```bash
+pnpm add @pii-mask/core
+```
+
+## Optional packages
+
+```bash
+# CLI for file processing
+npm install -g @pii-mask/cli
+
+# React bindings
+npm install @pii-mask/react
+
+# NLP-powered detection
+npm install @pii-mask/nlp
+```
+
+## Requirements
+
+- Node.js 18 or later
+- TypeScript 5.x (recommended)
+
+## Substitute mode
+
+If you want to use `substitute` mode (generates realistic fake data), install `@faker-js/faker` as a peer dependency:
+
+```bash
+npm install @faker-js/faker
+```
+
+`@faker-js/faker` is optional and only loaded when `mode: 'substitute'` is used.

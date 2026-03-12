@@ -1,0 +1,46 @@
+---
+title: createMasker
+description: Factory function that returns a configured masker instance.
+---
+
+## Usage
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({
+  mode: 'mask',
+  disable: ['person-name'],
+});
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `mode` | `MaskMode` | `'mask'` | Masking mode to use |
+| `disable` | `string[]` | `[]` | Detector IDs to disable |
+| `only` | `string[]` | `undefined` | Run only these detectors |
+| `extend` | `PIIDetector[]` | `[]` | Additional custom detectors |
+| `keyNameOnly` | `boolean` | `false` | Skip regex detection, use key heuristics only |
+
+## Return value
+
+The returned masker exposes four methods:
+
+- `maskString(input, key?)` — mask a single string value
+- `maskObject(input)` — deep-walk an object and mask all string values
+- `maskArray(input)` — deep-walk an array and mask all string values
+- `restore(masked, tokenMap)` — reverse tokenization
+
+Each masking method returns a `MaskResult`:
+
+```ts
+interface MaskResult {
+  result: string;
+  tokenMap: Record<string, string>;
+  detections: string[];
+}
+```
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

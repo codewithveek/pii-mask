@@ -1,0 +1,20 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "introduction",
+    "installation",
+    "quick-start",
+    "---Core---",
+    "...core",
+    "---CLI---",
+    "...cli",
+    "---React---",
+    "...react",
+    "---NLP---",
+    "...nlp",
+    "---Detectors---",
+    "...detectors",
+    "---Compliance---",
+    "...compliance"
+  ]
+}

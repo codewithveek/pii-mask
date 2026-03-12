@@ -1,0 +1,34 @@
+---
+title: usePIIMaskTable Hook
+description: Headless hook for masking PII in tabular data.
+---
+
+## Usage
+
+```tsx
+import { usePIIMaskTable } from '@pii-mask/react';
+
+function DataTable({ data }: { data: Record<string, unknown>[] }) {
+  const { maskedData } = usePIIMaskTable(data, {
+    mode: 'mask',
+  });
+
+  return (
+    <table>
+      <tbody>
+        {maskedData.map((row, i) => (
+          <tr key={i}>
+            {Object.values(row).map((cell, j) => (
+              <td key={j}>{String(cell)}</td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+```
+
+## Why headless?
+
+`usePIIMaskTable` produces no markup. It returns `{ maskedData }` — an array of masked objects. This works with any table library: TanStack Table, MUI DataGrid, plain HTML, or custom components.

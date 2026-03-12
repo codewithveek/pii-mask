@@ -1,0 +1,56 @@
+---
+title: Detectors
+description: Built-in detector registry and custom detector creation.
+---
+
+## Built-in detectors
+
+pii-mask ships with 21+ built-in detectors across seven categories:
+
+- **gov-id** — NIN, SSN, Aadhaar, PAN, BVN, etc.
+- **financial** — credit cards, IBANs, bank accounts
+- **contact** — email, phone numbers
+- **secret** — API keys, passwords, tokens
+- **biometric** — biometric identifiers
+- **network** — IP addresses, MAC addresses
+- **identity** — person names, dates of birth
+
+## Registry
+
+All detectors self-register on import. The registry is a singleton shared across the process.
+
+```ts
+import { registry } from '@pii-mask/core';
+
+const allDetectors = registry.all();
+console.log(allDetectors.map(d => d.id));
+```
+
+## Custom detectors
+
+```ts
+import { createMasker, registry } from '@pii-mask/core';
+import type { PIIDetector, MaskMode, MaskContext } from '@pii-mask/core';
+import { PIICategory, getOrCreateToken } from '@pii-mask/core';
+
+const myDetector: PIIDetector = {
+  id: 'custom-id',
+  label: 'Custom ID',
+  category: PIICategory.GOV_ID,
+  detect(value) {
+    return /^CUSTOM-\d{8}$/.test(value);
+  },
+  mask(value, mode, ctx) {
+    if (mode === 'redact') return '[REDACTED]';
+    if (mode === 'tokenize') return getOrCreateToken(value, ctx);
+    return `CUSTOM-****${value.slice(-4)}`;
+  },
+};
+
+const masker = createMasker({
+  mode: 'mask',
+  extend: [myDetector],
+});
+```
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

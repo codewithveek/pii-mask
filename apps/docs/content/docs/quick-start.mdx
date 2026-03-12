@@ -1,0 +1,50 @@
+---
+title: Quick Start
+description: Get started with pii-mask in under a minute.
+---
+
+## Mask a string
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'mask' });
+const { result } = masker.maskString('emeka@example.com');
+console.log(result);
+// → 'em***a@example.com'
+```
+
+## Mask an object
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'redact' });
+const { result } = masker.maskObject({
+  name: 'Chidi Okonkwo',
+  email: 'chidi@example.com',
+  phone: '+2348012345678',
+});
+
+console.log(JSON.parse(result));
+// → { name: '[REDACTED]', email: '[REDACTED]', phone: '[REDACTED]' }
+```
+
+## Tokenize and restore
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'tokenize' });
+const { result, tokenMap } = masker.maskString('lucky@example.com');
+
+console.log(result);
+// → '<<PII_a1b2c3d4>>'
+
+// Restore the original value
+const restored = masker.restore(result, tokenMap);
+console.log(restored);
+// → 'lucky@example.com'
+```
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

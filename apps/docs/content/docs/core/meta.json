@@ -1,0 +1,12 @@
+{
+  "title": "Core",
+  "pages": [
+    "create-masker",
+    "modes",
+    "detectors",
+    "mask-string",
+    "mask-object",
+    "mask-array",
+    "restore"
+  ]
+}

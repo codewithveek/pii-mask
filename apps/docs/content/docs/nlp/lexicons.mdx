@@ -1,0 +1,29 @@
+---
+title: Lexicons
+description: Sub-path lexicon imports for regional name detection.
+---
+
+## Available lexicons
+
+pii-mask ships regional lexicon files that enhance name detection for specific regions:
+
+```ts
+import '@pii-mask/core/lexicon/africa';
+import '@pii-mask/core/lexicon/south-asia';
+import '@pii-mask/core/lexicon/east-asia';
+```
+
+## Usage with NLP
+
+Lexicons are most useful with `@pii-mask/nlp` to improve recognition of region-specific names:
+
+```ts
+import '@pii-mask/core/lexicon/africa';
+import { buildCompromiseDetectors } from '@pii-mask/nlp';
+
+const detectors = buildCompromiseDetectors({
+  entities: ['Person'],
+});
+```
+
+Importing a lexicon file side-effects into the global registry, adding region-specific data that both built-in and NLP detectors can use.

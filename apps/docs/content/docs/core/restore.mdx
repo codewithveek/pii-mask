@@ -1,0 +1,31 @@
+---
+title: restore
+description: Reverse tokenization to recover original PII values.
+---
+
+## Usage
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'tokenize' });
+
+const { result, tokenMap } = masker.maskObject({
+  email: 'lucky@example.com',
+  phone: '+2348012345678',
+});
+
+// Send tokenized data to an LLM or external API...
+// Then restore the originals:
+const restored = masker.restore(result, tokenMap);
+console.log(JSON.parse(restored));
+// → { email: 'lucky@example.com', phone: '+2348012345678' }
+```
+
+## How it works
+
+`restore()` replaces each token in the masked string with its original value from the token map. The token map is a `Record<string, string>` where keys are tokens and values are the original PII.
+
+Only works with `tokenize` mode output.
+
+[Try it in the browser ↗](https://app.pii-mask.dev)

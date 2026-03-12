@@ -1,0 +1,35 @@
+---
+title: maskString
+description: Mask PII in a single string value or freeform text.
+---
+
+## Usage
+
+```ts
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'mask' });
+
+// Atomic value detection
+const { result } = masker.maskString('chidi@example.com');
+// → 'ch***i@example.com'
+
+// Freeform text — inline PII detection
+const { result: textResult } = masker.maskString(
+  'Contact Emeka at emeka@example.com or +2348012345678'
+);
+// → 'Contact Emeka at em***a@example.com or ***-***-5678'
+```
+
+## Parameters
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `input` | `string` | Yes | The string to scan and mask |
+| `key` | `string` | No | Object key hint for context-aware detection |
+
+## Return value
+
+Returns a `MaskResult` with `result`, `tokenMap`, and `detections`.
+
+[Try it in the browser ↗](https://app.pii-mask.dev)
