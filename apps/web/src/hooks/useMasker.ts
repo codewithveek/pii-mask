@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { createMasker } from '@pii-mask/core';
 import type { MaskMode, MaskResult } from '@pii-mask/core';
 import { detectFormat, type InputFormat } from '../lib/detectFormat.js';
@@ -42,42 +42,46 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
 
   const format = useMemo(() => detectFormat(input), [input]);
 
-  const runTransform = useCallback(
-    (value: string) => {
-      if (!value.trim() || inputTooLarge) {
-        setOutput('');
-        setTokenMap({});
-        setDetections([]);
-        return;
-      }
+  // Keep a ref to always-current masker + inputTooLarge to avoid stale closures
+  const maskerRef = useRef(masker);
+  maskerRef.current = masker;
+  const inputTooLargeRef = useRef(inputTooLarge);
+  inputTooLargeRef.current = inputTooLarge;
 
-      const currentFormat = detectFormat(value);
-      let result: MaskResult;
+  function runTransform(value: string) {
+    if (!value.trim() || inputTooLargeRef.current) {
+      setOutput('');
+      setTokenMap({});
+      setDetections([]);
+      return;
+    }
 
-      try {
-        if (currentFormat === 'object') {
-          result = masker.maskObject(JSON.parse(value) as Record<string, unknown>);
-          setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
-        } else if (currentFormat === 'array') {
-          result = masker.maskArray(JSON.parse(value) as unknown[]);
-          setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
-        } else {
-          result = masker.maskString(value);
-          setOutput(result.result);
-        }
-      } catch {
-        result = masker.maskString(value);
+    const currentFormat = detectFormat(value);
+    const m = maskerRef.current;
+    let result: MaskResult;
+
+    try {
+      if (currentFormat === 'object') {
+        result = m.maskObject(JSON.parse(value) as Record<string, unknown>);
+        setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
+      } else if (currentFormat === 'array') {
+        result = m.maskArray(JSON.parse(value) as unknown[]);
+        setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
+      } else {
+        result = m.maskString(value);
         setOutput(result.result);
       }
+    } catch {
+      result = m.maskString(value);
+      setOutput(result.result);
+    }
 
-      setTokenMap(result.tokenMap);
-      setDetections(result.detections);
-      setIsPending(false);
-    },
-    [masker, inputTooLarge],
-  );
+    setTokenMap(result.tokenMap);
+    setDetections(result.detections);
+    setIsPending(false);
+  }
 
-  // Debounced transform on input change
+  // Debounced transform on input change only
   useEffect(() => {
     if (!input.trim()) {
       setOutput('');
@@ -94,7 +98,8 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [input, runTransform]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [input]);
 
   // Immediate re-run on mode/detector change (no debounce)
   useEffect(() => {
