@@ -45,3 +45,59 @@
     outline-offset: 2px;
   }
 }
+
+/* Line numbers gutter — shared between InputPanel textarea and HighlightedCode */
+.line-numbers {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.75rem 0.75rem 0.75rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-disabled);
+  user-select: none;
+  min-width: 2.5rem;
+  overflow: hidden;
+}
+.line-numbers span {
+  display: block;
+  height: 1.45em;
+}
+
+/* HighlightedCode wrapper */
+.code-editor {
+  display: flex;
+  min-height: 0;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.code-editor .line-numbers {
+  flex-shrink: 0;
+}
+.code-editor .code-lines {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+/* Reset Shiki's generated <pre> / <code> styles so they blend into our panels */
+.code-editor .code-lines pre.shiki {
+  margin: 0;
+  padding: 0;
+  background: transparent !important;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.code-editor .code-lines pre.shiki code {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+.code-editor .code-lines pre.shiki code .line {
+  display: block;
+  height: 1.45em;
+}

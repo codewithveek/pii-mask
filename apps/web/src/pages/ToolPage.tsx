@@ -46,7 +46,7 @@ export function ToolPage() {
           <InputPanel value={input} onChange={setInput} inputTooLarge={inputTooLarge} />
         </div>
         <div className="min-h-0 p-3">
-          <OutputPanel output={output} isPending={isPending} />
+          <OutputPanel output={output} isPending={isPending} format={format} />
         </div>
       </div>
       <DetectionReport detections={detections} />

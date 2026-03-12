@@ -3,6 +3,7 @@ import { X, Copy, Check } from 'lucide-react';
 import type { MaskMode } from '@pii-mask/core';
 import { generateCodeSample } from '../../lib/generateCodeSample.js';
 import type { InputFormat } from '../../lib/detectFormat.js';
+import { HighlightedCode } from '../code/HighlightedCode.js';
 
 interface CodeSlideOverProps {
   open: boolean;
@@ -75,9 +76,7 @@ export function CodeSlideOver({
               )}
               {copied ? 'Copied' : 'Copy'}
             </button>
-            <pre className="text-[13px] font-mono text-[var(--color-text-primary)] whitespace-pre-wrap overflow-x-auto">
-              {code}
-            </pre>
+            <HighlightedCode code={code} lang="typescript" />
           </div>
 
           <div className="mt-6">
