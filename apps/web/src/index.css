@@ -5,7 +5,10 @@
 @import '@fontsource/inter/700.css';
 @import '@fontsource/jetbrains-mono/400.css';
 
-:root {
+@theme {
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
   --color-bg: #0a0e1a;
   --color-surface: #111827;
   --color-surface-2: #1c2333;
@@ -20,32 +23,25 @@
   --color-warning: #f59e0b;
   --color-error: #ef4444;
   --color-detection: #6366f1;
-
-  --font-sans: 'Inter', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
 }
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
 
-html,
-body,
-#root {
-  height: 100%;
-}
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
 
-body {
-  font-family: var(--font-sans);
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 2px;
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
 }
