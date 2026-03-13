@@ -1,8 +1,28 @@
 {
   "name": "@pii-mask/cli",
   "version": "0.1.0",
+  "description": "CLI tool for masking PII in files. Wraps @pii-mask/core.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codewithveek/pii-mask.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/codewithveek/pii-mask/issues"
+  },
+  "homepage": "https://github.com/codewithveek/pii-mask/tree/main/packages/cli#readme",
+  "keywords": [
+    "pii",
+    "mask",
+    "cli",
+    "redact",
+    "anonymize",
+    "privacy",
+    "data-protection",
+    "command-line"
+  ],
   "publishConfig": {
     "access": "public"
   },

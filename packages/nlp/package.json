@@ -1,8 +1,29 @@
 {
   "name": "@pii-mask/nlp",
   "version": "0.1.0",
+  "description": "NLP extension for PII masking. Detects names and places using compromise.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codewithveek/pii-mask.git",
+    "directory": "packages/nlp"
+  },
+  "bugs": {
+    "url": "https://github.com/codewithveek/pii-mask/issues"
+  },
+  "homepage": "https://github.com/codewithveek/pii-mask/tree/main/packages/nlp#readme",
+  "keywords": [
+    "pii",
+    "mask",
+    "nlp",
+    "names",
+    "places",
+    "compromise",
+    "privacy",
+    "data-protection",
+    "detector"
+  ],
   "publishConfig": {
     "access": "public"
   },

@@ -1,31 +1,33 @@
 {
-  "name": "@pii-mask/react",
+  "name": "pii-mask-cli",
   "version": "0.1.0",
-  "description": "React bindings for PII masking. Components and hooks powered by @pii-mask/core.",
+  "description": "Alias wrapper for @pii-mask/cli. Always reflects the latest @pii-mask/cli features.",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/codewithveek/pii-mask.git",
-    "directory": "packages/react"
+    "directory": "packages/pii-mask-cli"
   },
   "bugs": {
     "url": "https://github.com/codewithveek/pii-mask/issues"
   },
-  "homepage": "https://github.com/codewithveek/pii-mask/tree/main/packages/react#readme",
+  "homepage": "https://github.com/codewithveek/pii-mask/tree/main/packages/pii-mask-cli#readme",
   "keywords": [
     "pii",
     "mask",
-    "react",
-    "hooks",
+    "cli",
     "redact",
     "anonymize",
     "privacy",
     "data-protection",
-    "component"
+    "command-line"
   ],
   "publishConfig": {
     "access": "public"
+  },
+  "bin": {
+    "pii-mask": "./dist/index.js"
   },
   "exports": {
     ".": {
@@ -49,18 +51,10 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "@pii-mask/core": "workspace:*"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0"
+    "@pii-mask/cli": "workspace:*"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.2",
-    "@types/react": "^19.2.14",
     "@vitest/coverage-v8": "^4.0.18",
-    "happy-dom": "^20.8.3",
-    "react": "^19.2.4",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
