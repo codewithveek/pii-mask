@@ -5,18 +5,24 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // BVN: exactly 11 digits, distinguished from NIN by key hint
 const BVN_RE = /^\d{11}$/;
+// Freeform: match 11-digit sequences preceded by BVN context
+const BVN_NG_PATTERN =
+  /(?<=(?:BVN|Bank\s+Verification(?:\s+Number)?)\s+(?:is\s+|:\s*)?)\b\d{11}\b/gi;
 
 const bvnNgDetector: PIIDetector = {
   id: 'bvn-ng',
   label: 'Nigerian BVN',
   category: PIICategory.GOV_ID,
   regions: ['NG'],
+  pattern: BVN_NG_PATTERN,
+  contextualPattern: true,
 
   detect(value, key) {
     const trimmed = value.replace(/\s/g, '');
+    if (!BVN_RE.test(trimmed)) return false;
     // Only fires when key name suggests BVN
     const keyHint = key ? /\bbvn\b|bank.?verif/i.test(key) : false;
-    return keyHint && BVN_RE.test(trimmed);
+    return keyHint;
   },
 
   mask(value, mode, ctx) {

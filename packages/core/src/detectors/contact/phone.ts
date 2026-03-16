@@ -4,15 +4,21 @@ import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
+// Matches international phone numbers in freeform text:
+// +1 (415) 823-9042, +44 7911 234567, +234 803 456 7890, etc.
+const PHONE_PATTERN = /\+\d{1,3}[\s.-]?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,9}/g;
+
 const phoneDetector: PIIDetector = {
   id: 'phone-global',
   label: 'Phone Number',
   category: PIICategory.CONTACT,
+  pattern: PHONE_PATTERN,
 
   detect(value) {
-    if (value.length < 7 || value.length > 20) return false;
+    const trimmed = value.trim();
+    if (trimmed.length < 7 || trimmed.length > 30) return false;
     try {
-      return isValidPhoneNumber(value);
+      return isValidPhoneNumber(trimmed);
     } catch {
       return false;
     }

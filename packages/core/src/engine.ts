@@ -114,7 +114,9 @@ export function maskText(
 
     result = result.replace(detector.pattern, (match) => {
       // Run the atomic detect() as a secondary validation gate
-      if (!detector.detect(match)) return match;
+      // Skip for contextual patterns (e.g. lookbehind-based) where the
+      // pattern itself provides sufficient context that detect() requires
+      if (!detector.contextualPattern && !detector.detect(match)) return match;
 
       ctx.detections.push(detector.id);
       return detector.mask(match, ctx.mode, ctx);

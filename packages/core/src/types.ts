@@ -50,6 +50,13 @@ export interface PIIDetector {
    * Must have the `g` flag.
    */
   pattern?: RegExp;
+  /**
+   * When true, the pattern provides sufficient contextual validation (e.g. via
+   * lookbehinds) so maskText() skips the detect() secondary gate.
+   * Use for detectors whose detect() requires a key hint that is unavailable
+   * in freeform text but whose pattern already encodes that context.
+   */
+  contextualPattern?: boolean;
 }
 
 // ── Masking context passed to every mask() call ─────────────────────────────

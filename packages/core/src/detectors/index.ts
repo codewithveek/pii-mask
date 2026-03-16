@@ -12,6 +12,7 @@ import './gov-id/said-za';
 import './gov-id/nin-uk';
 import './gov-id/nik-id';
 import './gov-id/cpf-br';
+import './gov-id/passport';
 
 // Financial detectors
 import './financial/credit-card';

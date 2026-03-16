@@ -4,8 +4,9 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // UK National Insurance Number: 2 letters, 6 digits, 1 letter (A-D)
+// Both unspaced (AB123456C) and spaced (AB 12 34 56 C) forms
 const NIN_UK_RE = /^[A-Z]{2}\d{6}[A-D]$/;
-const NIN_UK_PATTERN = /\b[A-Z]{2}\d{6}[A-D]\b/gi;
+const NIN_UK_PATTERN = /\b[A-Z]{2}\s?\d{2}\s?\d{2}\s?\d{2}\s?[A-D]\b/gi;
 
 const ninUkDetector: PIIDetector = {
   id: 'nin-uk',

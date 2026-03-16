@@ -5,12 +5,17 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // NIN: exactly 11 digits (no spaces/dashes in canonical form)
 const NIN_RE = /^\d{11}$/;
+// Freeform: match 11-digit sequences preceded by NIN/National Identification context
+const NIN_NG_PATTERN =
+  /(?<=(?:NIN|National\s+Identification\s+Number)\s+(?:is\s+|:\s*)?)\b\d{11}\b/gi;
 
 const ninNgDetector: PIIDetector = {
   id: 'nin-ng',
   label: 'Nigerian NIN',
   category: PIICategory.GOV_ID,
   regions: ['NG'],
+  pattern: NIN_NG_PATTERN,
+  contextualPattern: true,
 
   detect(value, key) {
     const trimmed = value.replace(/\s/g, '');
