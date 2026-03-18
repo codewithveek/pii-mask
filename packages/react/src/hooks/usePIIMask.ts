@@ -16,14 +16,16 @@ export interface UsePIIMaskReturn {
 }
 
 export function usePIIMask(value: string, options: UsePIIMaskOptions = {}): UsePIIMaskReturn {
+  const detectKey = options.detect?.join(',') ?? '';
+  const disableKey = options.disable?.join(',') ?? '';
   const masker = useMemo(
     () =>
       createMasker({
         mode: options.mode ?? 'mask',
-        ...(options.detect != null && { only: options.detect }),
-        ...(options.disable != null && { disable: options.disable }),
+        ...(detectKey ? { only: detectKey.split(',') } : {}),
+        ...(disableKey ? { disable: disableKey.split(',') } : {}),
       }),
-    [options.mode, options.detect?.join(','), options.disable?.join(',')],
+    [options.mode, detectKey, disableKey],
   );
 
   const result: MaskResult = useMemo(() => masker.maskString(value), [masker, value]);

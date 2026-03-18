@@ -19,22 +19,25 @@ export function usePIIMaskTable<T extends Record<string, unknown>>(
   data: T[],
   options: UsePIIMaskTableOptions<T> = {},
 ): UsePIIMaskTableReturn<T> {
+  const disableKey = options.disable?.join(',') ?? '';
   const masker = useMemo(
     () =>
       createMasker({
         mode: options.mode ?? 'mask',
-        ...(options.disable != null && { disable: options.disable }),
+        ...(disableKey ? { disable: disableKey.split(',') } : {}),
       }),
-    [options.mode, options.disable?.join(',')],
+    [options.mode, disableKey],
   );
 
+  const maskColumnsKey = options.maskColumns?.join(',') ?? '';
   const maskedData = useMemo((): T[] => {
     if (options.reveal || data.length === 0) return data;
+    const maskCols = maskColumnsKey ? (maskColumnsKey.split(',') as (keyof T)[]) : null;
 
     return data.map((row) => {
       const out = { ...row };
       for (const key of Object.keys(row) as (keyof T)[]) {
-        if (options.maskColumns && !options.maskColumns.includes(key)) continue;
+        if (maskCols && !maskCols.includes(key)) continue;
         const val = row[key];
         if (typeof val === 'string') {
           out[key] = masker.maskString(val, key as string).result as T[keyof T];
@@ -42,7 +45,7 @@ export function usePIIMaskTable<T extends Record<string, unknown>>(
       }
       return out;
     });
-  }, [data, masker, options.reveal, options.maskColumns?.join(',')]);
+  }, [data, masker, options.reveal, maskColumnsKey]);
 
   return { maskedData };
 }

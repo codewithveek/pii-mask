@@ -23,9 +23,10 @@ export function MaskPII({
   className,
   style,
 }: MaskPIIProps) {
+  const detectKey = detect?.join(',') ?? '';
   const masker = useMemo(
-    () => createMasker({ mode, ...(detect != null && { only: detect }) }),
-    [mode, detect?.join(',')],
+    () => createMasker({ mode, ...(detectKey ? { only: detectKey.split(',') } : {}) }),
+    [mode, detectKey],
   );
 
   const masked = useMemo(() => masker.maskString(children).result, [masker, children]);

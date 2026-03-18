@@ -31,13 +31,15 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
 
   const inputTooLarge = new TextEncoder().encode(input).byteLength > MAX_INPUT_SIZE;
 
+  // Stable string key so useMemo only re-runs when detector list *content* changes
+  const detectorsKey = disabledDetectors.join(',');
   const masker = useMemo(
     () =>
       createMasker({
         mode,
-        ...(disabledDetectors.length > 0 && { disable: disabledDetectors }),
+        ...(detectorsKey ? { disable: detectorsKey.split(',') } : {}),
       }),
-    [mode, disabledDetectors.join(',')],
+    [mode, detectorsKey],
   );
 
   const format = useMemo(() => detectFormat(input), [input]);
@@ -98,7 +100,6 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [input]);
 
   // Immediate re-run on mode/detector change (no debounce)
