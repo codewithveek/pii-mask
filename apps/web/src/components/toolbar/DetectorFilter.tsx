@@ -32,20 +32,15 @@ export function DetectorFilter({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const grouped = allDetectors.reduce<Record<string, typeof allDetectors>>(
-    (acc, d) => {
-      const cat = d.category;
-      if (!acc[cat]) acc[cat] = [];
-      acc[cat].push(d);
-      return acc;
-    },
-    {},
-  );
+  const grouped = allDetectors.reduce<Record<string, typeof allDetectors>>((acc, d) => {
+    const cat = d.category;
+    if (!acc[cat]) acc[cat] = [];
+    acc[cat].push(d);
+    return acc;
+  }, {});
 
   const label =
-    activeCount === totalCount
-      ? 'All detectors'
-      : `Detectors: ${activeCount} of ${totalCount}`;
+    activeCount === totalCount ? 'All detectors' : `Detectors: ${activeCount} of ${totalCount}`;
 
   return (
     <div className="relative" ref={ref}>
@@ -59,9 +54,7 @@ export function DetectorFilter({
       {open && (
         <div className="absolute top-full left-0 mt-1 z-50 w-72 max-h-80 overflow-y-auto rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-[var(--color-text-primary)]">
-              Detectors
-            </span>
+            <span className="text-xs font-medium text-[var(--color-text-primary)]">Detectors</span>
             <button
               onClick={() => {
                 onReset();
