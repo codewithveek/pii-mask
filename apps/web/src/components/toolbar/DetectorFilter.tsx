@@ -74,7 +74,7 @@ export function DetectorFilter({
           </div>
           {Object.entries(grouped).map(([category, detectors]) => (
             <div key={category} className="mb-2">
-              <div className="text-[10px] uppercase tracking-wider text-[var(--color-text-disabled)] mb-1">
+              <div className="text-xs uppercase tracking-wider text-[var(--color-text-disabled)] mb-1">
                 {category}
               </div>
               {detectors.map((d) => (

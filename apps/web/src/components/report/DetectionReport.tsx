@@ -32,12 +32,12 @@ export function DetectionReport({ detections }: DetectionReportProps) {
             </span>
             <div className="flex items-center gap-2">
               {entries.slice(0, 5).map(([id, count]) => (
-                <span key={id} className="text-[10px] text-[var(--color-text-secondary)] font-mono">
+                <span key={id} className="text-xs text-[var(--color-text-secondary)] font-mono">
                   {id} × {count}
                 </span>
               ))}
               {entries.length > 5 && (
-                <span className="text-[10px] text-[var(--color-text-disabled)]">
+                <span className="text-xs text-[var(--color-text-disabled)]">
                   +{entries.length - 5} more
                 </span>
               )}
@@ -57,7 +57,7 @@ export function DetectionReport({ detections }: DetectionReportProps) {
           {entries.map(([id, count]) => (
             <span
               key={id}
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-[var(--color-detection)]/10 text-[var(--color-detection)] border border-[var(--color-detection)]/20"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-[var(--color-detection)]/10 text-[var(--color-detection)] border border-[var(--color-detection)]/20"
             >
               {id}
               <span className="text-[var(--color-text-disabled)]">× {count}</span>
