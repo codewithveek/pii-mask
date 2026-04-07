@@ -1,6 +1,6 @@
 {
   "name": "@pii-mask/cli",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "CLI tool for masking PII in files. Wraps @pii-mask/core.",
   "type": "module",
   "license": "MIT",

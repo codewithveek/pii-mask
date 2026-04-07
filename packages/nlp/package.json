@@ -1,6 +1,6 @@
 {
   "name": "@pii-mask/nlp",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "NLP extension for PII masking. Detects names and places using compromise.",
   "type": "module",
   "license": "MIT",

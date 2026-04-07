@@ -1,6 +1,6 @@
 {
   "name": "pii-mask-cli",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Alias wrapper for @pii-mask/cli. Always reflects the latest @pii-mask/cli features.",
   "type": "module",
   "license": "MIT",
