@@ -21,7 +21,7 @@ export function HighlightedCode({ code, lang = 'text', className = '' }: Highlig
     return (
       <div className={`code-editor ${className}`}>
         <div className="code-lines">
-          <pre className="text-[13px] font-mono text-text-primary whitespace-pre-wrap">{code}</pre>
+          <pre className="text-sm font-mono text-text-primary whitespace-pre-wrap leading-[1.5]">{code}</pre>
         </div>
       </div>
     );

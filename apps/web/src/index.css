@@ -15,8 +15,8 @@
   --color-border: #3a4e6a;
   --color-border-muted: #2a3a52;
   --color-text-primary: #f1f5f9;
-  --color-text-secondary: #a8bbd0;
-  --color-text-disabled: #7a8faa;
+  --color-text-secondary: #c0d0e0;
+  --color-text-disabled: #8fa3bc;
   --color-accent: #3b82f6;
   --color-accent-muted: #60a5fa;
   --color-success: #22c55e;
@@ -53,24 +53,24 @@
   align-items: flex-end;
   padding: 0.75rem 0.75rem 0.75rem 0.75rem;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   color: var(--color-text-disabled);
   user-select: none;
-  min-width: 2.5rem;
+  min-width: 2.75rem;
   overflow: hidden;
 }
 .line-numbers span {
   display: block;
-  height: 1.45em;
+  height: 1.5em;
 }
 
 /* HighlightedCode wrapper */
 .code-editor {
   display: flex;
   min-height: 0;
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
 }
 .code-editor .line-numbers {
   flex-shrink: 0;
@@ -87,8 +87,8 @@
   padding: 0;
   background: transparent !important;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.45;
+  font-size: 14px;
+  line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -99,5 +99,5 @@
 }
 .code-editor .code-lines pre.shiki code .line {
   display: block;
-  height: 1.45em;
+  height: 1.5em;
 }

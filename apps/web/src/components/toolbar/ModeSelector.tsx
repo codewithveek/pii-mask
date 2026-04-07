@@ -25,7 +25,7 @@ export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
             onModeChange(m.value);
             track('mode_changed', { mode: m.value });
           }}
-          className={`px-3 py-1.5 text-xs font-medium rounded transition-colors duration-150 ${
+          className={`px-3.5 py-2 text-sm font-medium rounded transition-colors duration-150 ${
             mode === m.value
               ? 'border border-[var(--color-accent)] text-[var(--color-text-primary)] bg-[var(--color-surface-2)]'
               : 'border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-muted)]'

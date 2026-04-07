@@ -2,7 +2,6 @@ import { useState } from 'react';
 import type { MaskMode } from '@pii-mask/core';
 import { useMasker } from '../hooks/useMasker.js';
 import { useDetectorFilter } from '../hooks/useDetectorFilter.js';
-import { useTokenMap } from '../hooks/useTokenMap.js';
 import { Header } from '../components/layout/Header.js';
 import { CtaStrip } from '../components/layout/CtaStrip.js';
 import { Toolbar } from '../components/toolbar/Toolbar.js';
@@ -10,18 +9,18 @@ import { InputPanel } from '../components/panels/InputPanel.js';
 import { OutputPanel } from '../components/panels/OutputPanel.js';
 import { DetectionReport } from '../components/report/DetectionReport.js';
 import { CodeSlideOver } from '../components/slideOver/CodeSlideOver.js';
+import { TokenMapSlideOver } from '../components/slideOver/TokenMapSlideOver.js';
 
 export function ToolPage() {
   const [mode, setMode] = useState<MaskMode>('mask');
   const [codeSlideOpen, setCodeSlideOpen] = useState(false);
+  const [tokenMapSlideOpen, setTokenMapSlideOpen] = useState(false);
 
   const { allDetectors, disabledDetectors, toggleDetector, resetFilter, activeCount, totalCount } =
     useDetectorFilter();
 
   const { input, setInput, output, format, tokenMap, detections, isPending, inputTooLarge } =
     useMasker({ mode, disabledDetectors });
-
-  const { navigateToTokenMap } = useTokenMap();
 
   return (
     <div className="flex flex-col h-full">
@@ -33,7 +32,7 @@ export function ToolPage() {
         format={format}
         tokenMap={tokenMap}
         onViewCode={() => setCodeSlideOpen(true)}
-        onViewTokenMap={() => navigateToTokenMap(tokenMap)}
+        onViewTokenMap={() => setTokenMapSlideOpen(true)}
         allDetectors={allDetectors}
         disabledDetectors={disabledDetectors}
         onToggleDetector={toggleDetector}
@@ -42,10 +41,10 @@ export function ToolPage() {
         totalDetectorCount={totalCount}
       />
       <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-0">
-        <div className="min-h-0 p-3">
+        <div className="min-h-0 p-4 overflow-hidden">
           <InputPanel value={input} onChange={setInput} inputTooLarge={inputTooLarge} />
         </div>
-        <div className="min-h-0 p-3">
+        <div className="min-h-0 p-4 overflow-hidden">
           <OutputPanel output={output} isPending={isPending} format={format} />
         </div>
       </div>
@@ -57,6 +56,11 @@ export function ToolPage() {
         mode={mode}
         format={format}
         disabledDetectors={disabledDetectors}
+      />
+      <TokenMapSlideOver
+        open={tokenMapSlideOpen}
+        onClose={() => setTokenMapSlideOpen(false)}
+        tokenMap={tokenMap}
       />
     </div>
   );

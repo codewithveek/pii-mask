@@ -55,7 +55,7 @@ export function Toolbar({
         {hasTokenMap && (
           <button
             onClick={onViewTokenMap}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white transition-colors duration-150"
+            className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded border border-[var(--color-accent)] text-[var(--color-accent)] hover:bg-[var(--color-accent)] hover:text-white transition-colors duration-150"
           >
             View Token Map
           </button>
