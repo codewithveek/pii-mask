@@ -15,7 +15,18 @@ const ssnUsDetector: PIIDetector = {
 
   detect(value, _key) {
     const trimmed = value.trim();
-    return SSN_RE.test(trimmed);
+    if (!SSN_RE.test(trimmed)) return false;
+    const parts = trimmed.split('-');
+    const area = parts[0]!;
+    const group = parts[1]!;
+    const serial = parts[2]!;
+    // Invalid area numbers: 000, 666, 900-999
+    if (area === '000' || area === '666' || parseInt(area, 10) >= 900) return false;
+    // Invalid group: 00
+    if (group === '00') return false;
+    // Invalid serial: 0000
+    if (serial === '0000') return false;
+    return true;
   },
 
   mask(value, mode, ctx) {

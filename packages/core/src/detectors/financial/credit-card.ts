@@ -44,12 +44,15 @@ const creditCardDetector: PIIDetector = {
   pattern: CC_PATTERN,
 
   detect(value) {
-    const digits = value.replace(/\D/g, '');
+    const trimmed = value.trim();
+    // Reject strings that aren't card-like (must contain only digits, spaces, dashes)
+    if (!/^[\d\s-]+$/.test(trimmed)) return false;
+    const digits = trimmed.replace(/\D/g, '');
     if (digits.length < 13 || digits.length > 19) return false;
     // Luhn-valid → definite card
     if (luhn(digits)) return true;
     // Formatted like a card (4x4 groups) with known card prefix → likely card
-    if (CC_FORMATTED_RE.test(value.trim()) && hasCardPrefix(digits)) return true;
+    if (CC_FORMATTED_RE.test(trimmed) && hasCardPrefix(digits)) return true;
     return false;
   },
 

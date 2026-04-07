@@ -23,7 +23,7 @@ class DetectorRegistry {
     detectors.forEach((d) => this.register(d));
   }
 
-  resolve(options: Pick<MaskOptions, 'disable' | 'only' | 'extend'>): PIIDetector[] {
+  resolve(options: Pick<MaskOptions, 'disable' | 'only' | 'extend' | 'regions'>): PIIDetector[] {
     const extended = new Map(this.detectors);
 
     // Consumer extensions use silent replacement — intentional override by ID
@@ -36,6 +36,12 @@ class DetectorRegistry {
     if (options.only?.length) {
       resolved = resolved.filter(
         (d) => options.only!.includes(d.id) || options.only!.includes(d.category),
+      );
+    }
+
+    if (options.regions?.length) {
+      resolved = resolved.filter(
+        (d) => !d.regions || d.regions.some((r) => options.regions!.includes(r)),
       );
     }
 

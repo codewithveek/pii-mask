@@ -10,22 +10,29 @@ const DOB_ISO_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
 // Natural language months for freeform scanning
 const MONTHS =
   'January|February|March|April|May|June|July|August|September|October|November|December';
-// Matches: "March 14, 1987", "22nd of July, 1993", "November 3, 1990"
-// Also matches numeric formats: MM/DD/YYYY, YYYY-MM-DD
+
+// Birth-related context words — used in freeform lookbehind
+const BIRTH_CONTEXT = '(?:born|birthday|date\\s+of\\s+birth|dob|birth\\s*date|d\\.o\\.b\\.?)';
+
+// Natural language date sub-patterns (month-first and day-first)
+const NATURAL_DATE =
+  `(?:(?:${MONTHS})\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}` +
+  '|' +
+  `\\d{1,2}(?:st|nd|rd|th)?\\s+(?:of\\s+)?(?:${MONTHS}),?\\s+\\d{4})`;
+
+// Freeform pattern: numeric dates match standalone; natural language dates
+// require a birth-context lookbehind to reduce false positives on regular dates.
 const DOB_PATTERN = new RegExp(
-  '\\b(?:' +
-    // "Month DD, YYYY" or "Month DDth, YYYY"
-    `(?:${MONTHS})\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+\\d{4}` +
+  '(?:' +
+    // Numeric: MM/DD/YYYY
+    '\\b(?:0[1-9]|1[0-2])\\/(?:0[1-9]|[12]\\d|3[01])\\/\\d{4}\\b' +
     '|' +
-    // "DD Month YYYY" or "DDth of Month, YYYY" or "DDth of Month YYYY"
-    `\\d{1,2}(?:st|nd|rd|th)?\\s+(?:of\\s+)?(?:${MONTHS}),?\\s+\\d{4}` +
+    // Numeric: YYYY-MM-DD
+    '\\b\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\b' +
     '|' +
-    // MM/DD/YYYY
-    '(?:0[1-9]|1[0-2])\\/(0[1-9]|[12]\\d|3[01])\\/\\d{4}' +
-    '|' +
-    // YYYY-MM-DD
-    '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])' +
-    ')\\b',
+    // Natural language dates WITH birth-context lookbehind
+    `(?<=\\b${BIRTH_CONTEXT}\\b.{0,20})${NATURAL_DATE}` +
+    ')',
   'gi',
 );
 
@@ -34,6 +41,7 @@ const dobDetector: PIIDetector = {
   label: 'Date of Birth',
   category: PIICategory.BIOMETRIC,
   pattern: DOB_PATTERN,
+  contextualPattern: true,
 
   detect(value, key) {
     const trimmed = value.trim();

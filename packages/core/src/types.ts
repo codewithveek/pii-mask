@@ -87,11 +87,19 @@ export interface MaskOptions {
   disable?: string[];
   /** If set, run ONLY these category names or detector IDs */
   only?: string[];
+  /** ISO 3166-1 alpha-2 region codes. Filters to detectors matching these regions (universal detectors always included). */
+  regions?: string[];
   /** Additional custom detectors to register */
   extend?: PIIDetector[];
   /** Skip value-level regex detection; rely on key-name heuristics only */
   keyNameOnly?: boolean;
   nlpOptions?: NLPOptions;
+}
+
+/** Opaque session handle for cross-call consistency (tokenize/pseudonymize). */
+export interface MaskSession {
+  /** @internal */
+  readonly _ctx: MaskContext;
 }
 
 export interface NLPOptions {

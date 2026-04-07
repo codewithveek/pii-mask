@@ -6,7 +6,9 @@ import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 // Matches international phone numbers in freeform text:
 // +1 (415) 823-9042, +44 7911 234567, +234 803 456 7890, etc.
-const PHONE_PATTERN = /\+\d{1,3}[\s.-]?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,9}/g;
+// Also matches common local formats: (415) 823-9042, 415-823-9042, 415.823.9042
+const PHONE_PATTERN =
+  /(?:\+\d{1,3}[\s.-]?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,9}|\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4})/g;
 
 const phoneDetector: PIIDetector = {
   id: 'phone-global',
@@ -18,7 +20,12 @@ const phoneDetector: PIIDetector = {
     const trimmed = value.trim();
     if (trimmed.length < 7 || trimmed.length > 30) return false;
     try {
-      return isValidPhoneNumber(trimmed);
+      if (isValidPhoneNumber(trimmed)) return true;
+      // Try common default countries for local numbers without country code
+      for (const country of ['US', 'GB', 'CA'] as const) {
+        if (isValidPhoneNumber(trimmed, country)) return true;
+      }
+      return false;
     } catch {
       return false;
     }
@@ -40,7 +47,13 @@ const phoneDetector: PIIDetector = {
       const national = parsed.nationalNumber;
       return `***-***-${national.slice(-4)}`;
     } catch {
-      return `***-***-${value.slice(-4)}`;
+      try {
+        const parsed = parsePhoneNumber(value, 'US');
+        const national = parsed.nationalNumber;
+        return `***-***-${national.slice(-4)}`;
+      } catch {
+        return `***-***-${value.slice(-4)}`;
+      }
     }
   },
 };

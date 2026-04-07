@@ -12,5 +12,6 @@ export {
   type MaskContext,
   type MaskResult,
   type MaskOptions,
+  type MaskSession,
   type NLPOptions,
 } from './types';

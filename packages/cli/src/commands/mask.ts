@@ -8,6 +8,31 @@ import { parseCSV, csvToString } from '../adapters/csv.js';
 import { parseJSONL, jsonlToString } from '../adapters/jsonl.js';
 import { persistTokenMap } from '../utils/token-map.js';
 
+const ALLOWED_CONFIG_KEYS = new Set([
+  'mode',
+  'disable',
+  'only',
+  'format',
+  'output',
+  'in-place',
+  'token-map-out',
+  'report',
+]);
+
+export function loadConfig(path: string): Record<string, unknown> {
+  const raw: unknown = JSON.parse(readFileSync(path, 'utf-8'));
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) {
+    console.error('Config file must be a JSON object');
+    process.exit(1);
+  }
+  for (const key of Object.keys(raw as Record<string, unknown>)) {
+    if (!ALLOWED_CONFIG_KEYS.has(key)) {
+      console.error(`Warning: unknown config key "${key}" — ignored`);
+    }
+  }
+  return raw as Record<string, unknown>;
+}
+
 export const maskCommand = defineCommand({
   meta: {
     name: 'pii-mask',
@@ -35,7 +60,7 @@ export const maskCommand = defineCommand({
   },
 
   async run({ args }) {
-    const config = args.config ? JSON.parse(readFileSync(resolve(args.config), 'utf-8')) : {};
+    const config = args.config ? loadConfig(resolve(args.config)) : {};
     const opts = { ...config, ...args };
 
     const isStdin = !opts.file;
@@ -54,11 +79,12 @@ export const maskCommand = defineCommand({
 
     const format =
       (opts.format as string) ?? (isStdin ? 'json' : extname((opts.file as string) ?? '').slice(1));
-    const masker = createMasker({
+    const maskerOpts: { mode: MaskMode; disable?: string[]; only?: string[] } = {
       mode: (opts.mode as MaskMode) ?? 'mask',
-      disable: typeof opts.disable === 'string' ? opts.disable.split(',') : undefined,
-      only: typeof opts.only === 'string' ? opts.only.split(',') : undefined,
-    });
+    };
+    if (typeof opts.disable === 'string') maskerOpts.disable = opts.disable.split(',');
+    if (typeof opts.only === 'string') maskerOpts.only = opts.only.split(',');
+    const masker = createMasker(maskerOpts);
 
     let output: string;
     let allDetections: string[] = [];
