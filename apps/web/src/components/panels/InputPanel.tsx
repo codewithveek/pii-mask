@@ -1,5 +1,5 @@
 import { useRef, useCallback } from 'react';
-import { Lock, AlertTriangle } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 interface InputPanelProps {
   value: string;
@@ -27,21 +27,17 @@ export function InputPanel({ value, onChange, inputTooLarge }: InputPanelProps) 
   }, []);
 
   return (
-    <div className="flex flex-col h-full border border-[var(--color-border)] rounded-md bg-[var(--color-surface)] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-2.5 border-b border-[var(--color-border-muted)]">
-        <span className="text-sm font-medium text-[var(--color-text-secondary)]">Input</span>
-        <span className="flex items-center gap-1.5 text-xs text-[var(--color-text-disabled)]">
-          <Lock size={12} />
-          Processed locally
-        </span>
+    <div className="flex flex-col h-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)]">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">Input</span>
       </div>
       {inputTooLarge && (
-        <div className="flex items-center gap-2 px-4 py-2.5 bg-[var(--color-warning)]/10 text-[var(--color-warning)] text-sm">
-          <AlertTriangle size={14} />
-          Input exceeds 500KB limit. Transformation disabled.
+        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-warning)]/10 text-[var(--color-warning)] text-xs">
+          <AlertTriangle size={13} />
+          Input exceeds 500 KB. Transformation disabled.
         </div>
       )}
-      <div className="flex flex-1 min-h-0 overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden bg-[var(--color-code-bg)] rounded-b-lg">
         <div className="line-numbers py-3" aria-hidden>
           {Array.from({ length: lineCount }, (_, i) => (
             <span key={i}>{i + 1}</span>
@@ -54,7 +50,7 @@ export function InputPanel({ value, onChange, inputTooLarge }: InputPanelProps) 
           onScroll={handleScroll}
           placeholder={PLACEHOLDER}
           spellCheck={false}
-          className="flex-1 w-full py-3 pr-4 bg-transparent text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-disabled)] resize-none focus:outline-none overflow-auto leading-[1.5]"
+          className="flex-1 w-full py-3 pr-4 bg-transparent text-[13px] font-mono text-[var(--color-code-text)] placeholder:text-[#64748b] resize-none focus:outline-none overflow-auto leading-[1.6]"
         />
       </div>
     </div>

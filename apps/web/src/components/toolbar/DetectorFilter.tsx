@@ -46,15 +46,15 @@ export function DetectorFilter({
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
+        className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] transition-colors duration-150 whitespace-nowrap flex-shrink-0"
       >
-        <Filter size={14} />
+        <Filter size={13} />
         {label}
       </button>
       {open && (
-        <div className="absolute top-full left-0 mt-1 z-50 w-72 max-h-80 overflow-y-auto rounded border border-[var(--color-border)] bg-[var(--color-surface-2)] p-3">
+        <div className="absolute top-full left-0 mt-1 z-50 w-72 max-h-80 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium text-[var(--color-text-primary)]">Detectors</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">Detectors</span>
             <button
               onClick={() => {
                 onReset();

@@ -23,9 +23,9 @@ export function DownloadButton({ output, format }: DownloadButtonProps) {
     <button
       onClick={handleDownload}
       disabled={disabled}
-      className="flex items-center gap-1.5 px-3.5 py-2 text-sm font-medium rounded border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
+      className="flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)] disabled:opacity-40 disabled:cursor-not-allowed transition-colors duration-150"
     >
-      <Download size={14} />
+      <Download size={13} />
       Download
     </button>
   );

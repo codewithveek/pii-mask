@@ -16,7 +16,7 @@ const modes: Array<{ value: MaskMode; label: string; tooltip: string }> = [
 
 export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center flex-wrap  gap-1 ">
       {modes.map((m) => (
         <button
           key={m.value}
@@ -25,10 +25,10 @@ export function ModeSelector({ mode, onModeChange }: ModeSelectorProps) {
             onModeChange(m.value);
             track('mode_changed', { mode: m.value });
           }}
-          className={`px-3.5 py-2 text-sm font-medium rounded transition-colors duration-150 ${
+          className={`px-2.5 py-1.5 text-xs font-medium rounded-md transition-colors duration-150 whitespace-nowrap ${
             mode === m.value
-              ? 'border border-[var(--color-accent)] text-[var(--color-text-primary)] bg-[var(--color-surface-2)]'
-              : 'border border-[var(--color-border)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-muted)]'
+              ? 'bg-accent text-white'
+              : 'text-text-secondary hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-2)]'
           }`}
         >
           {m.label}

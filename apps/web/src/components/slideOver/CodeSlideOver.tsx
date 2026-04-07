@@ -50,44 +50,44 @@ export function CodeSlideOver({
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
-      <div className="fixed right-0 top-0 bottom-0 w-full max-w-lg z-50 bg-[var(--color-surface)] border-l border-[var(--color-border)] flex flex-col">
-        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)]">
-          <span className="text-sm font-medium text-[var(--color-text-primary)]">
+      <div className="fixed inset-0 bg-black/30 z-50" onClick={onClose} />
+      <div className="fixed right-0 top-0 bottom-0 w-full max-w-md z-50 bg-[var(--color-surface)] border-l border-[var(--color-border)] flex flex-col shadow-xl">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
+          <span className="text-sm font-semibold text-[var(--color-text-primary)]">
             Generated Code
           </span>
           <button
             onClick={onClose}
-            className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
+            className="text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
           >
             <X size={16} />
           </button>
         </div>
         <div className="flex-1 overflow-y-auto p-4">
-          <div className="relative rounded-md bg-[var(--color-surface-2)] border border-[var(--color-border)] p-4">
+          <div className="relative rounded-lg overflow-hidden border border-[var(--color-border)]">
             <button
               onClick={handleCopyCode}
-              className="absolute top-2 right-2 flex items-center gap-1 text-xs text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
+              className="absolute top-2 right-2 z-10 flex items-center gap-1 px-2 py-1 text-xs rounded bg-[var(--color-code-bg)] text-[#94a3b8] hover:text-white transition-colors duration-150"
             >
               {copied ? (
-                <Check size={12} className="text-[var(--color-success)]" />
+                <Check size={11} className="text-[var(--color-success)]" />
               ) : (
-                <Copy size={12} />
+                <Copy size={11} />
               )}
               {copied ? 'Copied' : 'Copy'}
             </button>
             <HighlightedCode code={code} lang="typescript" />
           </div>
 
-          <div className="mt-6">
-            <p className="text-xs text-[var(--color-text-secondary)] mb-2">Install</p>
-            <div className="relative flex items-center rounded-md bg-[var(--color-surface-2)] border border-[var(--color-border)] px-3 py-2">
-              <code className="text-[13px] font-mono text-[var(--color-text-primary)]">
+          <div className="mt-5">
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">Install</p>
+            <div className="relative flex items-center rounded-lg bg-[var(--color-code-bg)] border border-[var(--color-border)] px-3 py-2">
+              <code className="text-[13px] font-mono text-[var(--color-code-text)]">
                 npm install @pii-mask/core
               </code>
               <button
                 onClick={handleCopyInstall}
-                className="ml-auto text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors duration-150"
+                className="ml-auto text-[#94a3b8] hover:text-white transition-colors duration-150"
               >
                 {installCopied ? (
                   <Check size={12} className="text-[var(--color-success)]" />
@@ -103,7 +103,7 @@ export function CodeSlideOver({
               href="https://pii-mask.dev/docs/core/create-masker"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-sm text-[var(--color-accent)] hover:text-[var(--color-accent-muted)] transition-colors duration-150"
+              className="text-xs font-medium text-[var(--color-accent)] hover:text-[var(--color-accent-muted)] transition-colors duration-150"
             >
               Read the docs →
             </a>

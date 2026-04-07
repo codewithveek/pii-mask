@@ -5,9 +5,15 @@ interface HighlightedCodeProps {
   code: string;
   lang?: 'json' | 'typescript' | 'text';
   className?: string;
+  showLineNumbers?: boolean;
 }
 
-export function HighlightedCode({ code, lang = 'text', className = '' }: HighlightedCodeProps) {
+export function HighlightedCode({
+  code,
+  lang = 'text',
+  className = '',
+  showLineNumbers = true,
+}: HighlightedCodeProps) {
   const { ready, highlight } = useHighlighter();
 
   const html = useMemo(() => {
@@ -21,7 +27,9 @@ export function HighlightedCode({ code, lang = 'text', className = '' }: Highlig
     return (
       <div className={`code-editor ${className}`}>
         <div className="code-lines">
-          <pre className="text-sm font-mono text-text-primary whitespace-pre-wrap leading-[1.5]">{code}</pre>
+          <pre className="text-[13px] font-mono text-inherit whitespace-pre-wrap leading-[1.3]">
+            {code}
+          </pre>
         </div>
       </div>
     );
@@ -29,11 +37,13 @@ export function HighlightedCode({ code, lang = 'text', className = '' }: Highlig
 
   return (
     <div className={`code-editor ${className}`}>
-      <div className="line-numbers" aria-hidden>
-        {Array.from({ length: lineCount }, (_, i) => (
-          <span key={i}>{i + 1}</span>
-        ))}
-      </div>
+      {showLineNumbers && (
+        <div className="line-numbers" aria-hidden>
+          {Array.from({ length: lineCount }, (_, i) => (
+            <span key={i}>{i + 1}</span>
+          ))}
+        </div>
+      )}
       <div className="code-lines" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
