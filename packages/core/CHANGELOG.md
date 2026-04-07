@@ -1,5 +1,11 @@
 # @pii-mask/core
 
+## 0.2.1
+
+### Patch Changes
+
+- Fix inline PII detection in maskObject/maskArray. The walk() function now falls through to maskText() when atomic detection misses, enabling detection of inline PII in freeform text fields.
+
 ## 0.2.0
 
 ### Minor Changes

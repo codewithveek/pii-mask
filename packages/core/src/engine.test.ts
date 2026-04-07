@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { generateToken, getOrCreateToken, getOrCreateLabel, createContext, extractTokenMap, walk } from './engine.js';
+import {
+  generateToken,
+  getOrCreateToken,
+  getOrCreateLabel,
+  createContext,
+  extractTokenMap,
+  walk,
+} from './engine.js';
 import { MaskMode, PIICategory } from './types.js';
 import type { PIIDetector } from './types.js';
 
@@ -82,13 +89,7 @@ describe('walk', () => {
 
   it('walks arrays', () => {
     const ctx = createContext(MaskMode.MASK);
-    const result = walk(
-      ['a@b.com', 'hello'],
-      undefined,
-      [emailDetector],
-      ctx,
-      false,
-    );
+    const result = walk(['a@b.com', 'hello'], undefined, [emailDetector], ctx, false);
     expect(result).toEqual(['[MASKED]', 'hello']);
   });
 
@@ -99,5 +100,27 @@ describe('walk', () => {
     // Should not throw
     const result = walk(obj, undefined, [emailDetector], ctx, false) as Record<string, unknown>;
     expect(result['email']).toBe('[MASKED]');
+  });
+
+  it('falls through to inline text scanning when atomic detection misses', () => {
+    const inlineDetector: PIIDetector = {
+      id: 'test-inline',
+      label: 'Test Inline',
+      category: PIICategory.CONTACT,
+      pattern: /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi,
+      detect: (v) => /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(v),
+      mask: () => '[EMAIL]',
+    };
+
+    const ctx = createContext(MaskMode.MASK);
+    const result = walk(
+      { notes: 'Contact me at a@b.com please' },
+      undefined,
+      [inlineDetector],
+      ctx,
+      false,
+    );
+    expect(result).toEqual({ notes: 'Contact me at [EMAIL] please' });
+    expect(ctx.detections).toContain('test-inline');
   });
 });

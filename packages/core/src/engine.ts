@@ -42,8 +42,12 @@ export function walk(
 ): unknown {
   // ── String — run detection ────────────────────────────────────────────────
   if (typeof node === 'string') {
+    const beforeCount = ctx.detections.length;
     const { masked } = maskValue(node, key, detectors, ctx, keyNameOnly);
-    return masked;
+    // If atomic detection fired, use its result; otherwise try inline scanning
+    if (ctx.detections.length > beforeCount) return masked;
+    const { masked: textResult } = maskText(node, detectors, ctx);
+    return textResult;
   }
 
   // ── Array — walk each item, pass parent key as hint ───────────────────────

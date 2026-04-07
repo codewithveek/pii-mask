@@ -1,6 +1,6 @@
 {
   "name": "@pii-mask/react",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "React bindings for PII masking. Components and hooks powered by @pii-mask/core.",
   "type": "module",
   "license": "MIT",
