@@ -5,15 +5,15 @@ description: Built-in detector registry and custom detector creation.
 
 ## Built-in detectors
 
-pii-mask ships with 21+ built-in detectors across seven categories:
+pii-mask ships with 31 built-in detectors across seven categories:
 
-- **gov-id** — NIN, SSN, Aadhaar, PAN, BVN, etc.
-- **financial** — credit cards, IBANs, bank accounts
-- **contact** — email, phone numbers
-- **secret** — API keys, passwords, tokens
-- **biometric** — biometric identifiers
-- **network** — IP addresses, MAC addresses
-- **identity** — person names, dates of birth
+- **gov-id** — SSN, NIN, BVN, Aadhaar, PAN, SA ID, NIK, CPF, Passport, SIN, and more
+- **financial** — credit cards, IBANs
+- **contact** — email, phone numbers (20+ country local formats)
+- **secret** — API keys, JWTs, bcrypt hashes, hex secrets, AWS keys, GitHub PATs, Slack/Stripe tokens
+- **biometric** — dates of birth
+- **network** — IPv4, IPv6, MAC addresses
+- **identity** — person names, addresses, UUIDs, MongoDB ObjectIds, VINs
 
 ## Registry
 

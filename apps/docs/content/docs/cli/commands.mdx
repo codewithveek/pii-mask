@@ -13,21 +13,58 @@ pii-mask <file> [options]
 
 ### Options
 
-| Flag        | Description                                  | Default     |
-| ----------- | -------------------------------------------- | ----------- |
-| `--mode`    | Masking mode                                 | `mask`      |
-| `--format`  | Input format (`json`, `csv`, `jsonl`, `txt`) | auto-detect |
-| `--output`  | Output file path                             | stdout      |
-| `--disable` | Comma-separated detector IDs to disable      | none        |
+| Flag              | Description                                           | Default           |
+| ----------------- | ----------------------------------------------------- | ----------------- |
+| `--mode`          | Masking mode                                          | `mask`            |
+| `--format`        | Input format (`json`, `csv`, `jsonl`, `txt`)          | auto-detect       |
+| `--output`        | Output directory path                                 | `./masked-output` |
+| `--in-place`      | Overwrite input file instead of writing to output dir | `false`           |
+| `--disable`       | Comma-separated detector IDs to disable               | none              |
+| `--only`          | Comma-separated detector IDs or categories to run     | all               |
+| `--token-map-out` | File path to persist the token map (tokenize mode)    | none              |
+| `--report`        | Print detection report without masking                | `false`           |
+| `--config`        | Path to `.pii-mask.json` config file                  | none              |
+
+### Config file
+
+Create a `.pii-mask.json` file to set defaults:
+
+```json
+{
+  "mode": "redact",
+  "disable": "person-name,address",
+  "output": "./redacted"
+}
+```
+
+Load it with `--config`:
+
+```bash
+pii-mask data.json --config .pii-mask.json
+```
+
+CLI flags override config file values.
 
 ### Examples
 
 ```bash
 # Mask a JSON file
-pii-mask  data.json --mode redact
+pii-mask data.json --mode redact
 
 # Mask CSV, output to file
-pii-mask users.csv --mode mask --output masked-users.csv
+pii-mask users.csv --mode mask --output ./masked
+
+# Mask in place
+pii-mask data.json --mode redact --in-place
+
+# Only run specific detectors
+pii-mask data.json --only email,phone
+
+# Tokenize and save token map
+pii-mask data.json --mode tokenize --token-map-out tokens.json
+
+# Detection report only (no masking)
+pii-mask data.json --report
 
 # Pipe from stdin
 cat data.json | pii-mask --format json --mode tokenize

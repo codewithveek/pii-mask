@@ -7,13 +7,15 @@ description: Map pii-mask detectors to GDPR, HIPAA, PCI-DSS, NDPR, and DPDP.
 
 pii-mask detectors map to fields required by major data protection regulations.
 
-| Regulation  | Jurisdiction | Key PII fields                            | Relevant detectors                                                                  |
-| ----------- | ------------ | ----------------------------------------- | ----------------------------------------------------------------------------------- |
-| **GDPR**    | EU/EEA       | Name, email, phone, IP, DOB, national IDs | `person-name`, `email`, `phone`, `ip-address`, `dob`, `ssn-us`, `nino-gb`, `nhs-gb` |
-| **HIPAA**   | US           | Name, DOB, SSN, phone, email, IP          | `person-name`, `dob`, `ssn-us`, `phone`, `email`, `ip-address`                      |
-| **PCI-DSS** | Global       | Credit card numbers, account numbers      | `credit-card`, `iban`                                                               |
-| **NDPR**    | Nigeria      | Name, NIN, BVN, phone, email              | `person-name`, `nin-ng`, `bvn-ng`, `phone`, `email`                                 |
-| **DPDP**    | India        | Name, Aadhaar, PAN, phone, email          | `person-name`, `aadhaar-in`, `pan-in`, `phone`, `email`                             |
+| Regulation  | Jurisdiction | Key PII fields                            | Relevant detectors                                                            |
+| ----------- | ------------ | ----------------------------------------- | ----------------------------------------------------------------------------- |
+| **GDPR**    | EU/EEA       | Name, email, phone, IP, DOB, national IDs | `person-name`, `email`, `phone`, `ip-address`, `dob`, `ssn-us`, `nin-uk`      |
+| **HIPAA**   | US           | Name, DOB, SSN, phone, email, IP          | `person-name`, `dob`, `ssn-us`, `phone`, `email`, `ip-address`                |
+| **PCI-DSS** | Global       | Credit card numbers, account numbers      | `credit-card`, `iban`                                                         |
+| **NDPR**    | Nigeria      | Name, NIN, BVN, phone, email              | `person-name`, `nin-ng`, `bvn-ng`, `phone`, `email`                           |
+| **DPDP**    | India        | Name, Aadhaar, PAN, phone, email          | `person-name`, `aadhaar-in`, `pan-in`, `phone`, `email`                       |
+| **PIPEDA**  | Canada       | Name, SIN, phone, email                   | `person-name`, `sin-ca`, `phone`, `email`                                     |
+| **SOC 2**   | Global       | API keys, tokens, secrets                 | `secret-key`, `aws-key`, `github-pat`, `platform-token`, `jwt`, `bcrypt-hash` |
 
 ## Important note
 

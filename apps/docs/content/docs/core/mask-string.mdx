@@ -23,10 +23,11 @@ const { result: textResult } = masker.maskString(
 
 ## Parameters
 
-| Parameter | Type     | Required | Description                                 |
-| --------- | -------- | -------- | ------------------------------------------- |
-| `input`   | `string` | Yes      | The string to scan and mask                 |
-| `key`     | `string` | No       | Object key hint for context-aware detection |
+| Parameter | Type          | Required | Description                                               |
+| --------- | ------------- | -------- | --------------------------------------------------------- |
+| `input`   | `string`      | Yes      | The string to scan and mask                               |
+| `key`     | `string`      | No       | Object key hint for context-aware detection               |
+| `session` | `MaskSession` | No       | Session for cross-call consistency (shared tokens/labels) |
 
 ## Return value
 

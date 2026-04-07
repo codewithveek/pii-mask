@@ -16,22 +16,49 @@ const masker = createMasker({
 
 ## Options
 
-| Option        | Type            | Default     | Description                                   |
-| ------------- | --------------- | ----------- | --------------------------------------------- |
-| `mode`        | `MaskMode`      | `'mask'`    | Masking mode to use                           |
-| `disable`     | `string[]`      | `[]`        | Detector IDs to disable                       |
-| `only`        | `string[]`      | `undefined` | Run only these detectors                      |
-| `extend`      | `PIIDetector[]` | `[]`        | Additional custom detectors                   |
-| `keyNameOnly` | `boolean`       | `false`     | Skip regex detection, use key heuristics only |
+| Option        | Type            | Default     | Description                                                                                                 |
+| ------------- | --------------- | ----------- | ----------------------------------------------------------------------------------------------------------- |
+| `mode`        | `MaskMode`      | `'mask'`    | Masking mode to use                                                                                         |
+| `disable`     | `string[]`      | `[]`        | Detector IDs to disable                                                                                     |
+| `only`        | `string[]`      | `undefined` | Run only these detectors                                                                                    |
+| `extend`      | `PIIDetector[]` | `[]`        | Additional custom detectors                                                                                 |
+| `regions`     | `string[]`      | `undefined` | ISO 3166-1 alpha-2 codes — filter to detectors matching these regions (universal detectors always included) |
+| `keyNameOnly` | `boolean`       | `false`     | Skip regex detection, use key heuristics only                                                               |
 
 ## Return value
 
-The returned masker exposes four methods:
+The returned masker exposes these methods:
 
-- `maskString(input, key?)` — mask a single string value
-- `maskObject(input)` — deep-walk an object and mask all string values
-- `maskArray(input)` — deep-walk an array and mask all string values
-- `restore(masked, tokenMap)` — reverse tokenization
+### Masking
+
+- `maskString(input, key?, session?)` — mask a single string value
+- `maskObject(input, session?)` — deep-walk an object and mask all string values
+- `maskArray(input, session?)` — deep-walk an array and mask all string values
+
+### Detection only
+
+- `detectString(input, key?)` — detect PII without masking, returns `{ detections: string[] }`
+
+### Restoring
+
+- `restore(masked, tokenMap)` — reverse tokenization (returns string)
+- `restoreObject(masked, tokenMap)` — restore and parse as object
+- `restoreArray(masked, tokenMap)` — restore and parse as array
+
+### Sessions
+
+- `createSession()` — create a `MaskSession` for cross-call consistency (shared token map and counters)
+
+Sessions allow multiple masking calls to share the same token map and pseudonymization counters. Pass the session as the last argument to any masking method:
+
+```ts
+const session = masker.createSession();
+masker.maskString('john@example.com', undefined, session);
+masker.maskObject({ email: 'john@example.com' }, session);
+// Both calls share the same token/label for the same value
+```
+
+### MaskResult
 
 Each masking method returns a `MaskResult`:
 

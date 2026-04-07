@@ -22,6 +22,27 @@ console.log(JSON.parse(restored));
 // → { email: 'lucky@example.com', phone: '+2348012345678' }
 ```
 
+## Convenience methods
+
+For structured data, use `restoreObject()` or `restoreArray()` to restore and parse in one step:
+
+```ts
+const masker = createMasker({ mode: 'tokenize' });
+
+const { result, tokenMap } = masker.maskObject({
+  email: 'lucky@example.com',
+  phone: '+2348012345678',
+});
+
+// Restore and parse as object
+const obj = masker.restoreObject(result, tokenMap);
+// → { email: 'lucky@example.com', phone: '+2348012345678' }
+
+// For arrays
+const { result: arrResult, tokenMap: arrMap } = masker.maskArray([{ email: 'lucky@example.com' }]);
+const arr = masker.restoreArray(arrResult, arrMap);
+```
+
 ## How it works
 
 `restore()` replaces each token in the masked string with its original value from the token map. The token map is a `Record<string, string>` where keys are tokens and values are the original PII.

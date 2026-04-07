@@ -22,4 +22,11 @@ console.log(JSON.parse(result));
 // ]
 ```
 
+## Parameters
+
+| Parameter | Type          | Required | Description                                               |
+| --------- | ------------- | -------- | --------------------------------------------------------- |
+| `input`   | `unknown[]`   | Yes      | The array to deep-walk and mask                           |
+| `session` | `MaskSession` | No       | Session for cross-call consistency (shared tokens/labels) |
+
 [Try it in the browser ↗](https://app.pii-mask.dev)

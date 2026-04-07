@@ -26,6 +26,13 @@ console.log(JSON.parse(result));
 // All PII values are masked; non-PII passes through unchanged
 ```
 
+## Parameters
+
+| Parameter | Type                      | Required | Description                                               |
+| --------- | ------------------------- | -------- | --------------------------------------------------------- |
+| `input`   | `Record<string, unknown>` | Yes      | The object to deep-walk and mask                          |
+| `session` | `MaskSession`             | No       | Session for cross-call consistency (shared tokens/labels) |
+
 ## Deep nesting
 
 `maskObject` recursively walks all nested objects and arrays. There is no depth limit. Circular references are handled via `WeakSet`.
