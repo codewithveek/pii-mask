@@ -51,4 +51,54 @@ describe('phone-global detector', () => {
     expect(result).not.toBe('+14155552671');
     expect(result.length).toBeGreaterThan(5);
   });
+
+  describe('local number formats (no country code)', () => {
+    // Nigeria — local numbers start with 0, 11 digits
+    it('detects Nigerian local number (08034567890)', () => {
+      const { detections } = masker.maskString('08034567890');
+      expect(detections).toContain('phone-global');
+    });
+
+    it('masks Nigerian local number preserving last 4', () => {
+      const { result } = masker.maskString('08034567890');
+      expect(result).toContain('7890');
+      expect(result).toContain('***');
+    });
+
+    // India — 10-digit mobile starting with 0 prefix
+    it('detects Indian local number (09876543210)', () => {
+      const { detections } = masker.maskString('09876543210');
+      expect(detections).toContain('phone-global');
+    });
+
+    // South Africa — 10 digits starting with 0
+    it('detects South African local number (0821234567)', () => {
+      const { detections } = masker.maskString('0821234567');
+      expect(detections).toContain('phone-global');
+    });
+
+    // Germany — local mobile format
+    it('detects German local number (01701234567)', () => {
+      const { detections } = masker.maskString('01701234567');
+      expect(detections).toContain('phone-global');
+    });
+
+    // Kenya — 10 digits starting with 0
+    it('detects Kenyan local number (0722123456)', () => {
+      const { detections } = masker.maskString('0722123456');
+      expect(detections).toContain('phone-global');
+    });
+
+    // Freeform text with Nigerian local number (compact format)
+    it('detects Nigerian number in freeform text', () => {
+      const { detections } = masker.maskString('Call me on 08034567890 please');
+      expect(detections).toContain('phone-global');
+    });
+
+    // International format for Nigeria still works
+    it('still detects Nigerian international format', () => {
+      const { detections } = masker.maskString('+2348034567890');
+      expect(detections).toContain('phone-global');
+    });
+  });
 });
