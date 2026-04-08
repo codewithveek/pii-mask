@@ -23,7 +23,7 @@ export function ToolPage() {
     useMasker({ mode, disabledDetectors });
 
   return (
-    <div className="flex flex-col h-full bg-bg">
+    <div className="flex flex-col min-h-full bg-bg">
       <Header />
       <Toolbar
         mode={mode}
@@ -40,11 +40,11 @@ export function ToolPage() {
         activeDetectorCount={activeCount}
         totalDetectorCount={totalCount}
       />
-      <div className="flex-1 min-h-0 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 sm:p-4">
-        <div className="min-h-60 md:min-h-0 md:h-full overflow-hidden">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3 p-3 sm:p-4">
+        <div className="h-72 md:h-auto md:min-h-72">
           <InputPanel value={input} onChange={setInput} inputTooLarge={inputTooLarge} />
         </div>
-        <div className="min-h-60 md:min-h-0 md:h-full overflow-hidden">
+        <div className="h-72 md:h-auto md:min-h-72">
           <OutputPanel output={output} isPending={isPending} format={format} />
         </div>
       </div>

@@ -54,7 +54,9 @@ export function DetectorFilter({
       {open && (
         <div className="absolute top-full left-0 mt-1 z-50 w-72 max-h-80 overflow-y-auto rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-lg p-3">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">Detectors</span>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+              Detectors
+            </span>
             <button
               onClick={() => {
                 onReset();

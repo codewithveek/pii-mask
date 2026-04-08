@@ -29,7 +29,9 @@ export function InputPanel({ value, onChange, inputTooLarge }: InputPanelProps) 
   return (
     <div className="flex flex-col h-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-2 border-b border-[var(--color-border)]">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">Input</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-[var(--color-text-secondary)]">
+          Input
+        </span>
       </div>
       {inputTooLarge && (
         <div className="flex items-center gap-2 px-4 py-2 bg-[var(--color-warning)]/10 text-[var(--color-warning)] text-xs">

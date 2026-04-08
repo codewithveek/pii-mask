@@ -38,9 +38,7 @@ export function TokenMapSlideOver({ open, onClose, tokenMap }: TokenMapSlideOver
       <div className="fixed inset-0 bg-black/30 z-50" onClick={onClose} />
       <div className="fixed right-0 top-0 bottom-0 w-full max-w-md z-50 bg-[var(--color-surface)] border-l border-[var(--color-border)] flex flex-col shadow-xl">
         <div className="flex items-center justify-between px-5 py-3 border-b border-[var(--color-border)]">
-          <span className="text-sm font-semibold text-[var(--color-text-primary)]">
-            Token Map
-          </span>
+          <span className="text-sm font-semibold text-[var(--color-text-primary)]">Token Map</span>
           <button
             onClick={onClose}
             className="text-[var(--color-text-disabled)] hover:text-[var(--color-text-primary)] transition-colors duration-150"

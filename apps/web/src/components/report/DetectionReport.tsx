@@ -22,9 +22,7 @@ export function DetectionReport({ detections }: DetectionReportProps) {
       <div className="flex items-center gap-2 min-w-0">
         <span className="text-xs text-[var(--color-detection)] font-medium flex-shrink-0">✦</span>
         {total === 0 ? (
-          <span className="text-xs text-[var(--color-text-disabled)]">
-            No PII detected
-          </span>
+          <span className="text-xs text-[var(--color-text-disabled)]">No PII detected</span>
         ) : (
           <>
             <span className="text-xs font-medium text-[var(--color-text-primary)] flex-shrink-0">
@@ -32,7 +30,10 @@ export function DetectionReport({ detections }: DetectionReportProps) {
             </span>
             <div className="flex items-center gap-1.5 overflow-x-auto min-w-0">
               {entries.slice(0, 4).map(([id, count]) => (
-                <span key={id} className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono bg-[var(--color-detection)]/8 text-[var(--color-detection)] whitespace-nowrap flex-shrink-0">
+                <span
+                  key={id}
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-mono bg-[var(--color-detection)]/8 text-[var(--color-detection)] whitespace-nowrap flex-shrink-0"
+                >
                   {id} <span className="text-[var(--color-text-disabled)]">×{count}</span>
                 </span>
               ))}

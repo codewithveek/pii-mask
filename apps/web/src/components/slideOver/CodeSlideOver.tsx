@@ -80,7 +80,9 @@ export function CodeSlideOver({
           </div>
 
           <div className="mt-5">
-            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">Install</p>
+            <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-text-secondary)] mb-2">
+              Install
+            </p>
             <div className="relative flex items-center rounded-lg bg-[var(--color-code-bg)] border border-[var(--color-border)] px-3 py-2">
               <code className="text-[13px] font-mono text-[var(--color-code-text)]">
                 npm install @pii-mask/core
