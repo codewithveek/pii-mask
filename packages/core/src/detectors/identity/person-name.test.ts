@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('person-name detector', () => {
@@ -28,7 +29,7 @@ describe('person-name detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['person-name'] });
     const { result, tokenMap } = tokenizer.maskString('John Doe', 'name');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('John Doe');
   });
 
@@ -45,7 +46,7 @@ describe('person-name detector', () => {
   });
 
   it('generates plausible name in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['person-name'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['person-name'] });
     const { result } = substitutor.maskString('John Doe', 'name');
     expect(result).not.toBe('John Doe');
     expect(result.length).toBeGreaterThan(2);

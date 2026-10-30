@@ -2,6 +2,7 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
 
 // CPF: 000.000.000-00 format with check digits
 const CPF_RE = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
@@ -40,6 +41,8 @@ const cpfBrDetector: PIIDetector = {
   category: PIICategory.GOV_ID,
   regions: ['BR'],
   pattern: CPF_PATTERN,
+  prefilter: /\d{3}\.\d{3}/,
+  keyPattern: (key) => normalizeKey(key) === 'cpf',
 
   detect(value) {
     const trimmed = value.trim();
@@ -61,8 +64,9 @@ const cpfBrDetector: PIIDetector = {
         `${ctx.faker?.string.numeric({ length: 2 }) ?? '00'}`
       );
     }
-    // Default mask
-    return `***.***.${value.slice(8, 11)}-**`;
+    // Default mask (works for both formatted and bare-digit values)
+    const digits = value.replace(/\D/g, '');
+    return `***.***.${digits.slice(6, 9)}-**`;
   },
 };
 

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('nin-uk detector', () => {
@@ -28,7 +29,7 @@ describe('nin-uk detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['nin-uk'] });
     const { result, tokenMap } = tokenizer.maskString('AB123456C');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('AB123456C');
   });
 
@@ -45,7 +46,7 @@ describe('nin-uk detector', () => {
   });
 
   it('generates plausible NIN in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['nin-uk'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['nin-uk'] });
     const { result } = substitutor.maskString('AB123456C');
     expect(result).not.toBe('AB123456C');
     expect(result).toMatch(/^[A-Z]{2}\d{6}[A-D]$/);

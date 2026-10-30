@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('cpf-br detector', () => {
@@ -28,7 +29,7 @@ describe('cpf-br detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['cpf-br'] });
     const { result, tokenMap } = tokenizer.maskString('529.982.247-25');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('529.982.247-25');
   });
 
@@ -45,7 +46,7 @@ describe('cpf-br detector', () => {
   });
 
   it('generates plausible CPF in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['cpf-br'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['cpf-br'] });
     const { result } = substitutor.maskString('529.982.247-25');
     expect(result).not.toBe('529.982.247-25');
     expect(result).toMatch(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/);

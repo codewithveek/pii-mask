@@ -38,7 +38,7 @@ describe('mongodb-objectid detector', () => {
     const masker = createMasker({ mode: 'tokenize' });
     const original = '507f1f77bcf86cd799439011';
     const { result, tokenMap } = masker.maskString(original);
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(masker.restore(result, tokenMap)).toBe(original);
   });
 

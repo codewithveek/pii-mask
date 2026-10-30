@@ -4,14 +4,17 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const IPV4_RE = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-// Negative lookbehind avoids matching version strings like "v1.2.3.4" or "version 1.2.3.4"
-const IPV4_PATTERN = /(?<!\bversion\s)(?<!\bv)(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)/g;
+// Negative lookbehinds avoid version strings ("v1.2.3.4", "version 1.2.3.4",
+// "pkg@1.2.3.4") and fragments of longer dotted numbers (1.2.3.4.5).
+const IPV4_PATTERN =
+  /(?<!\bversion\s)(?<!\bv)(?<![\w.@])(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(?!\.?\d|\w)/g;
 
 const ipAddressDetector: PIIDetector = {
   id: 'ip-address',
   label: 'IPv4 Address',
   category: PIICategory.NETWORK,
   pattern: IPV4_PATTERN,
+  prefilter: /\d\.\d/,
 
   detect(value) {
     const match = IPV4_RE.exec(value.trim());

@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('hex-secret detector', () => {
@@ -33,7 +34,7 @@ describe('hex-secret detector', () => {
   });
 
   it('redacts in substitute mode (secrets always redact)', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['hex-secret'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['hex-secret'] });
     const { result } = substitutor.maskString(md5);
     expect(result).toBe('[REDACTED]');
   });

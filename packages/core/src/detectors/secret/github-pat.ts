@@ -12,6 +12,7 @@ const githubPatDetector: PIIDetector = {
   label: 'GitHub Personal Access Token',
   category: PIICategory.SECRET,
   pattern: GH_PAT_PATTERN,
+  prefilter: /gh[pousr]_/,
 
   detect(value) {
     return GH_PAT_RE.test(value.trim());

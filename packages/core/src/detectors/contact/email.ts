@@ -4,13 +4,18 @@ import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
 
 const EMAIL_RE = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
-const EMAIL_PATTERN = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g;
+// The lookbehind makes a match start only at the beginning of a local-part run;
+// a plain \b would retry from every character of a long dotted string, which
+// is quadratic.
+const EMAIL_PATTERN =
+  /(?<![A-Za-z0-9._%+-])[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b/g;
 
 const emailDetector: PIIDetector = {
   id: 'email',
   label: 'Email Address',
   category: PIICategory.CONTACT,
   pattern: EMAIL_PATTERN,
+  prefilter: /@/,
 
   detect: (value) => EMAIL_RE.test(value.trim()),
 
@@ -27,7 +32,8 @@ const emailDetector: PIIDetector = {
     // Default mask: jo***n@domain.com
     const [local, domain] = value.split('@');
     if (!local || !domain) return '[EMAIL]';
-    if (local.length <= 3) return `${local[0]}***@${domain}`;
+    // Short local parts would be mostly revealed by the head/tail scheme
+    if (local.length <= 4) return `${local[0]}***@${domain}`;
     return `${local.slice(0, 2)}${'*'.repeat(local.length - 3)}${local.slice(-1)}@${domain}`;
   },
 };

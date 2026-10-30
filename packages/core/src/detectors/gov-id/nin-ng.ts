@@ -2,6 +2,15 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
+
+function isNinNgKey(key: string): boolean {
+  const k = normalizeKey(key);
+  return (
+    /^nin(?:ng|number|no)?$/.test(k) ||
+    ['nationalidentificationnumber', 'nationalid', 'nationalidnumber'].includes(k)
+  );
+}
 
 // NIN: exactly 11 digits (no spaces/dashes in canonical form)
 const NIN_RE = /^\d{11}$/;
@@ -16,11 +25,15 @@ const ninNgDetector: PIIDetector = {
   regions: ['NG'],
   pattern: NIN_NG_PATTERN,
   contextualPattern: true,
+  prefilter: /\bnin\b|national\s+identification/i,
 
+  keyPattern: isNinNgKey,
+
+  // A bare 11-digit number is ambiguous (order IDs, phone numbers, BVNs), so
+  // atomic detection needs a NIN key. Freeform text uses the context pattern.
   detect(value, key) {
-    const trimmed = value.replace(/\s/g, '');
-    const keyHint = key ? /\bnin\b|national.?id/i.test(key) : false;
-    return keyHint ? NIN_RE.test(trimmed) : NIN_RE.test(trimmed);
+    if (!key || !isNinNgKey(key)) return false;
+    return NIN_RE.test(value.replace(/\s/g, ''));
   },
 
   mask(value, mode, ctx) {

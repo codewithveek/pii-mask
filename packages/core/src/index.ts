@@ -3,8 +3,9 @@ import './detectors/index';
 
 // Public API
 export { createMasker } from './masker';
+export type { Masker, MaskValueResult } from './masker';
 export { registry } from './registry';
-export { generateToken, getOrCreateToken, getOrCreateLabel } from './engine';
+export { generateToken, getOrCreateToken, getOrCreateLabel, serializeError } from './engine';
 export {
   PIICategory,
   MaskMode,
@@ -14,4 +15,5 @@ export {
   type MaskOptions,
   type MaskSession,
   type NLPOptions,
+  type FakerLike,
 } from './types';

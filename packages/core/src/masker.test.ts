@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from './masker.js';
 
 describe('createMasker', () => {
@@ -47,7 +48,7 @@ describe('createMasker', () => {
     const original = 'hello@example.com';
     const { result, tokenMap } = masker.maskString(original);
     expect(result).not.toBe(original);
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(masker.restore(result, tokenMap)).toBe(original);
   });
 
@@ -66,7 +67,7 @@ describe('createMasker', () => {
   });
 
   it('substitute produces a different value', () => {
-    const masker = createMasker({ mode: 'substitute' });
+    const masker = createMasker({ mode: 'substitute', faker });
     const { result, detections } = masker.maskString('test@example.com');
     expect(result).not.toBe('test@example.com');
     expect(detections).toContain('email');
@@ -81,7 +82,7 @@ describe('createMasker', () => {
   });
 
   it('substitute on object produces fake values', () => {
-    const masker = createMasker({ mode: 'substitute' });
+    const masker = createMasker({ mode: 'substitute', faker });
     const { result } = masker.maskObject({ email: 'real@corp.com' });
     const parsed = JSON.parse(result);
     expect(parsed.email).not.toBe('real@corp.com');
@@ -122,7 +123,7 @@ describe('createMasker', () => {
       const { result } = masker.maskObject({ email: 'test@example.com' }, session);
       const parsed = JSON.parse(result);
       // Should use the same token as the string call
-      expect(parsed.email).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+      expect(parsed.email).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     });
   });
 

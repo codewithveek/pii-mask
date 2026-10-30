@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('email detector', () => {
@@ -29,7 +30,7 @@ describe('email detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['email'] });
     const { result, tokenMap } = tokenizer.maskString('test@example.com');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('test@example.com');
   });
 
@@ -54,7 +55,7 @@ describe('email detector', () => {
   });
 
   it('generates plausible email in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['email'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['email'] });
     const { result } = substitutor.maskString('test@example.com');
     expect(result).not.toBe('test@example.com');
     expect(result).toContain('@');

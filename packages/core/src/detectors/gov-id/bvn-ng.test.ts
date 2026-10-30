@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('bvn-ng detector', () => {
@@ -28,7 +29,7 @@ describe('bvn-ng detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['bvn-ng'] });
     const { result, tokenMap } = tokenizer.maskString('12345678901', 'bvn');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('12345678901');
   });
 
@@ -45,7 +46,7 @@ describe('bvn-ng detector', () => {
   });
 
   it('generates plausible BVN in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['bvn-ng'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['bvn-ng'] });
     const { result } = substitutor.maskString('12345678901', 'bvn');
     expect(result).not.toBe('12345678901');
     expect(result).toMatch(/^\d{11}$/);

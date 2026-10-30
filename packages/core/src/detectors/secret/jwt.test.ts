@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('jwt detector', () => {
@@ -32,7 +33,7 @@ describe('jwt detector', () => {
   });
 
   it('redacts in substitute mode (secrets always redact)', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['jwt'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['jwt'] });
     const { result } = substitutor.maskString(validJWT);
     expect(result).toBe('[REDACTED]');
   });

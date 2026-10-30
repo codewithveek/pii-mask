@@ -1,7 +1,8 @@
 import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
-import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { getOrCreateToken, getOrCreateLabel, randomInt } from '@/engine';
+import { randomDigits } from '../utils';
 
 // PAN: 5 letters + 4 digits + 1 letter
 const PAN_RE = /^[A-Z]{5}\d{4}[A-Z]$/;
@@ -26,10 +27,10 @@ const panInDetector: PIIDetector = {
     }
     if (mode === MaskMode.SUBSTITUTE) {
       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-      const randLetter = () => letters[Math.floor(Math.random() * 26)] ?? 'A';
+      const randLetter = () => letters[randomInt(26)]!;
       return (
         `${randLetter()}${randLetter()}${randLetter()}${randLetter()}${randLetter()}` +
-        `${ctx.faker?.string.numeric({ length: 4 }) ?? '0000'}${randLetter()}`
+        `${randomDigits(4)}${randLetter()}`
       );
     }
     // Default mask: ABCX****Z

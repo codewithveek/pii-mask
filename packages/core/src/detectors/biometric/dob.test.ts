@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('dob detector', () => {
@@ -33,7 +34,7 @@ describe('dob detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['dob'] });
     const { result, tokenMap } = tokenizer.maskString('1990-01-15', 'dob');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('1990-01-15');
   });
 
@@ -50,7 +51,7 @@ describe('dob detector', () => {
   });
 
   it('generates plausible date in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['dob'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['dob'] });
     const { result } = substitutor.maskString('1990-01-15', 'dob');
     expect(result).not.toBe('1990-01-15');
     expect(result).toMatch(/^\d{4}-\d{2}-\d{2}$/);

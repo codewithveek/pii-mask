@@ -28,7 +28,7 @@ describe('passport detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['passport'] });
     const { result, tokenMap } = tokenizer.maskString('AB1234567', 'passport_number');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('AB1234567');
   });
 

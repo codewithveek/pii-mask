@@ -9,7 +9,7 @@ const PASSPORT_RE = /^[A-Z0-9]{6,10}$/i;
 // Freeform: lookbehind for "passport number" / "passport no" / "passport #"
 // Allows intervening comma-separated clauses (e.g. "passport number, submitted during onboarding, is ...")
 const PASSPORT_PATTERN =
-  /(?<=passport\s+(?:number|no\.?|#)(?:(?:,\s*[a-z\s]+)*,)?\s*(?:is|was|:)\s*)\b[A-Z0-9]{6,10}\b/gi;
+  /(?<=passport\s+(?:number|no\.?|#)(?:,[a-z ]{1,60},)?\s*(?:is|was|:)\s*)\b[A-Z0-9]{6,10}\b/gi;
 
 const PASSPORT_KEYS = /passport[-_ ]?(?:number|num|no|#|id)?/i;
 
@@ -19,6 +19,8 @@ const passportDetector: PIIDetector = {
   category: PIICategory.GOV_ID,
   pattern: PASSPORT_PATTERN,
   contextualPattern: true,
+  prefilter: /passport/i,
+  keyPattern: PASSPORT_KEYS,
 
   detect(value, key) {
     if (!key || !PASSPORT_KEYS.test(key)) return false;

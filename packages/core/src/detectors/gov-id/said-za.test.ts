@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('said-za detector', () => {
@@ -28,7 +29,7 @@ describe('said-za detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['said-za'] });
     const { result, tokenMap } = tokenizer.maskString('8001015009087');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('8001015009087');
   });
 
@@ -45,7 +46,7 @@ describe('said-za detector', () => {
   });
 
   it('generates plausible SA ID in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['said-za'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['said-za'] });
     const { result } = substitutor.maskString('8001015009087');
     expect(result).not.toBe('8001015009087');
     expect(result).toMatch(/^\d{13}$/);

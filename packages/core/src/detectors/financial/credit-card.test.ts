@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('credit-card detector', () => {
@@ -29,7 +30,7 @@ describe('credit-card detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['credit-card'] });
     const { result, tokenMap } = tokenizer.maskString('4532015112830366');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('4532015112830366');
   });
 
@@ -46,7 +47,7 @@ describe('credit-card detector', () => {
   });
 
   it('generates plausible card number in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['credit-card'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['credit-card'] });
     const { result } = substitutor.maskString('4532015112830366');
     expect(result).not.toBe('4532015112830366');
     expect(result.length).toBeGreaterThan(10);

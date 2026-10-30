@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('ip-address detector', () => {
@@ -28,7 +29,7 @@ describe('ip-address detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['ip-address'] });
     const { result, tokenMap } = tokenizer.maskString('192.168.1.1');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('192.168.1.1');
   });
 
@@ -45,7 +46,7 @@ describe('ip-address detector', () => {
   });
 
   it('generates plausible IP in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['ip-address'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['ip-address'] });
     const { result } = substitutor.maskString('192.168.1.1');
     expect(result).not.toBe('192.168.1.1');
     expect(result).toMatch(/^\d+\.\d+\.\d+\.\d+$/);

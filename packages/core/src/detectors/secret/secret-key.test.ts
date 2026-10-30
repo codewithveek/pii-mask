@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('secret-key detector', () => {
@@ -31,7 +32,7 @@ describe('secret-key detector', () => {
   });
 
   it('redacts in substitute mode (secrets always redact)', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['secret-key'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['secret-key'] });
     const { result } = substitutor.maskString('my-api-key', 'api_key');
     expect(result).toBe('[REDACTED]');
   });

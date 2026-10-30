@@ -14,6 +14,7 @@ const platformTokenDetector: PIIDetector = {
   id: 'platform-token',
   label: 'Platform API Token (Slack/Stripe)',
   category: PIICategory.SECRET,
+  prefilter: /xox|k_(?:live|test)_/,
   // Combined pattern for freeform text scanning
   pattern: new RegExp(`(?:${SLACK_TOKEN_PATTERN.source}|${STRIPE_KEY_PATTERN.source})`, 'g'),
 

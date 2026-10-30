@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('bcrypt-hash detector', () => {
@@ -27,7 +28,7 @@ describe('bcrypt-hash detector', () => {
   });
 
   it('redacts in substitute mode (secrets always redact)', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['bcrypt-hash'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['bcrypt-hash'] });
     const { result } = substitutor.maskString(validHash);
     expect(result).toBe('[REDACTED]');
   });
