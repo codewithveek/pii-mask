@@ -239,8 +239,9 @@ export function maskValue(
   }
 
   // No detector recognised the format, but the key names a sensitive type
-  // (e.g. `ssn: '123456789'`, `vin: <non-checksummed VIN>`).
-  if (key !== undefined && /\d/.test(value)) {
+  // (e.g. `ssn: '123456789'`, `vin: <non-checksummed VIN>`). Only ID-shaped
+  // values (digits plus letters/separators) are forced, not free text.
+  if (key !== undefined && /\d/.test(value) && ID_SHAPED_RE.test(value)) {
     const forced = detectors.find((d) => matchesKeyPattern(d, key));
     if (forced) {
       ctx.detections.push(forced.id);
@@ -256,6 +257,8 @@ function matchesKeyPattern(detector: PIIDetector, key: string): boolean {
   if (!keyPattern) return false;
   return typeof keyPattern === 'function' ? keyPattern(key) : keyPattern.test(key);
 }
+
+const ID_SHAPED_RE = /^[\p{L}\d\s().+\-/#]{1,64}$/u;
 
 const KEY_HEURISTIC_DETECTORS = new Set(['secret-key', 'person-name', 'address']);
 
