@@ -7,14 +7,14 @@ description: The six masking modes and when to use each.
 
 pii-mask supports six masking modes. Each mode controls how detected PII values are transformed.
 
-| Mode           | Behaviour                                    | Reversible |
-| -------------- | -------------------------------------------- | ---------- |
-| `mask`         | Partial obscure — preserve type shape        | No         |
-| `redact`       | Full `[REDACTED]` replacement                | No         |
-| `pseudonymize` | Consistent label (`EMAIL_1`) per session     | No         |
-| `anonymize`    | Consistent label (`EMAIL_1`) per session     | No         |
-| `tokenize`     | Random token, stored in tokenMap, restorable | Yes        |
-| `substitute`   | Plausible fake via `@faker-js/faker`         | No         |
+| Mode           | Behaviour                                                             | Reversible |
+| -------------- | --------------------------------------------------------------------- | ---------- |
+| `mask`         | Partial obscure — preserve type shape                                 | No         |
+| `redact`       | Full `[REDACTED]` replacement                                         | No         |
+| `pseudonymize` | Consistent label (`EMAIL_1`) per session                              | No         |
+| `anonymize`    | Consistent label (`EMAIL_1`) per session                              | No         |
+| `tokenize`     | Random token, stored in tokenMap, restorable                          | Yes        |
+| `substitute`   | Plausible fake via `@faker-js/faker` (pass `faker` to `createMasker`) | No         |
 
 ## Examples
 
@@ -45,8 +45,8 @@ import { createMasker } from '@pii-mask/core';
 
 const masker = createMasker({ mode: 'tokenize' });
 const { result, tokenMap } = masker.maskString('emeka@example.com');
-// result: '<<PII_a1b2c3d4>>'
-// tokenMap: { '<<PII_a1b2c3d4>>': 'emeka@example.com' }
+// result: '<<PII_3f9c1a0b7d2e4c61>>'
+// tokenMap: { '<<PII_3f9c1a0b7d2e4c61>>': 'emeka@example.com' }
 
 const restored = masker.restore(result, tokenMap);
 // → 'emeka@example.com'

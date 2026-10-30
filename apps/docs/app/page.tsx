@@ -226,7 +226,7 @@ export default function LandingPage() {
           }}
         >
           {[
-            { name: '@pii-mask/core', desc: 'Zero-dependency masking engine' },
+            { name: '@pii-mask/core', desc: 'Masking engine + logger integrations' },
             { name: '@pii-mask/cli', desc: 'File I/O adapter for CLI usage' },
             { name: '@pii-mask/react', desc: 'React components and hooks' },
             { name: '@pii-mask/nlp', desc: 'NLP-powered name/place detection' },

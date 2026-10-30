@@ -23,7 +23,11 @@ const masker = createMasker({
 | `only`        | `string[]`      | `undefined` | Run only these detectors                                                                                    |
 | `extend`      | `PIIDetector[]` | `[]`        | Additional custom detectors                                                                                 |
 | `regions`     | `string[]`      | `undefined` | ISO 3166-1 alpha-2 codes — filter to detectors matching these regions (universal detectors always included) |
-| `keyNameOnly` | `boolean`       | `false`     | Skip regex detection, use key heuristics only                                                               |
+| `keyNameOnly` | `boolean`       | `false`     | Only mask fields whose key names them as sensitive; no value patterns at all                                |
+| `faker`       | `Faker`         | `undefined` | A `@faker-js/faker` instance — required for `mode: 'substitute'`                                            |
+| `maxDepth`    | `number`        | `100`       | Objects nested deeper than this become `'[Truncated]'`                                                      |
+
+`createMasker` throws on an unknown `mode`, and on `mode: 'substitute'` without `faker`. `regions` accepts `UK` as an alias for `GB`.
 
 ## Return value
 
@@ -31,9 +35,10 @@ The returned masker exposes these methods:
 
 ### Masking
 
+- `mask(value, session?)` — mask any value and return a masked copy with the same structure
 - `maskString(input, key?, session?)` — mask a single string value
-- `maskObject(input, session?)` — deep-walk an object and mask all string values
-- `maskArray(input, session?)` — deep-walk an array and mask all string values
+- `maskObject(input, session?)` — like `mask()`, with the result serialized as JSON
+- `maskArray(input, session?)` — like `mask()` for arrays, with the result serialized as JSON
 
 ### Detection only
 
@@ -42,12 +47,14 @@ The returned masker exposes these methods:
 ### Restoring
 
 - `restore(masked, tokenMap)` — reverse tokenization (returns string)
-- `restoreObject(masked, tokenMap)` — restore and parse as object
-- `restoreArray(masked, tokenMap)` — restore and parse as array
+- `restoreValue(value, tokenMap)` — restore every string inside a `mask()` result
+- `restoreObject(masked, tokenMap)` — parse a `maskObject()` result, then restore
+- `restoreArray(masked, tokenMap)` — parse a `maskArray()` result, then restore
 
 ### Sessions
 
 - `createSession()` — create a `MaskSession` for cross-call consistency (shared token map and counters)
+- `getTokenMap(session)` — the token map (token → original) a session has accumulated
 
 Sessions allow multiple masking calls to share the same token map and pseudonymization counters. Pass the session as the last argument to any masking method:
 
@@ -64,7 +71,7 @@ Each masking method returns a `MaskResult`:
 
 ```ts
 interface MaskResult {
-  result: string;
+  result: string; // for mask(), the masked value itself
   tokenMap: Record<string, string>;
   detections: string[];
 }

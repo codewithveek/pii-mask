@@ -33,8 +33,23 @@ console.log(JSON.parse(result));
 | `input`   | `Record<string, unknown>` | Yes      | The object to deep-walk and mask                          |
 | `session` | `MaskSession`             | No       | Session for cross-call consistency (shared tokens/labels) |
 
-## Deep nesting
+## Returning an object instead of JSON
 
-`maskObject` recursively walks all nested objects and arrays. There is no depth limit. Circular references are handled via `WeakSet`.
+`maskObject` returns the masked value as a JSON string. Use `mask()` to get the masked object directly:
+
+```ts
+const { result } = masker.mask({ user: { email: 'priya@example.com' } });
+result.user.email; // 'pr**a@example.com'
+```
+
+## What gets masked
+
+`maskObject` recursively walks all nested objects and arrays:
+
+- Strings run through every detector; numbers are masked when their key is sensitive (`pin`, `ssn`, `phone`, `zip` …).
+- `Date`s and objects with `toJSON()` are masked in their JSON form; `Error`s become `{ type, message, stack }`; `Map`s and `Set`s become objects and arrays; BigInts are serialized as strings.
+- Credential containers such as `cookies: { … }` are redacted whole.
+- An object referenced from two places is masked at both; a reference cycle becomes `'[Circular]'`.
+- Objects deeper than `maxDepth` (default 100) become `'[Truncated]'`.
 
 [Try it in the browser ↗](https://app.pii-mask.dev)

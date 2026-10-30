@@ -8,33 +8,33 @@ description: Complete table of all built-in PII detectors.
 | ID                 | Label            | Category  | Regions | Description                                                                   |
 | ------------------ | ---------------- | --------- | ------- | ----------------------------------------------------------------------------- |
 | `email`            | Email Address    | contact   | —       | RFC 5322 email addresses                                                      |
-| `phone`            | Phone Number     | contact   | —       | International phone numbers via libphonenumber-js (20+ country local formats) |
-| `credit-card`      | Credit Card      | financial | —       | Luhn-validated card numbers                                                   |
-| `iban`             | IBAN             | financial | —       | International bank account numbers                                            |
+| `phone-global`     | Phone Number     | contact   | —       | International phone numbers via libphonenumber-js (20+ country local formats) |
+| `credit-card`      | Credit Card      | financial | —       | Card numbers in a real issuer range, Luhn-validated                           |
+| `iban`             | IBAN             | financial | —       | IBANs (mod-97), compact or printed in groups                                  |
 | `ssn-us`           | SSN (US)         | gov-id    | US      | US Social Security Numbers                                                    |
-| `nin-ng`           | NIN (NG)         | gov-id    | NG      | Nigerian National ID Numbers                                                  |
-| `bvn-ng`           | BVN (NG)         | gov-id    | NG      | Nigerian Bank Verification Numbers                                            |
-| `aadhaar-in`       | Aadhaar (IN)     | gov-id    | IN      | Indian Aadhaar numbers                                                        |
+| `nin-ng`           | NIN (NG)         | gov-id    | NG      | Nigerian National ID Numbers (needs a `nin` key or context)                   |
+| `bvn-ng`           | BVN (NG)         | gov-id    | NG      | Nigerian Bank Verification Numbers (needs a `bvn` key or context)             |
+| `aadhaar-in`       | Aadhaar (IN)     | gov-id    | IN      | Aadhaar numbers: grouped `2341 2341 2346`, or bare with an `aadhaar` key      |
 | `pan-in`           | PAN (IN)         | gov-id    | IN      | Indian PAN numbers                                                            |
 | `said-za`          | SA ID (ZA)       | gov-id    | ZA      | South African ID numbers                                                      |
-| `nin-uk`           | NIN (UK)         | gov-id    | GB      | UK National Insurance Numbers                                                 |
+| `nin-uk`           | NIN (UK)         | gov-id    | GB      | UK National Insurance Numbers (`regions: ['GB']`; `UK` also accepted)         |
 | `nik-id`           | NIK (ID)         | gov-id    | ID      | Indonesian NIK numbers                                                        |
 | `cpf-br`           | CPF (BR)         | gov-id    | BR      | Brazilian CPF numbers                                                         |
 | `passport`         | Passport Number  | gov-id    | —       | Passport numbers                                                              |
 | `sin-ca`           | SIN (CA)         | gov-id    | CA      | Canadian Social Insurance Numbers                                             |
 | `ip-address`       | IP Address       | network   | —       | IPv4 addresses                                                                |
-| `ipv6`             | IPv6 Address     | network   | —       | IPv6 addresses                                                                |
+| `ipv6`             | IPv6 Address     | network   | —       | IPv6 addresses, including compressed forms                                    |
 | `mac-address`      | MAC Address      | network   | —       | Hardware MAC addresses                                                        |
-| `dob`              | Date of Birth    | biometric | —       | Date of birth fields (ISO 8601 and common formats)                            |
+| `dob`              | Date of Birth    | biometric | —       | Dates of birth — needs a birth key (`dob` …) or context word (`born`)         |
 | `person-name`      | Person Name      | identity  | —       | Person names via key heuristics                                               |
 | `address`          | Address          | identity  | —       | Physical addresses via key heuristics                                         |
 | `uuid`             | UUID             | identity  | —       | UUID v1–v5 identifiers                                                        |
 | `mongodb-objectid` | MongoDB ObjectId | identity  | —       | 24-character hex MongoDB ObjectIds                                            |
 | `vin`              | VIN              | identity  | —       | Vehicle Identification Numbers (17-char)                                      |
-| `secret-key`       | Secret / API Key | secret    | —       | API keys, tokens, passwords via key heuristics                                |
+| `secret-key`       | Secret / API Key | secret    | —       | Passwords, tokens, API keys, cookies, `Authorization` via key heuristics      |
 | `jwt`              | JWT              | secret    | —       | JSON Web Tokens                                                               |
 | `bcrypt-hash`      | bcrypt Hash      | secret    | —       | bcrypt password hashes                                                        |
-| `hex-secret`       | Hex Secret       | secret    | —       | Long hex strings (32+ characters)                                             |
+| `hex-secret`       | Hex Secret       | secret    | —       | 32/64-char hex strings (not under trace-ID, checksum or commit keys)          |
 | `aws-key`          | AWS Access Key   | secret    | —       | AWS access key IDs (AKIA/ASIA prefix)                                         |
 | `github-pat`       | GitHub PAT       | secret    | —       | GitHub personal access tokens (ghp\_, gho\_, ghs\_, etc.)                     |
 | `platform-token`   | Platform Token   | secret    | —       | Slack (xox\*) and Stripe (sk\_/rk\_) tokens                                   |

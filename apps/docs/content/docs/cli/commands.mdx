@@ -21,7 +21,9 @@ pii-mask <file> [options]
 | `--in-place`      | Overwrite input file instead of writing to output dir | `false`           |
 | `--disable`       | Comma-separated detector IDs to disable               | none              |
 | `--only`          | Comma-separated detector IDs or categories to run     | all               |
-| `--token-map-out` | File path to persist the token map (tokenize mode)    | none              |
+| `--regions`       | Comma-separated ISO country codes (e.g. `NG,GB`)      | all               |
+| `--key-name-only` | Only mask fields whose key names them as sensitive    | `false`           |
+| `--token-map-out` | Persist the token map (any format; written `0600`)    | none              |
 | `--report`        | Print detection report without masking                | `false`           |
 | `--config`        | Path to `.pii-mask.json` config file                  | none              |
 
@@ -32,7 +34,7 @@ Create a `.pii-mask.json` file to set defaults:
 ```json
 {
   "mode": "redact",
-  "disable": "person-name,address",
+  "disable": ["person-name", "address"],
   "output": "./redacted"
 }
 ```
@@ -43,7 +45,7 @@ Load it with `--config`:
 pii-mask data.json --config .pii-mask.json
 ```
 
-CLI flags override config file values.
+Flags passed on the command line override config values; defaults never do.
 
 ### Examples
 
@@ -66,14 +68,18 @@ pii-mask data.json --mode tokenize --token-map-out tokens.json
 # Detection report only (no masking)
 pii-mask data.json --report
 
-# Pipe from stdin
-cat data.json | pii-mask --format json --mode tokenize
+# Pipe from stdin — JSON, NDJSON or text is detected from the first line
+cat data.json | pii-mask --mode tokenize
+
+# Mask a running app's logs line by line
+node server.js | pii-mask --mode redact
 ```
+
+Within one run the same value always gets the same token or label. NDJSON and text stream line by line; CSV supports quoted multi-line cells and keeps CRLF line endings; masked CSV cells that a spreadsheet would treat as formulas are prefixed with `'`.
 
 ### Exit codes
 
-| Code | Meaning                                        |
-| ---- | ---------------------------------------------- |
-| `0`  | Success                                        |
-| `1`  | User error (bad arguments, unsupported format) |
-| `2`  | Unexpected runtime error                       |
+| Code | Meaning                                     |
+| ---- | ------------------------------------------- |
+| `0`  | Success                                     |
+| `1`  | Any error; the message is printed to stderr |

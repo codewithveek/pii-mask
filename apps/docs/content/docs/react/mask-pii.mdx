@@ -30,6 +30,8 @@ function UserProfile({ email }: { email: string }) {
 
 ## Reveal prop
 
+Masking runs in the browser, so the raw value has already reached the client (props, devtools, network). Treat `<MaskPII>` as a display feature, and mask on the server when a viewer must never see the value.
+
 The `reveal` prop renders the raw unmasked value. It is the caller's responsibility to gate this on authorization:
 
 ```tsx

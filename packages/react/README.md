@@ -8,24 +8,15 @@ React bindings for the `@pii-mask` toolkit. Provides a component and hooks for m
 pnpm add @pii-mask/react @pii-mask/core
 ```
 
-For **substitute** mode, also install:
-
-```bash
-pnpm add @faker-js/faker
-```
-
 **Peer dependency:** React >= 18.0.0
 
-## Security: React CVE Guard
+The bundle is marked `'use client'`, so it can be imported from React Server Components (e.g. the Next.js app router); the masking itself runs on the client.
 
-This package includes a runtime guard that blocks known-vulnerable React versions at import time. If your React version has a critical CVE, the import will throw an error with upgrade instructions.
+## Security notes
 
-Currently blocked versions:
-- React 19.0.0–19.0.3 (CVE-2025-55182)
-- React 19.1.0–19.1.4 (CVE-2025-55184)
-- React 19.2.0–19.2.3 (CVE-2026-23864)
+**Client-side masking is a display feature, not access control.** By the time a component masks a value, the raw value is already in the browser — in props, devtools and network responses. When a viewer must never see the data, mask it on the server (with `@pii-mask/core`) before sending it. The same applies to `reveal`.
 
-This guard is intentional and cannot be bypassed. Upgrade React to resolve.
+**React version check.** On import, the package logs a one-time `console.warn` if the installed React is a release affected by the December 2025 React Server Components advisories (19.0.0–19.0.3, 19.1.0–19.1.4, 19.2.0–19.2.3; CVE-2025-55182, CVE-2025-55184, CVE-2026-23864). Those issues are in the server-side RSC packages, so the check never blocks rendering; upgrade if you use Server Components.
 
 ## API Reference
 
@@ -49,21 +40,21 @@ function UserProfile({ email, isAdmin }) {
 
 #### Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `string` | *(required)* | The text to mask |
-| `mode` | `MaskMode` | `'mask'` | Masking mode |
-| `detect` | `string[]` | — | Detector IDs or categories to run. Default: all. |
-| `reveal` | `boolean` | `false` | When `true`, renders the original unmasked value |
-| `fallback` | `ReactNode` | — | Rendered while masking |
-| `className` | `string` | — | CSS class for the wrapper `<span>` |
-| `style` | `CSSProperties` | — | Inline styles for the wrapper `<span>` |
+| Prop        | Type            | Default      | Description                                      |
+| ----------- | --------------- | ------------ | ------------------------------------------------ |
+| `children`  | `string`        | _(required)_ | The text to mask                                 |
+| `mode`      | `MaskMode`      | `'mask'`     | Masking mode                                     |
+| `detect`    | `string[]`      | —            | Detector IDs or categories to run. Default: all. |
+| `reveal`    | `boolean`       | `false`      | When `true`, renders the original unmasked value |
+| `fallback`  | `ReactNode`     | —            | _Deprecated, no effect_ — masking is synchronous |
+| `className` | `string`        | —            | CSS class for the wrapper `<span>`               |
+| `style`     | `CSSProperties` | —            | Inline styles for the wrapper `<span>`           |
 
 #### Output HTML
 
 ```html
 <!-- Masked (default) -->
-<span data-pii-masked="true">jo***n@example.com</span>
+<span data-pii-masked="true">j***@example.com</span>
 
 <!-- Revealed -->
 <span data-pii-masked="false">john@example.com</span>
@@ -72,7 +63,7 @@ function UserProfile({ email, isAdmin }) {
 The `data-pii-masked` attribute lets you style masked vs. revealed states in CSS:
 
 ```css
-[data-pii-masked="true"] {
+[data-pii-masked='true'] {
   font-family: monospace;
   color: #999;
 }
@@ -113,9 +104,9 @@ function MaskedEmail({ email }) {
 
 ```ts
 interface UsePIIMaskOptions {
-  mode?: MaskMode;      // default: 'mask'
-  detect?: string[];    // only run these detector IDs/categories
-  disable?: string[];   // skip these detector IDs
+  mode?: MaskMode; // default: 'mask'
+  detect?: string[]; // only run these detector IDs/categories
+  disable?: string[]; // skip these detector IDs
 }
 ```
 
@@ -123,10 +114,10 @@ interface UsePIIMaskOptions {
 
 ```ts
 interface UsePIIMaskReturn {
-  masked: string;                        // the masked output
-  tokenMap: Record<string, string>;      // token → original (tokenize mode)
-  detections: string[];                  // detector IDs that fired
-  restore: (masked: string) => string;   // reverse tokenization
+  masked: string; // the masked output
+  tokenMap: Record<string, string>; // token → original (tokenize mode)
+  detections: string[]; // detector IDs that fired
+  restore: (masked: string) => string; // reverse tokenization
 }
 ```
 
@@ -151,7 +142,11 @@ function UsersTable({ users, isAdmin }) {
   return (
     <table>
       <thead>
-        <tr><th>Name</th><th>Email</th><th>SSN</th></tr>
+        <tr>
+          <th>Name</th>
+          <th>Email</th>
+          <th>SSN</th>
+        </tr>
       </thead>
       <tbody>
         {maskedData.map((row) => (
@@ -171,10 +166,10 @@ function UsersTable({ users, isAdmin }) {
 
 ```ts
 interface UsePIIMaskTableOptions<T> {
-  maskColumns?: (keyof T)[];   // columns to mask. Default: all string columns.
-  mode?: MaskMode;             // default: 'mask'
-  reveal?: boolean;            // when true, returns original data untouched
-  disable?: string[];          // detector IDs to skip
+  maskColumns?: (keyof T)[]; // columns to mask. Default: all columns.
+  mode?: MaskMode; // default: 'mask'
+  reveal?: boolean; // when true, returns original data untouched
+  disable?: string[]; // detector IDs to skip
 }
 ```
 
@@ -182,7 +177,7 @@ interface UsePIIMaskTableOptions<T> {
 
 ```ts
 interface UsePIIMaskTableReturn<T> {
-  maskedData: T[];   // same shape as input, with masked string values
+  maskedData: T[]; // same shape as input, with masked string values
 }
 ```
 
@@ -214,14 +209,14 @@ When `maskColumns` is provided, only those columns are processed. Other columns 
 
 ```ts
 const { maskedData } = usePIIMaskTable(users, {
-  maskColumns: ['email', 'ssn'],  // only mask these
+  maskColumns: ['email', 'ssn'], // only mask these
   mode: 'redact',
 });
 // maskedData[0].name  → 'John Doe' (untouched)
 // maskedData[0].email → '[REDACTED]'
 ```
 
-When `maskColumns` is omitted, all string columns run through detectors.
+When `maskColumns` is omitted, every column runs through detectors. Nested objects and arrays are masked too, and numbers are masked when their key is sensitive (`pin`, `ssn` …). The whole table shares one masking session, so a value gets the same pseudonym or token in every row.
 
 ## SSR Safety
 

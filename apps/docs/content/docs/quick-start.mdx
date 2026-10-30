@@ -39,7 +39,7 @@ const masker = createMasker({ mode: 'tokenize' });
 const { result, tokenMap } = masker.maskString('lucky@example.com');
 
 console.log(result);
-// → '<<PII_a1b2c3d4>>'
+// → '<<PII_3f9c1a0b7d2e4c61>>'
 
 // Restore the original value
 const restored = masker.restore(result, tokenMap);

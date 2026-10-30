@@ -30,7 +30,7 @@ npm install @pii-mask/nlp
 
 ## Requirements
 
-- Node.js 18 or later
+- Node.js 22 or later (core also runs in modern browsers without shims)
 - TypeScript 5.x (recommended)
 
 ## Substitute mode
@@ -41,4 +41,13 @@ If you want to use `substitute` mode (generates realistic fake data), install `@
 npm install @faker-js/faker
 ```
 
-`@faker-js/faker` is optional and only loaded when `mode: 'substitute'` is used.
+Then pass it in — core never imports faker itself, so it's only bundled when you use it:
+
+```ts
+import { faker } from '@faker-js/faker';
+import { createMasker } from '@pii-mask/core';
+
+const masker = createMasker({ mode: 'substitute', faker });
+```
+
+Use `@faker-js/faker` 10.5.0 or later (earlier versions are affected by GHSA-qxc2-j82w-r537).
