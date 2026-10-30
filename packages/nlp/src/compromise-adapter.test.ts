@@ -62,7 +62,7 @@ describe('buildCompromiseDetectors', () => {
     it('masks in tokenize mode', () => {
       const ctx = makeCtx(MaskMode.TOKENIZE);
       const token = personDetector!.mask('John Smith', MaskMode.TOKENIZE, ctx);
-      expect(token).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+      expect(token).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     });
 
     it('masks in pseudonymize mode', () => {
@@ -110,7 +110,7 @@ describe('buildCompromiseDetectors', () => {
     it('masks in tokenize mode', () => {
       const ctx = makeCtx(MaskMode.TOKENIZE);
       const token = placeDetector.mask('New York', MaskMode.TOKENIZE, ctx);
-      expect(token).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+      expect(token).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     });
 
     it('masks in pseudonymize mode', () => {
@@ -147,3 +147,44 @@ function makeCtx(mode: MaskMode) {
     detections: [] as string[],
   };
 }
+
+describe('freeform text (audit regressions)', () => {
+  it('masks only the names inside a sentence', () => {
+    const masker = createMasker({ mode: 'redact', extend: buildCompromiseDetectors() });
+    expect(masker.maskString('Please contact John Smith about the invoice').result).toBe(
+      'Please contact [REDACTED] about the invoice',
+    );
+  });
+
+  it('does not replace a whole sentence that only mentions a place', () => {
+    const masker = createMasker({ mode: 'redact', extend: buildCompromiseDetectors() });
+    expect(masker.maskString('The server in Paris restarted overnight').result).toBe(
+      'The server in [REDACTED] restarted overnight',
+    );
+  });
+
+  it('masks only the entity in mask mode', () => {
+    const masker = createMasker({ mode: 'mask', extend: buildCompromiseDetectors() });
+    expect(masker.maskString('ticket opened by John Smith today').result).toBe(
+      'ticket opened by J*** S**** today',
+    );
+  });
+
+  it('applies a custom lexicon without changing the shared compromise instance', () => {
+    const withLexicon = buildCompromiseDetectors({
+      entities: ['Person'],
+      customLexicon: { table: 'Person' },
+    });
+    const without = buildCompromiseDetectors({ entities: ['Person'] });
+    const text = 'ask the Table about it';
+    expect(withLexicon[0]!.find!(text)).toEqual([{ start: 8, end: 13 }]);
+    // the lexicon must not leak into other detectors or later calls
+    expect(without[0]!.find!(text)).toEqual([]);
+  });
+
+  it('supports Organization entities', () => {
+    const [org] = buildCompromiseDetectors({ entities: ['Organization'] });
+    expect(org!.id).toBe('nlp-organization');
+    expect(org!.detect('Google')).toBe(true);
+  });
+});
