@@ -29,7 +29,7 @@ describe('walker', () => {
       meta: new Map([['email', 'a@b.com']]),
       err: new Error('failed for a@b.com'),
     });
-    const r = result as Record<string, Record<string, unknown>>;
+    const r = result as unknown as Record<string, Record<string, unknown>>;
     expect(r['at']).toBe('2024-01-02T03:04:05.000Z');
     expect(r['n']).toBe(10n);
     expect(r['tags']).toEqual(['[REDACTED]']);

@@ -5,6 +5,11 @@ import './detectors/index';
 export { createMasker } from './masker';
 export type { Masker, MaskValueResult } from './masker';
 export { registry } from './registry';
+export { pinoMask } from './integrations/pino';
+export { winstonMask } from './integrations/winston';
+export { maskedDestination } from './integrations/destination';
+export type { WritableLike } from './integrations/destination';
+export type { WinstonInfo } from './integrations/winston';
 export { generateToken, getOrCreateToken, getOrCreateLabel, serializeError } from './engine';
 export {
   PIICategory,
