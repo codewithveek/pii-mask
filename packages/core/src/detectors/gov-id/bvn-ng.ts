@@ -2,6 +2,12 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
+
+function isBvnKey(key: string): boolean {
+  const k = normalizeKey(key);
+  return k.includes('bvn') || k.includes('bankverification');
+}
 
 // BVN: exactly 11 digits, distinguished from NIN by key hint
 const BVN_RE = /^\d{11}$/;
@@ -16,13 +22,14 @@ const bvnNgDetector: PIIDetector = {
   regions: ['NG'],
   pattern: BVN_NG_PATTERN,
   contextualPattern: true,
+  prefilter: /bvn|bank\s+verification/i,
+
+  keyPattern: isBvnKey,
 
   detect(value, key) {
-    const trimmed = value.replace(/\s/g, '');
-    if (!BVN_RE.test(trimmed)) return false;
     // Only fires when key name suggests BVN
-    const keyHint = key ? /\bbvn\b|bank.?verif/i.test(key) : false;
-    return keyHint;
+    if (!key || !isBvnKey(key)) return false;
+    return BVN_RE.test(value.replace(/\s/g, ''));
   },
 
   mask(value, mode, ctx) {

@@ -2,17 +2,26 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
 
-// Supports MM/DD/YYYY, DD/MM/YYYY, and YYYY-MM-DD
+// Supports YYYY-MM-DD, MM/DD/YYYY and DD/MM/YYYY (also with . or - separators).
 const DOB_MDY_RE = /^(0[1-9]|1[0-2])\/(0[1-9]|[12]\d|3[01])\/\d{4}$/;
 const DOB_ISO_RE = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/;
+const DOB_DMY_RE = /^(0?[1-9]|[12]\d|3[01])([/.-])(0?[1-9]|1[0-2])\2\d{4}$/;
 
 // Natural language months for freeform scanning
 const MONTHS =
   'January|February|March|April|May|June|July|August|September|October|November|December';
+const MONTHS_RE = new RegExp(`\\b(?:${MONTHS})\\b`, 'i');
 
 // Birth-related context words — used in freeform lookbehind
-const BIRTH_CONTEXT = '(?:born|birthday|date\\s+of\\s+birth|dob|birth\\s*date|d\\.o\\.b\\.?)';
+const BIRTH_CONTEXT =
+  '(?:born(?:\\s+on)?|birthday|date\\s+of\\s+birth|dob|birth\\s*date|d\\.o\\.b\\.?)';
+
+const NUMERIC_DATE =
+  '(?:\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])' +
+  '|(?:0?[1-9]|[12]\\d|3[01])[/.-](?:0?[1-9]|1[0-2])[/.-]\\d{4}' +
+  '|(?:0[1-9]|1[0-2])\\/(?:0[1-9]|[12]\\d|3[01])\\/\\d{4})';
 
 // Natural language date sub-patterns (month-first and day-first)
 const NATURAL_DATE =
@@ -20,21 +29,25 @@ const NATURAL_DATE =
   '|' +
   `\\d{1,2}(?:st|nd|rd|th)?\\s+(?:of\\s+)?(?:${MONTHS}),?\\s+\\d{4})`;
 
-// Freeform pattern: numeric dates match standalone; natural language dates
-// require a birth-context lookbehind to reduce false positives on regular dates.
+// A date on its own is not a date of birth (createdAt, invoice dates, release
+// notes …), so in freeform text every date form needs a birth-context word.
+// The gap may not contain digits, so one context word can't claim a later date.
 const DOB_PATTERN = new RegExp(
-  '(?:' +
-    // Numeric: MM/DD/YYYY
-    '\\b(?:0[1-9]|1[0-2])\\/(?:0[1-9]|[12]\\d|3[01])\\/\\d{4}\\b' +
-    '|' +
-    // Numeric: YYYY-MM-DD
-    '\\b\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])\\b' +
-    '|' +
-    // Natural language dates WITH birth-context lookbehind
-    `(?<=\\b${BIRTH_CONTEXT}\\b.{0,20})${NATURAL_DATE}` +
-    ')',
+  `(?<=\\b${BIRTH_CONTEXT}\\b\\D{0,20})(?:\\b${NUMERIC_DATE}\\b|${NATURAL_DATE})`,
   'gi',
 );
+
+function isDobKey(key: string): boolean {
+  const k = normalizeKey(key);
+  return k === 'dob' || k.includes('birth') || k.endsWith('dob');
+}
+
+function isDateValue(value: string): boolean {
+  if (DOB_ISO_RE.test(value) || DOB_MDY_RE.test(value) || DOB_DMY_RE.test(value)) return true;
+  // Natural language date: "March 14, 1987", "22nd of July, 1993", etc.
+  // Length-gate: a single date expression is at most ~30 chars
+  return value.length <= 40 && MONTHS_RE.test(value) && /\d{4}/.test(value);
+}
 
 const dobDetector: PIIDetector = {
   id: 'dob',
@@ -42,19 +55,13 @@ const dobDetector: PIIDetector = {
   category: PIICategory.BIOMETRIC,
   pattern: DOB_PATTERN,
   contextualPattern: true,
+  prefilter: /born|birth|\bdob\b|d\.o\.b/i,
+  keyPattern: isDobKey,
 
+  // Only date-like values under a birth-related key are dates of birth.
   detect(value, key) {
-    const trimmed = value.trim();
-    const matchesNumeric = DOB_MDY_RE.test(trimmed) || DOB_ISO_RE.test(trimmed);
-    // Natural language date: "March 14, 1987", "22nd of July, 1993", etc.
-    // Length-gate: a single date expression is at most ~30 chars
-    const monthsRe =
-      /\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\b/i;
-    const matchesNatural = trimmed.length <= 40 && monthsRe.test(trimmed) && /\d{4}/.test(trimmed);
-    if (!matchesNumeric && !matchesNatural) return false;
-    // Boost: only fire on date-like key names to reduce false positives
-    const keyHint = key ? /\bdob\b|birth|date.?of.?birth|birthday/i.test(key) : false;
-    return keyHint || matchesNumeric || matchesNatural;
+    if (!key || !isDobKey(key)) return false;
+    return isDateValue(value.trim());
   },
 
   mask(value, mode, ctx) {
@@ -71,6 +78,8 @@ const dobDetector: PIIDetector = {
         const d = String(date.getDate()).padStart(2, '0');
         if (DOB_ISO_RE.test(value.trim())) return `${y}-${m}-${d}`;
         if (DOB_MDY_RE.test(value.trim())) return `${m}/${d}/${y}`;
+        const dmy = DOB_DMY_RE.exec(value.trim());
+        if (dmy) return `${d}${dmy[2]}${m}${dmy[2]}${y}`;
         // Natural language: return "Month DD, YYYY"
         const monthNames = [
           'January',

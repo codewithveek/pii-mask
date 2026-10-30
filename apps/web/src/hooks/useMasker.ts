@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { createMasker } from '@pii-mask/core';
+import { faker } from '@faker-js/faker';
 import type { MaskMode, MaskResult } from '@pii-mask/core';
 import { detectFormat, type InputFormat } from '../lib/detectFormat.js';
 
@@ -37,6 +38,7 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
     () =>
       createMasker({
         mode,
+        ...(mode === 'substitute' ? { faker } : {}),
         ...(detectorsKey ? { disable: detectorsKey.split(',') } : {}),
       }),
     [mode, detectorsKey],
@@ -63,12 +65,10 @@ export function useMasker({ mode, disabledDetectors }: UseMaskerOptions): UseMas
     let result: MaskResult;
 
     try {
-      if (currentFormat === 'object') {
-        result = m.maskObject(JSON.parse(value) as Record<string, unknown>);
-        setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
-      } else if (currentFormat === 'array') {
-        result = m.maskArray(JSON.parse(value) as unknown[]);
-        setOutput(JSON.stringify(JSON.parse(result.result) as unknown, null, 2));
+      if (currentFormat === 'object' || currentFormat === 'array') {
+        const masked = m.mask(JSON.parse(value) as unknown);
+        result = { ...masked, result: JSON.stringify(masked.result, null, 2) };
+        setOutput(result.result);
       } else {
         result = m.maskString(value);
         setOutput(result.result);

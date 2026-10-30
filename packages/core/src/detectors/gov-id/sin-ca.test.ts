@@ -44,7 +44,7 @@ describe('sin-ca detector', () => {
     const masker = createMasker({ mode: 'tokenize' });
     const original = '130-692-544';
     const { result, tokenMap } = masker.maskString(original);
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(masker.restore(result, tokenMap)).toBe(original);
   });
 

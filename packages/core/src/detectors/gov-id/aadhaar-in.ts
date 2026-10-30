@@ -2,10 +2,20 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
 
-// Aadhaar: 12 digits with Verhoeff checksum
-const AADHAAR_RE = /^\d{12}$/;
-const AADHAAR_PATTERN = /\b\d{12}\b/g;
+// Aadhaar: 12 digits with Verhoeff checksum, never starting with 0 or 1.
+// Usually printed as 4-4-4 groups (2341 2341 2346).
+const AADHAAR_RE = /^[2-9]\d{11}$/;
+const AADHAAR_GROUPED_RE = /^[2-9]\d{3}([\s-])\d{4}\1\d{4}$/;
+// Freeform: grouped form anywhere, contiguous form only after "aadhaar"/"UID".
+const AADHAAR_PATTERN =
+  /(?<![\w-])[2-9]\d{3}([\s-])\d{4}\1\d{4}(?![\w-])|(?<=\b(?:aadhaa?r|uid)(?:\s+(?:no\.?|number))?\s*(?:is\s+|:\s*|#\s*)?)[2-9]\d{11}\b/gi;
+
+function isAadhaarKey(key: string): boolean {
+  const k = normalizeKey(key);
+  return k.startsWith('aadhaar') || k.startsWith('aadhar') || k === 'uid' || k === 'uidai';
+}
 
 // Verhoeff algorithm tables
 const d = [
@@ -56,12 +66,27 @@ const aadhaarInDetector: PIIDetector = {
   label: 'Indian Aadhaar Number',
   category: PIICategory.GOV_ID,
   regions: ['IN'],
-  pattern: AADHAAR_PATTERN,
+  // The contiguous form is only matched after an Aadhaar context word, which
+  // detect() can't see, so matches are validated here instead.
+  find(text) {
+    const out: Array<{ start: number; end: number }> = [];
+    for (const m of text.matchAll(AADHAAR_PATTERN)) {
+      if (verhoeff(m[0].replace(/\D/g, '')))
+        out.push({ start: m.index, end: m.index + m[0].length });
+    }
+    return out;
+  },
 
-  detect(value) {
-    const trimmed = value.replace(/\s/g, '');
-    if (!AADHAAR_RE.test(trimmed)) return false;
-    return verhoeff(trimmed);
+  keyPattern: isAadhaarKey,
+  prefilter: /\d{4}/,
+
+  // About 1 in 10 random 12-digit numbers pass Verhoeff, so a bare 12-digit
+  // value needs an Aadhaar-like key; the grouped 4-4-4 form stands on its own.
+  detect(value, key) {
+    const trimmed = value.trim();
+    const digits = trimmed.replace(/[\s-]/g, '');
+    if (!AADHAAR_RE.test(digits) || !verhoeff(digits)) return false;
+    return AADHAAR_GROUPED_RE.test(trimmed) || (key !== undefined && isAadhaarKey(key));
   },
 
   mask(value, mode, ctx) {
@@ -74,7 +99,7 @@ const aadhaarInDetector: PIIDetector = {
       return ctx.faker?.string.numeric({ length: 12 }) ?? '[AADHAAR]';
     }
     // Default mask: XXXX-XXXX-1234
-    const digits = value.replace(/\s/g, '');
+    const digits = value.replace(/\D/g, '');
     return `XXXX-XXXX-${digits.slice(-4)}`;
   },
 };

@@ -46,7 +46,7 @@ describe('vin detector', () => {
     const masker = createMasker({ mode: 'tokenize' });
     const original = '1HGBH41JXMN109186';
     const { result, tokenMap } = masker.maskString(original);
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(masker.restore(result, tokenMap)).toBe(original);
   });
 

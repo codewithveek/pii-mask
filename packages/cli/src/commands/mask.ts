@@ -1,23 +1,24 @@
 import { defineCommand } from 'citty';
-import { resolve, extname, basename, join } from 'node:path';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { createMasker } from '@pii-mask/core';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { MaskMode } from '@pii-mask/core';
-import { readStdin } from '../utils/stdin.js';
-import { parseCSV, csvToString } from '../adapters/csv.js';
-import { parseJSONL, jsonlToString } from '../adapters/jsonl.js';
-import { persistTokenMap } from '../utils/token-map.js';
+import { runMask } from '../run.js';
+import type { Format, RunOptions } from '../run.js';
 
 const ALLOWED_CONFIG_KEYS = new Set([
   'mode',
   'disable',
   'only',
+  'regions',
+  'key-name-only',
   'format',
   'output',
   'in-place',
   'token-map-out',
   'report',
 ]);
+
+const MODES = new Set(['mask', 'redact', 'pseudonymize', 'anonymize', 'tokenize', 'substitute']);
 
 export function loadConfig(path: string): Record<string, unknown> {
   const raw: unknown = JSON.parse(readFileSync(path, 'utf-8'));
@@ -33,126 +34,95 @@ export function loadConfig(path: string): Record<string, unknown> {
   return raw as Record<string, unknown>;
 }
 
+/** Accepts "a,b" (CLI) or ["a","b"] (config file). */
+function list(value: unknown): string[] | undefined {
+  if (Array.isArray(value)) return value.map(String).filter(Boolean);
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return undefined;
+}
+
+/**
+ * Merges config-file values with CLI flags. Only flags the user actually
+ * passed override the config — defaults never do.
+ */
+export function resolveOptions(
+  args: Record<string, unknown>,
+  config: Record<string, unknown> = {},
+): RunOptions {
+  const passed = Object.fromEntries(
+    Object.entries(args).filter(([k, v]) => v !== undefined && k !== '_'),
+  );
+  const o: Record<string, unknown> = { ...config, ...passed };
+  const mode = String(o['mode'] ?? 'mask');
+  if (!MODES.has(mode)) {
+    throw new Error(`Unknown mode "${mode}". Expected one of: ${[...MODES].join(', ')}`);
+  }
+  const opts: RunOptions = { mode: mode as MaskMode };
+  if (typeof o['file'] === 'string') opts.file = o['file'];
+  if (typeof o['format'] === 'string') opts.format = o['format'].toLowerCase() as Format;
+  if (typeof o['output'] === 'string') opts.output = o['output'];
+  if (typeof o['token-map-out'] === 'string') opts.tokenMapOut = o['token-map-out'];
+  if (o['in-place'] === true) opts.inPlace = true;
+  if (o['report'] === true) opts.report = true;
+  if (o['key-name-only'] === true) opts.keyNameOnly = true;
+  const disable = list(o['disable']);
+  const only = list(o['only']);
+  const regions = list(o['regions']);
+  if (disable) opts.disable = disable;
+  if (only) opts.only = only;
+  if (regions) opts.regions = regions;
+  return opts;
+}
+
 export const maskCommand = defineCommand({
   meta: {
     name: 'pii-mask',
-    description: 'Mask PII in CSV, JSON, JSONL, and TXT files',
+    description: 'Mask PII in CSV, JSON, JSONL, and TXT files (or stdin)',
   },
   args: {
-    file: { type: 'positional', required: false, description: 'Input file path' },
+    file: { type: 'positional', required: false, description: 'Input file path (default: stdin)' },
     mode: {
       type: 'string',
-      default: 'mask',
-      description: 'mask | redact | pseudonymize | tokenize | substitute',
+      description:
+        'mask | redact | pseudonymize | anonymize | tokenize | substitute (default: mask)',
     },
     output: { type: 'string', description: 'Output directory (default: ./masked-output)' },
-    'in-place': { type: 'boolean', default: false, description: 'Overwrite input file' },
-    format: { type: 'string', description: 'Force format: csv | json | jsonl | txt' },
+    'in-place': { type: 'boolean', description: 'Overwrite input file' },
+    format: {
+      type: 'string',
+      description: 'Force format: csv | json | jsonl | txt (stdin is auto-detected)',
+    },
     disable: { type: 'string', description: 'Comma-separated detector IDs to disable' },
     only: { type: 'string', description: 'Comma-separated categories or IDs to run' },
-    'token-map-out': { type: 'string', description: 'File path to persist token map' },
-    report: {
+    regions: { type: 'string', description: 'Comma-separated ISO country codes, e.g. NG,GB' },
+    'key-name-only': {
       type: 'boolean',
-      default: false,
-      description: 'Print detection report without masking',
+      description: 'Only mask fields whose key names them as sensitive',
     },
+    'token-map-out': {
+      type: 'string',
+      description: 'File to persist the token map (contains raw PII; written with 0600)',
+    },
+    report: { type: 'boolean', description: 'Print detection report without masking' },
     config: { type: 'string', description: 'Path to .pii-mask.json config file' },
   },
-
   async run({ args }) {
-    const config = args.config ? loadConfig(resolve(args.config)) : {};
-    const opts = { ...config, ...args };
-
-    const isStdin = !opts.file;
-    let raw: string;
-
-    if (isStdin) {
-      try {
-        raw = await readStdin();
-      } catch {
-        console.error('No file argument provided and stdin is a TTY.');
-        process.exit(1);
+    try {
+      const config = args.config ? loadConfig(resolve(args.config)) : {};
+      const { config: _config, ...rest } = args as Record<string, unknown>;
+      const opts = resolveOptions(rest, config);
+      if (!opts.file && process.stdin.isTTY) {
+        throw new Error('No file argument provided and stdin is a TTY.');
       }
-    } else {
-      raw = readFileSync(resolve(opts.file as string), 'utf-8');
+      await runMask(opts, { stdin: process.stdin, stdout: process.stdout, stderr: process.stderr });
+    } catch (err) {
+      console.error(`pii-mask: ${(err as Error).message}`);
+      process.exitCode = 1;
     }
-
-    const format =
-      (opts.format as string) ?? (isStdin ? 'json' : extname((opts.file as string) ?? '').slice(1));
-    const maskerOpts: { mode: MaskMode; disable?: string[]; only?: string[] } = {
-      mode: (opts.mode as MaskMode) ?? 'mask',
-    };
-    if (typeof opts.disable === 'string') maskerOpts.disable = opts.disable.split(',');
-    if (typeof opts.only === 'string') maskerOpts.only = opts.only.split(',');
-    const masker = createMasker(maskerOpts);
-
-    let output: string;
-    let allDetections: string[] = [];
-
-    if (format === 'csv') {
-      const { rows, headers } = parseCSV(raw);
-      const masked = rows.map((row) => {
-        return row.map((cell, i) => {
-          const { result, detections } = masker.maskString(cell, headers[i]);
-          allDetections.push(...detections);
-          return result;
-        });
-      });
-      output = csvToString([headers, ...masked]);
-    } else if (format === 'jsonl') {
-      const lines = parseJSONL(raw);
-      const masked = lines.map((line) => {
-        const { result, detections } = masker.maskObject(line);
-        allDetections.push(...detections);
-        return JSON.parse(result) as Record<string, unknown>;
-      });
-      output = jsonlToString(masked);
-    } else if (format === 'json') {
-      const data: unknown = JSON.parse(raw);
-      const { result, detections, tokenMap } = Array.isArray(data)
-        ? masker.maskArray(data as unknown[])
-        : masker.maskObject(data as Record<string, unknown>);
-      allDetections = detections;
-      output = result;
-
-      if (opts['token-map-out']) {
-        await persistTokenMap(opts['token-map-out'] as string, tokenMap);
-      }
-    } else {
-      // Plain text
-      const { result, detections } = masker.maskString(raw);
-      allDetections = detections;
-      output = result;
-    }
-
-    if (opts.report) {
-      const counts = allDetections.reduce<Record<string, number>>((acc, id) => {
-        acc[id] = (acc[id] ?? 0) + 1;
-        return acc;
-      }, {});
-      console.error('\n── PII Detection Report ──────────────────────');
-      for (const [id, count] of Object.entries(counts)) {
-        console.error(`  ${id.padEnd(20)} ${count} instance(s)`);
-      }
-      console.error('─────────────────────────────────────────────\n');
-      return;
-    }
-
-    if (isStdin) {
-      process.stdout.write(output);
-      return;
-    }
-
-    if (opts['in-place']) {
-      writeFileSync(resolve(opts.file as string), output, 'utf-8');
-      console.error(`✓  Masked in place: ${opts.file}`);
-      return;
-    }
-
-    const outDir = resolve((opts.output as string) ?? 'masked-output');
-    mkdirSync(outDir, { recursive: true });
-    const outPath = join(outDir, basename(opts.file as string));
-    writeFileSync(outPath, output, 'utf-8');
-    console.error(`✓  Masked output written to ${outPath}`);
   },
 });

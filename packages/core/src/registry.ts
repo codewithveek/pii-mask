@@ -1,5 +1,11 @@
 import type { PIIDetector, MaskOptions } from './types';
 
+// 'UK' is not an ISO 3166-1 code but is widely used for the United Kingdom.
+function normalizeRegion(region: string): string {
+  const upper = region.toUpperCase();
+  return upper === 'UK' ? 'GB' : upper;
+}
+
 class DetectorRegistry {
   private detectors = new Map<string, PIIDetector>();
 
@@ -40,8 +46,9 @@ class DetectorRegistry {
     }
 
     if (options.regions?.length) {
+      const wanted = new Set(options.regions.map(normalizeRegion));
       resolved = resolved.filter(
-        (d) => !d.regions || d.regions.some((r) => options.regions!.includes(r)),
+        (d) => !d.regions || d.regions.some((r) => wanted.has(normalizeRegion(r))),
       );
     }
 

@@ -37,7 +37,7 @@ describe('uuid detector', () => {
     const masker = createMasker({ mode: 'tokenize' });
     const original = '550e8400-e29b-41d4-a716-446655440000';
     const { result, tokenMap } = masker.maskString(original);
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(masker.restore(result, tokenMap)).toBe(original);
   });
 

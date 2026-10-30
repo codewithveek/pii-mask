@@ -44,7 +44,7 @@ describe('buildPlaceDetector', () => {
   it('tokenizes to PII token', () => {
     const ctx = makeCtx(MaskMode.TOKENIZE);
     const token = detector.mask('New York', MaskMode.TOKENIZE, ctx);
-    expect(token).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(token).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
   });
 
   it('pseudonymizes to PLACE_N label', () => {

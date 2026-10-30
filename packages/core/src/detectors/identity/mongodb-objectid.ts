@@ -1,7 +1,7 @@
 import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
-import { getOrCreateToken, getOrCreateLabel, generateToken } from '@/engine';
+import { getOrCreateToken, getOrCreateLabel, randomHex } from '@/engine';
 
 // MongoDB ObjectID: exactly 24 hex characters
 const OBJECTID_RE = /^[a-fA-F0-9]{24}$/;
@@ -19,6 +19,7 @@ const mongodbObjectIdDetector: PIIDetector = {
   label: 'MongoDB ObjectID',
   category: PIICategory.IDENTITY,
   pattern: OBJECTID_PATTERN,
+  prefilter: /[a-fA-F0-9]{24}/,
 
   detect(value) {
     const trimmed = value.trim();
@@ -33,12 +34,11 @@ const mongodbObjectIdDetector: PIIDetector = {
       return getOrCreateLabel('OBJECTID', value, ctx, PIICategory.IDENTITY);
     }
     if (mode === MaskMode.SUBSTITUTE) {
-      // Generate a plausible ObjectID-shaped hex string
-      const hex = generateToken()
-        .replace(/[^a-f0-9]/g, '')
-        .padEnd(24, '0')
-        .slice(0, 24);
-      return hex;
+      // Plausible ObjectID: current timestamp + 8 random bytes
+      const ts = Math.floor(Date.now() / 1000)
+        .toString(16)
+        .padStart(8, '0');
+      return `${ts}${randomHex(8)}`;
     }
     // Default mask: preserve first 8 chars (timestamp), mask the rest
     return `${value.slice(0, 8)}****************`;

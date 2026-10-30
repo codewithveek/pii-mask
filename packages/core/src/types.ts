@@ -57,19 +57,43 @@ export interface PIIDetector {
    * in freeform text but whose pattern already encodes that context.
    */
   contextualPattern?: boolean;
+  /**
+   * Optional. Locates occurrences in freeform text for detectors that cannot be
+   * expressed as a single regex (e.g. NLP). Returns [start, end) offsets into
+   * `text`. Matches are masked exactly like `pattern` matches.
+   */
+  find?: (text: string) => Array<{ start: number; end: number }>;
+  /**
+   * Optional. A cheap test run once per string before `pattern`/`find`; when
+   * it fails the detector is skipped for that text. Use it for patterns that
+   * are expensive to scan (lookbehinds) but need an obvious marker such as
+   * '@' or a context word.
+   */
+  prefilter?: RegExp;
+  /**
+   * Optional. Key names that strongly imply this PII type (e.g. /^ssn$/ for
+   * SSNs). When a field's key matches and no detector claimed the value by
+   * format, the value is masked by this detector anyway. This catches
+   * unformatted values (`{ ssn: '123456789' }`) and numeric values
+   * (`{ phone: 4155552671 }`). Only values containing a digit are forced.
+   */
+  keyPattern?: RegExp | ((key: string) => boolean);
 }
 
 // ── Masking context passed to every mask() call ─────────────────────────────
 export interface MaskContext {
   mode: MaskMode;
-  /** Monotonically increasing counter per category, used for pseudonymize labels */
-  counter: Map<PIICategory, number>;
+  /**
+   * Monotonically increasing counter per label prefix (e.g. `EMAIL`, `SSN`),
+   * used for pseudonymize labels.
+   */
+  counter: Map<string, number>;
   /** value → token, used for tokenize + pseudonymize consistency */
   tokenMap: Map<string, string>;
   /** Detector IDs that fired during this masking session, accumulated by maskValue() */
   detections: string[];
   /** faker instance, present only when mode === 'substitute' */
-  faker?: import('@faker-js/faker').Faker;
+  faker?: FakerLike;
 }
 
 // ── Result types ────────────────────────────────────────────────────────────
@@ -93,8 +117,30 @@ export interface MaskOptions {
   extend?: PIIDetector[];
   /** Skip value-level regex detection; rely on key-name heuristics only */
   keyNameOnly?: boolean;
+  /**
+   * A `@faker-js/faker` instance. Required for `mode: 'substitute'`:
+   * `import { faker } from '@faker-js/faker'; createMasker({ mode: 'substitute', faker })`.
+   * faker is an optional peer dependency and is never imported by core itself.
+   */
+  faker?: FakerLike;
+  /**
+   * Objects nested deeper than this are replaced with `'[Truncated]'` instead of
+   * being walked, so hostile input cannot overflow the stack. Default: 100.
+   */
+  maxDepth?: number;
+  /**
+   * @deprecated Has no effect. Pass NLP detectors explicitly instead:
+   * `createMasker({ extend: buildCompromiseDetectors(nlpOptions) })`.
+   */
   nlpOptions?: NLPOptions;
 }
+
+/**
+ * A `@faker-js/faker` `Faker` instance. Typed loosely so core's published
+ * declarations don't require faker to be installed.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type FakerLike = any;
 
 /** Opaque session handle for cross-call consistency (tokenize/pseudonymize). */
 export interface MaskSession {

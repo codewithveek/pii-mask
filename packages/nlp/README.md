@@ -1,6 +1,6 @@
 # @pii-mask/nlp
 
-Optional NLP extension for `@pii-mask/core`. Uses [compromise](https://github.com/spencermountain/compromise) for freeform person name and place detection in unstructured text — cases where regex-based detectors can't help.
+Optional NLP extension for `@pii-mask/core`. Uses [compromise](https://github.com/spencermountain/compromise) to find person names, places and organizations in unstructured text — cases where regex-based detectors can't help.
 
 ## Installation
 
@@ -64,11 +64,11 @@ const detectors = buildCompromiseDetectors({
 
 #### Options
 
-| Option          | Type                                                    | Default               | Description                                                                                             |
-| --------------- | ------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------- |
-| `confidence`    | `number`                                                | `0.7`                 | Minimum ratio of detected entity text to total text length (0–1). Higher values reduce false positives. |
-| `entities`      | `Array<'Person' \| 'Place' \| 'Organization'>`          | `['Person', 'Place']` | Entity types to detect                                                                                  |
-| `customLexicon` | `Record<string, 'Person' \| 'Place' \| 'Organization'>` | `{}`                  | Additional terms to teach compromise                                                                    |
+| Option          | Type                                                    | Default               | Description                                                                                                                    |
+| --------------- | ------------------------------------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| `confidence`    | `number`                                                | `0.7`                 | For whole-value detection: minimum share of the value the entity must cover (0–1). Freeform text always masks just the entity. |
+| `entities`      | `Array<'Person' \| 'Place' \| 'Organization'>`          | `['Person', 'Place']` | Entity types to detect                                                                                                         |
+| `customLexicon` | `Record<string, 'Person' \| 'Place' \| 'Organization'>` | `{}`                  | Extra terms to detect, matched as whole words (case-insensitive)                                                               |
 
 #### Returns
 
@@ -79,6 +79,7 @@ The returned detectors:
 - **Do not self-register** in the global registry — they are consumer-supplied extensions only
 - Use `getOrCreateToken` and `getOrCreateLabel` from `@pii-mask/core` for consistent tokenization
 - Support all six masking modes
+- Work on whole values (`detect`) and inside freeform text (`find`): in a sentence only the entity is replaced, never the whole string
 
 ### `buildPersonDetector(confidence?)`
 
@@ -102,7 +103,7 @@ masker.maskString('Jane Doe');
 
 - `confidence` _(optional, default: 0.7)_ — Minimum ratio threshold
 
-### `buildPlaceDetector()`
+### `buildPlaceDetector(confidence?)`
 
 Builds a single place/location detector.
 
@@ -122,37 +123,46 @@ masker.maskString('Paris');
 
 ## Detector IDs
 
-| ID           | Entity | Description                                    |
-| ------------ | ------ | ---------------------------------------------- |
-| `nlp-person` | Person | Names detected by compromise's `.people()`     |
-| `nlp-place`  | Place  | Locations detected by compromise's `.places()` |
+| ID                 | Entity       | Description                                                                       |
+| ------------------ | ------------ | --------------------------------------------------------------------------------- |
+| `nlp-person`       | Person       | Names detected by compromise's `.people()`                                        |
+| `nlp-place`        | Place        | Locations detected by compromise's `.places()`                                    |
+| `nlp-organization` | Organization | Organizations detected by compromise's `.organizations()` (opt in via `entities`) |
 
 ## Custom Lexicon
 
-Teach compromise additional terms using the `customLexicon` option. This uses compromise's object-style `nlp.extend({ words: ... })` API.
+Add terms compromise doesn't know with `customLexicon`. Entries are matched as whole words, case-insensitively, alongside compromise's own results. Each set of detectors keeps its own lexicon — compromise's built-in lexicon options change its global state for every caller, so they are not used.
 
 ```ts
 const detectors = buildCompromiseDetectors({
+  entities: ['Person', 'Place', 'Organization'],
   customLexicon: {
     Wakanda: 'Place',
     JARVIS: 'Person',
     'Stark Industries': 'Organization',
   },
 });
+
+createMasker({ mode: 'redact', extend: detectors }).maskString(
+  'JARVIS flew to Wakanda for Stark Industries',
+);
+// → '[REDACTED] flew to [REDACTED] for [REDACTED]'
 ```
 
 ## Masking Modes
 
 All NLP detectors support every masking mode:
 
-| Mode           | Person output                   | Place output                      |
-| -------------- | ------------------------------- | --------------------------------- |
-| `mask`         | `J***` (first char + asterisks) | `P*****` (first char + asterisks) |
-| `redact`       | `[REDACTED]`                    | `[REDACTED]`                      |
-| `pseudonymize` | `PERSON_1`                      | `PLACE_1`                         |
-| `anonymize`    | `PERSON_1`                      | `PLACE_1`                         |
-| `tokenize`     | `<<PII_a1b2c3d4>>`              | `<<PII_e5f6a7b8>>`                |
-| `substitute`   | Random full name via faker      | Random city name via faker        |
+| Mode           | Person output                         | Place output                       |
+| -------------- | ------------------------------------- | ---------------------------------- |
+| `mask`         | `J*** D**` (each word's first letter) | `P****` (each word's first letter) |
+| `redact`       | `[REDACTED]`                          | `[REDACTED]`                       |
+| `pseudonymize` | `PERSON_1`                            | `PLACE_1`                          |
+| `anonymize`    | `PERSON_1`                            | `PLACE_1`                          |
+| `tokenize`     | `<<PII_3f9c1a0b7d2e4c61>>`            | `<<PII_a07e55d1c94b2f38>>`         |
+| `substitute`   | Random full name via faker            | Random city name via faker         |
+
+Organizations use the `ORG_N` label and a random company name in `substitute` mode (pass `faker` to `createMasker`).
 
 ## Combining with Core Detectors
 
@@ -180,6 +190,7 @@ const { result } = masker.maskObject({
 - **Never import `@pii-mask/nlp` from core, cli, or react.** NLP is always a consumer-supplied peer, never a dependency of other packages.
 - Token generation uses `generateToken`, `getOrCreateToken`, and `getOrCreateLabel` from `@pii-mask/core` — never local reimplementations.
 - The compromise library adds ~200KB to your bundle. Only install this package if you need NLP-based detection.
+- NLP parsing is much slower than regex detection. Recent parses are cached so each string is parsed once per masking call, but expect NLP to dominate the cost when masking large volumes.
 
 ## License
 

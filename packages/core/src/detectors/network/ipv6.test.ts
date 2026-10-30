@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('ipv6 detector', () => {
@@ -28,7 +29,7 @@ describe('ipv6 detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['ipv6'] });
     const { result, tokenMap } = tokenizer.maskString('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
   });
 
@@ -45,7 +46,7 @@ describe('ipv6 detector', () => {
   });
 
   it('generates plausible IPv6 in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['ipv6'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['ipv6'] });
     const { result } = substitutor.maskString('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
     expect(result).not.toBe('2001:0db8:85a3:0000:0000:8a2e:0370:7334');
     expect(result).toContain(':');

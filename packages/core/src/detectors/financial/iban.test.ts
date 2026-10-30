@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('iban detector', () => {
@@ -28,7 +29,7 @@ describe('iban detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['iban'] });
     const { result, tokenMap } = tokenizer.maskString('GB29NWBK60161331926819');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('GB29NWBK60161331926819');
   });
 
@@ -45,7 +46,7 @@ describe('iban detector', () => {
   });
 
   it('generates plausible IBAN in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['iban'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['iban'] });
     const { result } = substitutor.maskString('GB29NWBK60161331926819');
     expect(result).not.toBe('GB29NWBK60161331926819');
     expect(result.length).toBeGreaterThan(10);

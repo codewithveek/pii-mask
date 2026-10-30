@@ -13,7 +13,7 @@ import type { PIIDetector } from './types.js';
 describe('generateToken', () => {
   it('generates a token with correct format', () => {
     const token = generateToken();
-    expect(token).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(token).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
   });
 
   it('generates unique tokens', () => {

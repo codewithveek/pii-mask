@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('address detector', () => {
@@ -33,7 +34,7 @@ describe('address detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['address'] });
     const { result, tokenMap } = tokenizer.maskString('123 Main Street', 'address');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('123 Main Street');
   });
 
@@ -50,7 +51,7 @@ describe('address detector', () => {
   });
 
   it('generates plausible address in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['address'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['address'] });
     const { result } = substitutor.maskString('123 Main Street', 'address');
     expect(result).not.toBe('123 Main Street');
     expect(result.length).toBeGreaterThan(5);

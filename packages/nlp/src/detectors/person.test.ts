@@ -49,7 +49,7 @@ describe('buildPersonDetector', () => {
   it('tokenizes to PII token', () => {
     const ctx = makeCtx(MaskMode.TOKENIZE);
     const token = detector.mask('John Smith', MaskMode.TOKENIZE, ctx);
-    expect(token).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(token).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
   });
 
   it('pseudonymizes to PERSON_N label', () => {

@@ -2,6 +2,7 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
 
 // VIN: exactly 17 chars, excludes I, O, Q
 const VIN_RE = /^[A-HJ-NPR-Z0-9]{17}$/;
@@ -55,6 +56,13 @@ const vinDetector: PIIDetector = {
   label: 'Vehicle Identification Number',
   category: PIICategory.IDENTITY,
   pattern: VIN_PATTERN,
+  prefilter: /[A-HJ-NPR-Z0-9]{17}/,
+  // Only North American VINs carry a check digit; under a VIN key the
+  // checksum is not required.
+  keyPattern: (key) =>
+    /^(?:vin|vinnumber|vehicleidentificationnumber|chassisnumber|chassisno)$/.test(
+      normalizeKey(key),
+    ),
 
   detect(value) {
     const trimmed = value.trim().toUpperCase();

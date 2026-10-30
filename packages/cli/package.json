@@ -27,14 +27,15 @@
     "access": "public"
   },
   "bin": {
-    "pii-mask": "./dist/index.js"
+    "pii-mask": "./dist/cli.js"
   },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./cli": "./dist/cli.js"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -52,12 +53,21 @@
   },
   "dependencies": {
     "@pii-mask/core": "workspace:*",
-    "citty": "^0.2.1"
+    "citty": "^0.2.2"
   },
   "devDependencies": {
-    "@vitest/coverage-v8": "^4.0.18",
+    "@faker-js/faker": "^10.6.0",
+    "@vitest/coverage-v8": "^4.1.12",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.12"
+  },
+  "peerDependencies": {
+    "@faker-js/faker": ">=10.5.0"
+  },
+  "peerDependenciesMeta": {
+    "@faker-js/faker": {
+      "optional": true
+    }
   }
 }

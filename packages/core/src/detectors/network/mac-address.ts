@@ -1,7 +1,7 @@
 import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
-import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { getOrCreateToken, getOrCreateLabel, randomHex } from '@/engine';
 
 // MAC address: 6 groups of 2 hex chars separated by colons or dashes
 const MAC_COLON_RE = /^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/;
@@ -13,6 +13,7 @@ const macAddressDetector: PIIDetector = {
   label: 'MAC Address',
   category: PIICategory.NETWORK,
   pattern: MAC_PATTERN,
+  prefilter: /[0-9A-Fa-f]{2}[:-][0-9A-Fa-f]{2}/,
 
   detect(value) {
     const trimmed = value.trim();
@@ -26,13 +27,8 @@ const macAddressDetector: PIIDetector = {
       return getOrCreateLabel('MAC', value, ctx, PIICategory.NETWORK);
     }
     if (mode === MaskMode.SUBSTITUTE) {
-      const hex = () =>
-        Math.floor(Math.random() * 256)
-          .toString(16)
-          .padStart(2, '0')
-          .toUpperCase();
       const sep = value.includes(':') ? ':' : '-';
-      return [hex(), hex(), hex(), hex(), hex(), hex()].join(sep);
+      return (randomHex(6).toUpperCase().match(/../g) ?? []).join(sep);
     }
     // Default mask: preserve OUI (first 3 octets)
     const sep = value.includes(':') ? ':' : '-';

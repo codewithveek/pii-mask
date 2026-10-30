@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('ssn-us detector', () => {
@@ -28,7 +29,7 @@ describe('ssn-us detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['ssn-us'] });
     const { result, tokenMap } = tokenizer.maskString('123-45-6789');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('123-45-6789');
   });
 
@@ -45,7 +46,7 @@ describe('ssn-us detector', () => {
   });
 
   it('generates plausible SSN in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['ssn-us'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['ssn-us'] });
     const { result } = substitutor.maskString('123-45-6789');
     expect(result).not.toBe('123-45-6789');
     expect(result).toMatch(/^\d{3}-\d{2}-\d{4}$/);

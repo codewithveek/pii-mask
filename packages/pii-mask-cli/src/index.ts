@@ -1,2 +1,2 @@
-// Thin wrapper: always delegates to @pii-mask/cli
-import '@pii-mask/cli';
+// Thin wrapper: runs the @pii-mask/cli executable
+import '@pii-mask/cli/cli';

@@ -8,11 +8,16 @@ interface CodeSampleOptions {
 
 export function generateCodeSample(opts: CodeSampleOptions): string {
   const maskerArgs: Record<string, unknown> = { mode: opts.mode };
+  const isSubstitute = opts.mode === 'substitute';
   if (opts.disabledDetectors.length > 0) {
     maskerArgs.disable = opts.disabledDetectors;
   }
 
-  const maskerCall = `createMasker(${JSON.stringify(maskerArgs, null, 2)})`;
+  let maskerCall = `createMasker(${JSON.stringify(maskerArgs, null, 2)})`;
+  if (isSubstitute) {
+    // substitute mode takes a faker instance
+    maskerCall = maskerCall.replace(/\n}\)$/, ',\n  faker\n})');
+  }
 
   const methodMap = {
     string: 'maskString',
@@ -32,7 +37,9 @@ export function generateCodeSample(opts: CodeSampleOptions): string {
       ? `\n\n// Restore originals\nconst restored = masker.restore(result, tokenMap);`
       : '';
 
-  return `import { createMasker } from '@pii-mask/core';
+  const fakerImport = isSubstitute ? `\nimport { faker } from '@faker-js/faker';` : '';
+
+  return `import { createMasker } from '@pii-mask/core';${fakerImport}
 
 const masker = ${maskerCall};
 

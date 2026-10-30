@@ -1,6 +1,6 @@
 # @pii-mask/core
 
-The masking engine at the heart of the `@pii-mask` toolkit. Ships 22 built-in PII detectors, six masking modes, a detector registry, and both structured-data and freeform-text masking — all with zero required runtime dependencies beyond `libphonenumber-js`.
+The masking engine at the heart of the `@pii-mask` toolkit. Ships 31 built-in PII detectors, six masking modes, a detector registry, structured-data and freeform-text masking, and ready-made pino and winston integrations. Its only runtime dependency is `libphonenumber-js`; it runs in Node.js (>= 22) and in browsers without bundler shims.
 
 ## Installation
 
@@ -8,7 +8,7 @@ The masking engine at the heart of the `@pii-mask` toolkit. Ships 22 built-in PI
 pnpm add @pii-mask/core
 ```
 
-For **substitute** mode (fake data generation), also install the optional peer dependency:
+For **substitute** mode (fake data generation), also install the optional peer dependency and pass it in — core never imports it itself:
 
 ```bash
 pnpm add @faker-js/faker
@@ -21,8 +21,8 @@ import { createMasker } from '@pii-mask/core';
 
 const masker = createMasker(); // defaults to 'mask' mode
 
-const { result, detections } = masker.maskString('john@example.com');
-// result:     "jo***n@example.com"
+const { result, detections } = masker.maskString('john.doe@example.com');
+// result:     "jo*****e@example.com"
 // detections: ["email"]
 ```
 
@@ -36,88 +36,96 @@ Factory function that returns a masker instance. Call it once, reuse the returne
 import { createMasker } from '@pii-mask/core';
 
 const masker = createMasker({
-  mode: 'redact',         // 'mask' | 'redact' | 'pseudonymize' | 'anonymize' | 'tokenize' | 'substitute'
-  only: ['email', 'ssn-us'],  // run only these detector IDs or category names
-  disable: ['phone'],          // disable specific detector IDs
-  extend: [myCustomDetector],  // add custom detectors to the registry
-  keyNameOnly: false,          // skip value-level regex; rely on key-name heuristics only
+  mode: 'redact', // 'mask' | 'redact' | 'pseudonymize' | 'anonymize' | 'tokenize' | 'substitute'
+  only: ['email', 'ssn-us'], // run only these detector IDs or category names
+  disable: ['phone-global'], // disable specific detector IDs
+  regions: ['US', 'NG'], // only region-specific detectors for these ISO codes (universal ones always run)
+  extend: [myCustomDetector], // add custom detectors
+  keyNameOnly: false, // true: only mask fields whose *key* names them as sensitive
+  maxDepth: 100, // deeper objects become '[Truncated]'
+  faker, // required for mode: 'substitute'
 });
 ```
 
-#### `masker.maskString(input, key?)`
+`createMasker` throws on an unknown `mode`, and on `mode: 'substitute'` without `faker`.
 
-Mask a single string value. First attempts atomic detection (is the whole string PII?), then falls back to freeform text scanning using detector `pattern` regexes.
+#### `masker.mask(value, session?)`
 
-```ts
-// Atomic value
-masker.maskString('john@example.com');
-// → { result: '[REDACTED]', detections: ['email'], tokenMap: {} }
-
-// Freeform text with inline PII
-masker.maskString('Contact john@example.com or call 555-0123');
-// → { result: 'Contact [REDACTED] or call [REDACTED]', detections: ['email', 'phone'], tokenMap: {} }
-```
-
-**Parameters:**
-- `input` — The string to mask
-- `key` *(optional)* — Object key or column header, used by key-name heuristic detectors
-
-**Returns:** `MaskResult`
-- `result` — The masked string
-- `tokenMap` — In `tokenize` mode, maps `token → original` for restoration
-- `detections` — Array of detector IDs that fired
-
-#### `masker.maskObject(input)`
-
-Recursively walk a plain object, masking all string values.
+Mask any value — object, array, string, `Error`, `Map`, `Set` — and get back a masked **copy with the same structure** (no JSON round-trip).
 
 ```ts
-const { result, detections } = masker.maskObject({
-  user: {
-    email: 'jane@corp.com',
-    ssn: '123-45-6789',
-    age: 30,
-  },
+const { result, detections } = masker.mask({
+  user: { email: 'jane@corp.com', ssn: '123-45-6789', age: 30, password: 'hunter2' },
 });
-
-const parsed = JSON.parse(result);
-// parsed.user.email → '[REDACTED]'
-// parsed.user.ssn   → '[REDACTED]'
-// parsed.user.age   → 30  (non-string, untouched)
+// result.user → { email: '[REDACTED]', ssn: '[REDACTED]', age: 30, password: '[REDACTED]' }
 ```
 
-**Parameters:**
-- `input` — A `Record<string, unknown>` to walk
+How values are handled:
 
-**Returns:** `MaskResult` (result is a JSON string)
+| Input                                           | Output                                                            |
+| ----------------------------------------------- | ----------------------------------------------------------------- |
+| Strings                                         | Whole-value detection first, then freeform scanning               |
+| Numbers / BigInts                               | Unchanged, unless the key is sensitive (`password`, `ssn`, `phone`, `zip` …) |
+| `Date`, objects with `toJSON()`                 | Their JSON form, then masked                                      |
+| `Error`                                         | `{ type, message, stack, …own fields }`, masked                   |
+| `Map` / `Set`                                   | Plain object / array, masked                                      |
+| Credential containers (`cookies: {…}`)          | `'[REDACTED]'` as a whole                                         |
+| An object referenced twice                      | Masked at every occurrence                                        |
+| A cycle                                         | `'[Circular]'`                                                    |
+| `Buffer` / typed arrays                         | Passed through                                                    |
 
-#### `masker.maskArray(input)`
+#### `masker.maskString(input, key?, session?)`
 
-Recursively walk an array of objects, masking all string values.
+Mask a single string. First attempts whole-value detection (is the entire string PII?), then scans freeform text with each detector's `pattern`/`find`.
 
 ```ts
-const { result } = masker.maskArray([
-  { email: 'a@b.com' },
-  { email: 'c@d.com' },
-]);
-
-const parsed = JSON.parse(result);
-// parsed[0].email → '[REDACTED]'
-// parsed[1].email → '[REDACTED]'
+masker.maskString('Contact john@example.com or call (415) 823-9042');
+// → { result: 'Contact [REDACTED] or call [REDACTED]', detections: ['email', 'phone-global'], tokenMap: {} }
 ```
 
-#### `masker.restore(masked, tokenMap)`
+- `key` *(optional)* — the object key or column header; enables key-name detection (`password`, `first_name`, `dob` …).
 
-Reverse tokenization. Only works when masking was done in `tokenize` mode.
+#### `masker.maskObject(input, session?)` / `masker.maskArray(input, session?)`
+
+Same as `mask()`, but `result` is the masked value **serialized as JSON** (BigInts become strings).
+
+```ts
+const { result } = masker.maskArray([{ email: 'a@b.com' }, { email: 'c@d.com' }]);
+JSON.parse(result); // [{ email: '[REDACTED]' }, { email: '[REDACTED]' }]
+```
+
+#### `masker.detectString(input, key?)`
+
+Returns `{ detections }` without masking.
+
+#### Sessions — `masker.createSession()` / `masker.getTokenMap(session)`
+
+Pass one session to several calls and the same value gets the same token or label in all of them:
+
+```ts
+const masker = createMasker({ mode: 'pseudonymize' });
+const session = masker.createSession();
+masker.maskString('john@example.com', undefined, session).result; // 'EMAIL_1'
+masker.mask({ backup: 'john@example.com' }, session).result; // { backup: 'EMAIL_1' }
+masker.getTokenMap(session); // { EMAIL_1: 'john@example.com' }
+```
+
+#### Restoring — `restore`, `restoreValue`, `restoreObject`, `restoreArray`
 
 ```ts
 const masker = createMasker({ mode: 'tokenize' });
 const { result, tokenMap } = masker.maskString('john@example.com');
-// result: '<<PII_a1b2c3d4>>'
+// result: '<<PII_3f9c1a0b7d2e4c61>>'
+masker.restore(result, tokenMap); // 'john@example.com'
 
-const original = masker.restore(result, tokenMap);
-// original: 'john@example.com'
+const masked = masker.mask({ note: 'mail a@b.com' });
+masker.restoreValue(masked.result, masked.tokenMap); // { note: 'mail a@b.com' }
+
+const json = masker.maskObject({ fullName: 'Bob "The" Builder' });
+masker.restoreObject(json.result, json.tokenMap); // parsed, then restored — quotes survive
 ```
+
+Restoration replaces whole tokens in one pass, so `EMAIL_1` never matches inside `EMAIL_10`.
 
 ## Masking Modes
 
@@ -127,75 +135,103 @@ Partial obscure that preserves the type shape.
 
 ```ts
 const masker = createMasker({ mode: 'mask' });
-masker.maskString('john@example.com');    // → 'jo***n@example.com'
-masker.maskString('4111111111111111');     // → '****-****-****-1111'
-masker.maskString('123-45-6789');          // → '***-**-6789'
+masker.maskString('john.doe@example.com'); // → 'jo*****e@example.com'
+masker.maskString('jane@example.com'); // → 'j***@example.com' (short local parts reveal one character)
+masker.maskString('4111111111111111'); // → '4111-XXXX-XXXX-1111'
+masker.maskString('123-45-6789'); // → '***-**-6789'
 ```
 
 ### `redact`
 
 Full replacement. Every PII value becomes `[REDACTED]`.
 
-```ts
-const masker = createMasker({ mode: 'redact' });
-masker.maskString('john@example.com');    // → '[REDACTED]'
-```
-
 ### `pseudonymize` / `anonymize`
 
-Replaces PII with consistent labels per session. The same value always maps to the same label within a single `maskObject`/`maskArray` call.
+Consistent labels, numbered per type: `EMAIL_1`, `EMAIL_2`, `PHONE_1` … The same value maps to the same label within a call, or across calls that share a session.
 
 ```ts
 const masker = createMasker({ mode: 'pseudonymize' });
-masker.maskObject({
-  primary: 'john@example.com',
-  backup: 'jane@corp.com',
-  confirm: 'john@example.com',
-});
-// primary → 'EMAIL_1', backup → 'EMAIL_2', confirm → 'EMAIL_1'
+masker.mask({ primary: 'john@example.com', backup: 'jane@corp.com', confirm: 'john@example.com' });
+// → { primary: 'EMAIL_1', backup: 'EMAIL_2', confirm: 'EMAIL_1' }
 ```
 
 ### `tokenize`
 
-Generates cryptographically random tokens. Reversible via the returned token map.
-
-```ts
-const masker = createMasker({ mode: 'tokenize' });
-const { result, tokenMap } = masker.maskString('john@example.com');
-// result: '<<PII_a1b2c3d4>>'
-
-masker.restore(result, tokenMap);
-// → 'john@example.com'
-```
-
-Tokens are generated using `node:crypto` `randomBytes` — never `Math.random()`.
+Random 64-bit tokens (`<<PII_` + 16 hex chars + `>>`), generated with Web Crypto and checked for collisions within a token map. Reversible via the returned token map.
 
 ### `substitute`
 
-Generates plausible fake values using `@faker-js/faker`. Requires `@faker-js/faker` as a peer dependency.
+Plausible fake values from `@faker-js/faker`, which you pass in:
 
 ```ts
-const masker = createMasker({ mode: 'substitute' });
-masker.maskString('john@example.com');    // → 'dakota.johnson@gmail.com' (random)
-masker.maskString('123-45-6789');          // → '987-65-4321' (random)
+import { faker } from '@faker-js/faker';
+
+const masker = createMasker({ mode: 'substitute', faker });
+masker.maskString('john@example.com'); // → 'dakota.johnson@gmail.com' (random)
 ```
+
+> **Secret-category detectors** always return `[REDACTED]`, whatever the mode.
+
+## Logging Integrations
+
+No extra dependencies — these work with the pino and winston you already have.
+
+### pino
+
+```ts
+import pino from 'pino';
+import { pinoMask, maskedDestination } from '@pii-mask/core';
+
+// In-process: masks the merging object, the message, interpolation args and
+// logged Errors (keeping their type, message and stack).
+const logger = pino({ ...pinoMask({ mode: 'redact' }) });
+
+// Or mask each serialized line just before it's written. This also covers
+// child-logger bindings, which pino never passes to formatters.
+const logger2 = pino({}, maskedDestination(process.stdout, { mode: 'redact' }));
+```
+
+`maskedDestination(stream, options)` works with any NDJSON logger; non-JSON lines are masked as text.
+
+### winston
+
+```ts
+import winston from 'winston';
+import { winstonMask } from '@pii-mask/core';
+
+const logger = winston.createLogger({
+  format: winston.format.combine(winstonMask({ mode: 'redact' }), winston.format.json()),
+  transports: [new winston.transports.Console()],
+});
+
+logger.error(new Error('failed for jane@acme.com'));
+// {"level":"error","message":"failed for [REDACTED]","stack":"Error: failed for [REDACTED]\n …"}
+```
+
+All three accept either `MaskOptions` or an existing masker.
+
+Performance: masking a typical HTTP log record takes about 90–100 µs (about 10,000 records/s per core) in `mask`/`redact` mode.
+
+## How detection decides
+
+Detection is tuned to avoid masking ordinary data in logs and exports:
+
+- **Ambiguous digit runs need context.** A bare 10–19 digit number (order IDs, timestamps, snowflake IDs) is not treated as a phone, card or national ID. Cards need a Luhn-valid number in a real issuer range; NIN/BVN need a matching key (`nin`, `bvn`); a bare 12-digit Aadhaar needs an `aadhaar` key (the grouped `2341 2341 2346` form is detected anywhere).
+- **Phones** are detected with a `+` prefix, a leading trunk `0` (valid for a supported country), or US/CA formatting like `(415) 823-9042`. Under a phone-like key (`phone`, `mobile`, `msisdn` …) any digit value is masked.
+- **Dates of birth** need a birth-related key (`dob`, `birthDate` …) or, in text, a context word (`born`, `date of birth`, `DOB`) just before the date. Other dates are left alone.
+- **Key names** are normalized (`first_name` = `firstName` = `First-Name`) and matched exactly, not by substring — `capacity` isn't a city and `secretary` isn't a secret. A bare `name` key is only treated as a person when the value looks like one (`Jane Doe`).
+- **Sensitive keys force masking** of ID-shaped values a format check would miss: `{ ssn: '123456789' }`, `{ vin: <non-North-American VIN> }`, `{ zip: 94107 }`.
+- **Freeform text** is scanned once by every detector; overlapping matches are resolved (longest wins), so masked output is never re-scanned.
+
+Known limitation: a leading-zero number that is a valid local phone number somewhere (`08034567890`) is masked as a phone even if it's an ID — that's the trade-off for detecting local formats.
 
 ## Filtering Detectors
 
-### Run only specific detectors
-
 ```ts
-// By detector ID
-const masker = createMasker({ only: ['email', 'ssn-us'] });
-
-// By category — runs all detectors in that category
-const masker = createMasker({ only: ['financial'] });
-```
-
-### Disable specific detectors
-
-```ts
-const masker = createMasker({ disable: ['phone', 'dob'] });
+createMasker({ only: ['email', 'ssn-us'] }); // by detector ID
+createMasker({ only: ['financial'] }); // by category
+createMasker({ disable: ['phone-global', 'dob'] });
+createMasker({ regions: ['GB'] }); // 'UK' is accepted as an alias
 ```
 
 ## Custom Detectors
@@ -203,68 +239,52 @@ const masker = createMasker({ disable: ['phone', 'dob'] });
 Register additional detectors via the `extend` option:
 
 ```ts
-import { createMasker, PIICategory, MaskMode } from '@pii-mask/core';
+import { createMasker, getOrCreateToken, getOrCreateLabel, PIICategory, MaskMode } from '@pii-mask/core';
 import type { PIIDetector } from '@pii-mask/core';
 
-const myDetector: PIIDetector = {
-  id: 'custom-id',
-  label: 'My Custom PII',
-  category: PIICategory.GOV_ID,
-  regions: ['XX'],
+const employeeId: PIIDetector = {
+  id: 'employee-id',
+  label: 'Employee ID',
+  category: PIICategory.IDENTITY,
 
-  detect(value, key) {
-    return /^\d{10}$/.test(value);
-  },
+  detect: (value) => /^EMP-\d{6}$/.test(value.trim()),
 
   mask(value, mode, ctx) {
     if (mode === MaskMode.REDACT) return '[REDACTED]';
     if (mode === MaskMode.TOKENIZE) return getOrCreateToken(value, ctx);
     if (mode === MaskMode.PSEUDONYMIZE || mode === MaskMode.ANONYMIZE) {
-      return getOrCreateLabel('CUSTOM', value, ctx);
+      return getOrCreateLabel('EMPLOYEE', value, ctx);
     }
-    if (mode === MaskMode.SUBSTITUTE) {
-      return ctx.faker?.string.numeric(10) ?? '0000000000';
-    }
-    return `******${value.slice(-4)}`;
+    if (mode === MaskMode.SUBSTITUTE) return `EMP-${ctx.faker?.string.numeric(6) ?? '000000'}`;
+    return `EMP-***${value.slice(-3)}`;
   },
 
-  // Optional: enables freeform text scanning (must have 'g' flag)
-  pattern: /\b\d{10}\b/g,
+  // Optional: freeform text scanning (needs the 'g' flag). detect() validates each match.
+  pattern: /\bEMP-\d{6}\b/g,
+  // Optional: cheap test that skips the scan when it can't match
+  prefilter: /EMP-/,
+  // Optional: mask any ID-shaped value under these keys, even if detect() says no
+  keyPattern: /^employee_?id$/i,
 };
 
-const masker = createMasker({ extend: [myDetector] });
+const masker = createMasker({ extend: [employeeId] });
 ```
 
-### `pattern` property
+Other optional fields:
 
-When a detector has a `pattern` regex (with the `g` flag), `maskString()` can find and replace occurrences within freeform text. Without `pattern`, the detector only works on atomic field values (whole-string matches via `detect()`).
-
-The `detect()` function is still called as a secondary validation gate on each `pattern` match, so detectors with checksums (like credit cards, CPF, Aadhaar) still validate correctly.
+- `contextualPattern: true` — the `pattern` already encodes the context (e.g. a lookbehind for "passport number"), so `detect()` isn't used as a gate.
+- `find(text)` — return `{ start, end }` ranges instead of a regex, for matchers a regex can't express (used by `@pii-mask/nlp`).
 
 ## Registry
 
-The singleton registry holds all registered detectors. Detectors self-register on import.
+The singleton registry holds all registered detectors. Detectors self-register on import, and registration order is priority order.
 
 ```ts
 import { registry } from '@pii-mask/core';
 
-// List all registered detectors
-const all = registry.list();
-// → [{ id: 'email', ... }, { id: 'phone', ... }, ...]
-
-// Resolve with filtering
-const filtered = registry.resolve({ only: ['email'], disable: [] });
-```
-
-### Override behaviour
-
-```ts
-// Accidental double-registration — warns, then replaces
-registry.register(myDetector);
-registry.register(myDetector); // ⚠ console.warn
-
-// Intentional override — silent
-registry.register(myDetector, { override: true }); // ✓ silent
+registry.list(); // all registered detectors
+registry.resolve({ only: ['email'] });
+registry.register(myDetector, { override: true }); // replace silently
 ```
 
 ## Built-in Detectors
@@ -272,44 +292,42 @@ registry.register(myDetector, { override: true }); // ✓ silent
 | ID | Category | Regions | Description |
 |----|----------|---------|-------------|
 | `email` | contact | — | Email addresses |
-| `phone` | contact | — | Phone numbers (libphonenumber-js) |
+| `phone-global` | contact | — | Phone numbers (libphonenumber-js) |
 | `ssn-us` | gov-id | US | Social Security Numbers |
-| `nin-ng` | gov-id | NG | Nigerian NIN (11 digits) |
-| `bvn-ng` | gov-id | NG | Nigerian BVN (11 digits, key-gated) |
-| `aadhaar-in` | gov-id | IN | Aadhaar numbers (Verhoeff-validated) |
-| `pan-in` | gov-id | IN | PAN cards (AAAAA0000A) |
-| `said-za` | gov-id | ZA | South African ID (Luhn-validated) |
-| `nin-uk` | gov-id | GB | National Insurance Numbers |
-| `nik-id` | gov-id | ID | Indonesian NIK (16 digits) |
+| `sin-ca` | gov-id | CA | Canadian SIN (Luhn-validated, formatted) |
 | `cpf-br` | gov-id | BR | Brazilian CPF (checksum-validated) |
-| `credit-card` | financial | — | Credit/debit cards (Luhn-validated) |
-| `iban` | financial | — | IBANs (ISO 13616) |
+| `nin-uk` | gov-id | GB | National Insurance Numbers (HMRC prefix rules) |
+| `pan-in` | gov-id | IN | PAN cards (AAAAA0000A) |
+| `aadhaar-in` | gov-id | IN | Aadhaar numbers (Verhoeff-validated) |
+| `said-za` | gov-id | ZA | South African ID (date, citizenship and Luhn validated) |
+| `nik-id` | gov-id | ID | Indonesian NIK (province and date validated) |
+| `nin-ng` | gov-id | NG | Nigerian NIN (key or context required) |
+| `bvn-ng` | gov-id | NG | Nigerian BVN (key or context required) |
+| `passport` | gov-id | — | Passport numbers (key or context required) |
+| `credit-card` | financial | — | Credit/debit cards (issuer range + Luhn) |
+| `iban` | financial | — | IBANs (mod-97), compact or spaced |
 | `ip-address` | network | — | IPv4 addresses |
-| `ipv6` | network | — | IPv6 addresses |
-| `dob` | biometric | — | Dates of birth |
+| `ipv6` | network | — | IPv6 addresses, including compressed forms |
+| `mac-address` | network | — | MAC addresses |
+| `dob` | biometric | — | Dates of birth (key or context required) |
 | `person-name` | identity | — | Person names (key-name heuristic) |
 | `address` | identity | — | Physical addresses (key-name heuristic) |
-| `secret-key` | secret | — | API keys, passwords (key-name heuristic) |
+| `uuid` | identity | — | UUID v1–v5 |
+| `mongodb-objectid` | identity | — | MongoDB ObjectIds |
+| `vin` | identity | — | Vehicle Identification Numbers |
+| `secret-key` | secret | — | Passwords, tokens, API keys, cookies, `Authorization` headers (key-name heuristic) |
 | `jwt` | secret | — | JSON Web Tokens |
 | `bcrypt-hash` | secret | — | bcrypt hashes |
-| `hex-secret` | secret | — | Long hex strings (32+ chars) |
-
-> **Secret-category detectors** always return `[REDACTED]` regardless of masking mode.
+| `hex-secret` | secret | — | 32/64-char hex strings (not under trace-ID, checksum or commit keys) |
+| `aws-key` | secret | — | AWS access key IDs |
+| `github-pat` | secret | — | GitHub tokens |
+| `platform-token` | secret | — | Slack and Stripe tokens |
 
 ## Types
 
 ```ts
-import type {
-  PIIDetector,
-  MaskContext,
-  MaskResult,
-  MaskOptions,
-} from '@pii-mask/core';
-
+import type { PIIDetector, MaskContext, MaskResult, MaskOptions, MaskSession, Masker } from '@pii-mask/core';
 import { PIICategory, MaskMode } from '@pii-mask/core';
-
-// Categories: 'gov-id' | 'financial' | 'contact' | 'secret' | 'biometric' | 'network' | 'identity'
-// Modes: 'mask' | 'redact' | 'pseudonymize' | 'anonymize' | 'tokenize' | 'substitute'
 ```
 
 ## Lexicon Data

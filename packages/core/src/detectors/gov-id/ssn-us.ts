@@ -2,6 +2,7 @@ import type { PIIDetector } from '@/types';
 import { PIICategory, MaskMode } from '@/types';
 import { registry } from '@/registry';
 import { getOrCreateToken, getOrCreateLabel } from '@/engine';
+import { normalizeKey } from '../utils';
 
 const SSN_RE = /^\d{3}-\d{2}-\d{4}$/;
 const SSN_PATTERN = /\b\d{3}-\d{2}-\d{4}\b/g;
@@ -12,6 +13,11 @@ const ssnUsDetector: PIIDetector = {
   category: PIICategory.GOV_ID,
   regions: ['US'],
   pattern: SSN_PATTERN,
+  prefilter: /\d{3}-\d{2}-/,
+  keyPattern: (key) => {
+    const k = normalizeKey(key);
+    return k === 'ssn' || k.endsWith('ssn') || k.startsWith('socialsecurity');
+  },
 
   detect(value, _key) {
     const trimmed = value.trim();

@@ -11,6 +11,7 @@ const awsKeyDetector: PIIDetector = {
   label: 'AWS Access Key',
   category: PIICategory.SECRET,
   pattern: AWS_ACCESS_KEY_PATTERN,
+  prefilter: /A[KS]IA/,
 
   detect(value) {
     return AWS_ACCESS_KEY_RE.test(value.trim());

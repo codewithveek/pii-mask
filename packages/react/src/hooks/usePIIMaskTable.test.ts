@@ -48,3 +48,25 @@ describe('usePIIMaskTable', () => {
     expect(masked[0]!.email).toBe('john@example.com');
   });
 });
+
+describe('usePIIMaskTable (audit regressions)', () => {
+  it('gives the same value the same pseudonym in every row', () => {
+    const data = [{ email: 'a@b.com' }, { email: 'a@b.com' }, { email: 'c@d.com' }];
+    const { result } = renderHook(() => usePIIMaskTable(data, { mode: 'pseudonymize' }));
+    expect(result.current.maskedData.map((r) => r.email)).toEqual([
+      'EMAIL_1',
+      'EMAIL_1',
+      'EMAIL_2',
+    ]);
+  });
+
+  it('masks nested objects and numeric sensitive fields', () => {
+    const data = [{ contact: { email: 'a@b.com' }, pin: 1234, count: 3 }];
+    const { result } = renderHook(() => usePIIMaskTable(data, { mode: 'redact' }));
+    expect(result.current.maskedData[0]).toEqual({
+      contact: { email: '[REDACTED]' },
+      pin: '[REDACTED]',
+      count: 3,
+    });
+  });
+});

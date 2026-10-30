@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('phone-global detector', () => {
@@ -29,7 +30,7 @@ describe('phone-global detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['phone-global'] });
     const { result, tokenMap } = tokenizer.maskString('+14155552671');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('+14155552671');
   });
 
@@ -46,7 +47,7 @@ describe('phone-global detector', () => {
   });
 
   it('generates plausible phone in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['phone-global'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['phone-global'] });
     const { result } = substitutor.maskString('+14155552671');
     expect(result).not.toBe('+14155552671');
     expect(result.length).toBeGreaterThan(5);

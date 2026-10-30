@@ -29,6 +29,19 @@ describe('parseCSV', () => {
     expect(rows).toEqual([]);
   });
 
+  it('keeps line breaks inside quoted cells', () => {
+    const { rows } = parseCSV('name,note\nJohn,"line one\nline two"\n');
+    expect(rows).toEqual([['John', 'line one\nline two']]);
+  });
+
+  it('handles CRLF line endings and a BOM', () => {
+    const parsed = parseCSV('\ufeffname,email\r\nJohn,j@x.com\r\n');
+    expect(parsed.headers).toEqual(['name', 'email']);
+    expect(parsed.rows).toEqual([['John', 'j@x.com']]);
+    expect(parsed.eol).toBe('\r\n');
+    expect(parsed.trailingNewline).toBe(true);
+  });
+
   it('skips blank lines', () => {
     const input = 'a,b\n1,2\n\n3,4\n';
     const { rows } = parseCSV(input);

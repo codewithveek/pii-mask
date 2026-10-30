@@ -22,7 +22,7 @@ describe('usePIIMask', () => {
 
   it('supports tokenize mode with restore', () => {
     const { result } = renderHook(() => usePIIMask('test@example.com', { mode: 'tokenize' }));
-    expect(result.current.masked).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result.current.masked).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     const restored = result.current.restore(result.current.masked);
     expect(restored).toBe('test@example.com');
   });

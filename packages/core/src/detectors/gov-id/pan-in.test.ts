@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { createMasker } from '../../masker.js';
 
 describe('pan-in detector', () => {
@@ -28,7 +29,7 @@ describe('pan-in detector', () => {
   it('round-trips in tokenize mode', () => {
     const tokenizer = createMasker({ mode: 'tokenize', only: ['pan-in'] });
     const { result, tokenMap } = tokenizer.maskString('BNZPM2501F');
-    expect(result).toMatch(/^<<PII_[a-f0-9]{8}>>$/);
+    expect(result).toMatch(/^<<PII_[a-f0-9]{16}>>$/);
     expect(tokenizer.restore(result, tokenMap)).toBe('BNZPM2501F');
   });
 
@@ -45,7 +46,7 @@ describe('pan-in detector', () => {
   });
 
   it('generates plausible PAN in substitute mode', () => {
-    const substitutor = createMasker({ mode: 'substitute', only: ['pan-in'] });
+    const substitutor = createMasker({ mode: 'substitute', faker, only: ['pan-in'] });
     const { result } = substitutor.maskString('BNZPM2501F');
     expect(result).not.toBe('BNZPM2501F');
     expect(result).toMatch(/^[A-Z]{5}\d{4}[A-Z]$/);
