@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { faker } from '@faker-js/faker';
 import { buildCompromiseDetectors } from './compromise-adapter.js';
 import { createMasker, MaskMode } from '@pii-mask/core';
 
@@ -186,5 +187,30 @@ describe('freeform text (audit regressions)', () => {
     const [org] = buildCompromiseDetectors({ entities: ['Organization'] });
     expect(org!.id).toBe('nlp-organization');
     expect(org!.detect('Google')).toBe(true);
+  });
+});
+
+describe('substitute mode with faker', () => {
+  it.each(['Person', 'Place', 'Organization'] as const)('generates a fake %s', (kind) => {
+    const [detector] = buildCompromiseDetectors({ entities: [kind] });
+    const masker = createMasker({
+      mode: 'substitute',
+      faker,
+      extend: [detector!],
+      only: [detector!.id],
+    });
+    const input = { Person: 'John Smith', Place: 'Paris', Organization: 'Google' }[kind];
+    const { result, detections } = masker.maskString(input);
+    expect(detections).toEqual([detector!.id]);
+    expect(result).not.toBe(input);
+    expect(result.length).toBeGreaterThan(0);
+  });
+
+  it('merges lexicon matches that overlap compromise matches', () => {
+    const [person] = buildCompromiseDetectors({
+      entities: ['Person'],
+      customLexicon: { smith: 'Person' },
+    });
+    expect(person!.find!('ticket from John Smith today')).toEqual([{ start: 12, end: 22 }]);
   });
 });

@@ -49,16 +49,17 @@
     "lint": "eslint src/"
   },
   "dependencies": {
-    "compromise": "^14.15.0"
+    "compromise": "^14.19.0"
   },
   "peerDependencies": {
     "@pii-mask/core": "workspace:*"
   },
   "devDependencies": {
+    "@faker-js/faker": "^10.5.0",
     "@pii-mask/core": "workspace:*",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.12",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.1.12"
   }
 }
