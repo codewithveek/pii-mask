@@ -1,6 +1,6 @@
-// Guard runs before any exports are used
-import { assertSafeReactVersion } from './guard';
-assertSafeReactVersion();
+// Warns (once, never throws) on React releases with known RSC advisories
+import { warnIfVulnerableReact } from './guard';
+warnIfVulnerableReact();
 
 export { MaskPII } from './MaskPII';
 export type { MaskPIIProps } from './MaskPII';
