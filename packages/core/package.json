@@ -1,6 +1,6 @@
 {
   "name": "@pii-mask/core",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Zero-dependency PII masking engine with detector registry, all modes, and all detectors.",
   "type": "module",
   "license": "MIT",
