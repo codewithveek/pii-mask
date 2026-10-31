@@ -12,6 +12,7 @@
   "devDependencies": {
     "@changesets/cli": "^2.31.1",
     "@eslint/js": "^10.0.1",
+    "@tanstack/intent": "^0.5.6",
     "@types/node": "^25.9.9",
     "@vitest/coverage-v8": "^4.1.12",
     "eslint": "^10.14.0",

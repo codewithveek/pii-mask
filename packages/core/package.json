@@ -22,10 +22,12 @@
     "privacy",
     "data-protection",
     "gdpr",
-    "detector"
+    "detector",
+    "tanstack-intent"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "exports": {
     ".": {
@@ -54,7 +56,10 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "!dist/**/*.map"
+    "!dist/**/*.map",
+    "skills/mask-pii",
+    "skills/mask-logs",
+    "skills/custom-detectors"
   ],
   "scripts": {
     "build": "tsup",

@@ -21,10 +21,12 @@
     "anonymize",
     "privacy",
     "data-protection",
-    "command-line"
+    "command-line",
+    "tanstack-intent"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "bin": {
     "pii-mask": "./dist/cli.js"
@@ -42,7 +44,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "!dist/**/*.map"
+    "!dist/**/*.map",
+    "skills/mask-files"
   ],
   "scripts": {
     "build": "tsup",

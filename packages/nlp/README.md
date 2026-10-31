@@ -192,6 +192,10 @@ const { result } = masker.maskObject({
 - The compromise library adds ~200KB to your bundle. Only install this package if you need NLP-based detection.
 - NLP parsing is much slower than regex detection. Recent parses are cached so each string is parsed once per masking call, but expect NLP to dominate the cost when masking large volumes.
 
+## Using with AI coding agents
+
+This package ships [TanStack Intent](https://tanstack.com/intent) skills (`detect-names-in-text`) that coding agents load on demand. Run `npx @tanstack/intent@latest install` once in your project to enable them.
+
 ## License
 
 MIT

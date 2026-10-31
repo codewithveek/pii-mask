@@ -340,6 +340,10 @@ import '@pii-mask/core/lexicon/south-asia';
 import '@pii-mask/core/lexicon/east-asia';
 ```
 
+## Using with AI coding agents
+
+This package ships [TanStack Intent](https://tanstack.com/intent) skills (`mask-pii`, `mask-logs`, `custom-detectors`) that coding agents load on demand. Run `npx @tanstack/intent@latest install` once in your project to enable them.
+
 ## License
 
 MIT

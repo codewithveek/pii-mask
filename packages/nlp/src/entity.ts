@@ -80,13 +80,18 @@ function lexiconMatcher(kind: EntityKind, lexicon?: Lexicon): RegExp | undefined
   );
 }
 
-/** Union of possibly overlapping spans, sorted by start. */
-function mergeSpans(spans: Span[]): Span[] {
+/**
+ * Union of overlapping spans, sorted by start. Spans separated only by
+ * whitespace are joined too, so lexicon entries "Emeka" + "Okafor" mask as one
+ * name.
+ */
+function mergeSpans(text: string, spans: Span[]): Span[] {
   const sorted = [...spans].sort((a, b) => a.start - b.start);
   const out: Span[] = [];
   for (const s of sorted) {
     const last = out[out.length - 1];
-    if (last && s.start <= last.end) last.end = Math.max(last.end, s.end);
+    const touches = last && (s.start <= last.end || !text.slice(last.end, s.start).trim());
+    if (last && touches) last.end = Math.max(last.end, s.end);
     else out.push({ ...s });
   }
   return out;
@@ -119,7 +124,7 @@ function findSpans(text: string, kind: EntityKind, lexiconRe?: RegExp): Span[] {
       spans.push({ start: m.index, end: m.index + m[0].length });
     }
   }
-  return lexiconRe ? mergeSpans(spans) : spans;
+  return lexiconRe ? mergeSpans(text, spans) : spans;
 }
 
 /** Default mask: keep each word's first letter — "John Smith" → "J*** S****". */
