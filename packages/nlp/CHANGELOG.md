@@ -1,5 +1,19 @@
 # @pii-mask/nlp
 
+## 1.0.0
+
+### Minor Changes
+
+- 5f71c18: - Detects names, places and organizations inside freeform text (previously whole values only), masking just the entity
+  - A sentence that mentions a place is no longer replaced wholesale; mask mode masks only entity words
+  - Custom lexicons are kept per detector set instead of mutating compromise's global state
+  - New `Organization` entity support and `buildEntityDetector()`; parses are cached
+
+### Patch Changes
+
+- Updated dependencies [5f71c18]
+  - @pii-mask/core@0.3.0
+
 ## 0.2.1
 
 ### Patch Changes

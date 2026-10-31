@@ -1,5 +1,14 @@
 # web
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies [5f71c18]
+- Updated dependencies [5f71c18]
+  - @pii-mask/core@0.3.0
+  - @pii-mask/react@0.3.0
+
 ## 0.1.2
 
 ### Patch Changes
