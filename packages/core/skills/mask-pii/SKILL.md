@@ -33,9 +33,9 @@ import { createMasker } from '@pii-mask/core';
 const masker = createMasker({ mode: 'redact' });
 
 const { result, detections } = masker.mask({
-  user: { email: 'jane@corp.com', ssn: '123-45-6789', age: 30, password: 'hunter2' },
+  user: { email: 'jane@corp.com', ssn: '123-45-6789', age: 30, pin: 4821 },
 });
-// result      → { user: { email: '[REDACTED]', ssn: '[REDACTED]', age: 30, password: '[REDACTED]' } }
+// result      → { user: { email: '[REDACTED]', ssn: '[REDACTED]', age: 30, pin: '[REDACTED]' } }
 // detections  → ['email', 'ssn-us', 'secret-key']
 ```
 
