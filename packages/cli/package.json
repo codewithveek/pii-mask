@@ -24,7 +24,8 @@
     "command-line"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "bin": {
     "pii-mask": "./dist/cli.js"
