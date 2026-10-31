@@ -1,0 +1,145 @@
+library:
+  name: pii-mask
+generated_from:
+  domain_map: _artifacts/domain_map.yaml
+  skill_spec: _artifacts/skill_spec.md
+skills:
+  [
+    {
+        name: mask-pii,
+        slug: mask-pii,
+        domain: masking,
+        package: packages/core,
+        path: skills/mask-pii/SKILL.md,
+        description: "Use when masking, redacting, pseudonymizing, tokenizing or
+          substituting PII (emails, phones, card numbers, government IDs,
+          secrets) in strings, objects, arrays, API payloads or database exports
+          with @pii-mask/core, or restoring tokenized data. Not for logger setup
+          (mask-logs) or writing new detectors (custom-detectors).\n",
+        sources:
+          [
+            src/masker.ts,
+            src/engine.ts,
+            src/types.ts,
+            README.md,
+            src/skills/skills.test.ts
+          ],
+        requires: [],
+        purpose: "Explains how to create a masker, pick a masking mode, mask strings and
+          structured values, keep labels consistent with sessions, and restore
+          tokenized output with @pii-mask/core.\n"
+      },
+    {
+        name: mask-logs,
+        slug: mask-logs,
+        domain: logging,
+        package: packages/core,
+        path: skills/mask-logs/SKILL.md,
+        description: "Use when keeping PII and secrets out of application logs with pino
+          or winston via @pii-mask/core: masking log messages, metadata, request
+          headers, child-logger bindings and logged Errors. For masking data
+          outside a logger, use mask-pii.\n",
+        sources:
+          [
+            src/integrations/pino.ts,
+            src/integrations/winston.ts,
+            src/integrations/destination.ts,
+            src/integrations/integrations.test.ts,
+            src/skills/skills.test.ts
+          ],
+        requires: [ mask-pii ],
+        purpose: "Shows how to wire @pii-mask/core's pinoMask, maskedDestination and
+          winstonMask into an existing logger so messages, metadata and errors
+          are masked before they are written.\n"
+      },
+    {
+        name: custom-detectors,
+        slug: custom-detectors,
+        domain: detection,
+        package: packages/core,
+        path: skills/custom-detectors/SKILL.md,
+        description: "Use when @pii-mask/core misses or over-masks a value: writing a
+          custom PIIDetector (pattern, find, prefilter, keyPattern), restricting
+          detectors with only/disable/regions/keyNameOnly, or understanding why
+          a value was or was not detected.\n",
+        sources:
+          [
+            src/types.ts,
+            src/engine.ts,
+            src/registry.ts,
+            src/detectors/index.ts,
+            src/skills/skills.test.ts
+          ],
+        requires: [ mask-pii ],
+        purpose: "Explains how @pii-mask/core decides what is PII and how to extend or
+          narrow detection with custom detectors and masker options.\n"
+      },
+    {
+        name: mask-files,
+        slug: mask-files,
+        domain: cli,
+        package: packages/cli,
+        path: skills/mask-files/SKILL.md,
+        description: "Use when masking PII in CSV, JSON, JSONL/NDJSON or text files, or
+          in a stdin/stdout pipeline (including a running app's log output),
+          from the command line with the pii-mask CLI (@pii-mask/cli), or
+          calling the CLI's runMask() from a script.\n",
+        sources:
+          [
+            src/run.ts,
+            src/commands/mask.ts,
+            src/adapters/csv.ts,
+            README.md,
+            src/skills.test.ts
+          ],
+        requires: [],
+        purpose: "Shows how to run the pii-mask CLI on files and pipes, choose formats
+          and modes, persist token maps safely, and call the same logic from
+          Node.\n"
+      },
+    {
+        name: mask-pii-react,
+        slug: mask-pii-react,
+        domain: react,
+        package: packages/react,
+        path: skills/mask-pii-react/SKILL.md,
+        description: "Use when displaying masked PII in a React or Next.js UI with
+          @pii-mask/react: the MaskPII component, usePIIMask and usePIIMaskTable
+          hooks, and reveal toggles. Covers why client-side masking is not
+          access control.\n",
+        sources:
+          [
+            src/MaskPII.tsx,
+            src/hooks/usePIIMask.ts,
+            src/hooks/usePIIMaskTable.ts,
+            README.md,
+            src/skills.test.tsx
+          ],
+        requires: [ "@pii-mask/core#mask-pii" ],
+        purpose: "Shows how to render masked values and tables with @pii-mask/react and
+          where client-side masking stops being a privacy control.\n"
+      },
+    {
+        name: detect-names-in-text,
+        slug: detect-names-in-text,
+        domain: nlp,
+        package: packages/nlp,
+        path: skills/detect-names-in-text/SKILL.md,
+        description: "Use when person names, places or organizations in free text
+          (support tickets, chat logs, LLM prompts or outputs, notes) must be
+          masked with @pii-mask/nlp's compromise-based detectors alongside
+          @pii-mask/core, including adding custom lexicon terms.\n",
+        sources:
+          [
+            src/entity.ts,
+            src/compromise-adapter.ts,
+            README.md,
+            src/skills.test.ts,
+            src/compromise-adapter.test.ts
+          ],
+        requires: [ "@pii-mask/core#mask-pii" ],
+        purpose: "Shows how to add @pii-mask/nlp's person, place and organization
+          detectors to a masker, tune them, and teach them names compromise
+          doesn't know.\n"
+      }
+  ]

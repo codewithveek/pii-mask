@@ -22,7 +22,8 @@
     "anonymize",
     "privacy",
     "data-protection",
-    "component"
+    "component",
+    "tanstack-intent"
   ],
   "publishConfig": {
     "access": "public",
@@ -40,7 +41,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "!dist/**/*.map"
+    "!dist/**/*.map",
+    "skills/mask-pii-react"
   ],
   "scripts": {
     "build": "tsup",

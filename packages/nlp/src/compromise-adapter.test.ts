@@ -206,6 +206,19 @@ describe('substitute mode with faker', () => {
     expect(result.length).toBeGreaterThan(0);
   });
 
+  it('joins adjacent lexicon words into one entity', () => {
+    const masker = createMasker({
+      mode: 'redact',
+      extend: buildCompromiseDetectors({
+        entities: ['Person'],
+        customLexicon: { emeka: 'Person', okafor: 'Person' },
+      }),
+    });
+    expect(masker.maskString('ticket from Emeka Okafor today').result).toBe(
+      'ticket from [REDACTED] today',
+    );
+  });
+
   it('merges lexicon matches that overlap compromise matches', () => {
     const [person] = buildCompromiseDetectors({
       entities: ['Person'],

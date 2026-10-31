@@ -21,7 +21,8 @@
     "anonymize",
     "privacy",
     "data-protection",
-    "command-line"
+    "command-line",
+    "tanstack-intent"
   ],
   "publishConfig": {
     "access": "public",
@@ -43,7 +44,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "!dist/**/*.map"
+    "!dist/**/*.map",
+    "skills/mask-files"
   ],
   "scripts": {
     "build": "tsup",

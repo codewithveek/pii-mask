@@ -1,0 +1,341 @@
+# domain_map.yaml
+# Library: pii-mask
+# Date: 2026-10-31
+# Status: draft
+
+library:
+  name: pii-mask
+  version: 0.3.0 (@pii-mask/core, cli, react); 1.0.0 (@pii-mask/nlp)
+  repository: https://github.com/codewithveek/pii-mask
+  description: PII detection and masking for strings, structured data, logs, files and React UIs.
+  primary_framework: framework-agnostic
+domains:
+- name: Masking data
+  slug: masking
+  description: Choosing a mode, masking strings and structured values, sessions and restoring tokens.
+- name: Logging
+  slug: logging
+  description: Keeping PII out of pino and winston output.
+- name: Detection
+  slug: detection
+  description: What counts as PII, custom detectors, and narrowing detection.
+- name: Command line
+  slug: cli
+  description: Masking files and pipes with the pii-mask CLI.
+- name: React UI
+  slug: react
+  description: Displaying masked values in React components.
+- name: Free-text entities
+  slug: nlp
+  description: Finding names, places and organizations in unstructured text.
+skills:
+- name: mask-pii
+  slug: mask-pii
+  domain: masking
+  description: Use when masking, redacting, pseudonymizing, tokenizing or substituting PII (emails, phones,
+    card numbers, government IDs, secrets) in strings, objects, arrays, API payloads or database exports
+    with @pii-mask/core, or restoring tokenized data. Not for logger setup (mask-logs) or writing new
+    detectors (custom-detectors).
+  packages:
+  - '@pii-mask/core'
+  tasks:
+  - Mask PII in an object or string before storing or sending it
+  - Tokenize data reversibly and restore it later
+  - Keep pseudonyms consistent across calls with a session
+  covers:
+  - createMasker
+  - mask
+  - maskString
+  - maskObject
+  - maskArray
+  - createSession
+  - getTokenMap
+  - restore
+  - restoreValue
+  - restoreObject
+  - MaskMode
+  type: core
+  failure_modes:
+  - mistake: substitute mode without a faker instance
+    mechanism: Core never imports faker, so createMasker throws without one.
+    wrong_pattern: 'createMasker({ mode: ''substitute'' })
+
+      '
+    correct_pattern: 'import { faker } from ''@faker-js/faker'';
+
+      createMasker({ mode: ''substitute'', faker })
+
+      '
+    source: packages/core/src/masker.ts
+    priority: CRITICAL
+    status: active
+  - mistake: reading maskObject result as an object
+    mechanism: maskObject returns a JSON string; property access yields undefined.
+    wrong_pattern: 'masker.maskObject(rec).result.email
+
+      '
+    correct_pattern: 'masker.mask(rec).result.email
+
+      '
+    source: packages/core/src/masker.ts
+    priority: HIGH
+    status: active
+  - mistake: pseudonymizing records without a shared session
+    mechanism: Each call numbers labels from 1, so different values collide on EMAIL_1.
+    wrong_pattern: 'rows.map((r) => masker.mask(r))
+
+      '
+    correct_pattern: 'const s = masker.createSession();
+
+      rows.map((r) => masker.mask(r, s))
+
+      '
+    source: packages/core/src/masker.ts
+    priority: HIGH
+    status: active
+  - mistake: expecting bare digits or dates to be masked without a key
+    mechanism: Ambiguous values need a key or context word to be detected.
+    wrong_pattern: 'masker.maskString(''123456789'')
+
+      '
+    correct_pattern: 'masker.maskString(''123456789'', ''ssn'')
+
+      '
+    source: packages/core/README.md#how-detection-decides
+    priority: HIGH
+    status: active
+    skills:
+    - mask-pii
+    - custom-detectors
+- name: mask-logs
+  slug: mask-logs
+  domain: logging
+  description: 'Use when keeping PII and secrets out of application logs with pino or winston via @pii-mask/core:
+    masking log messages, metadata, request headers, child-logger bindings and logged Errors. For masking
+    data outside a logger, use mask-pii.'
+  packages:
+  - '@pii-mask/core'
+  tasks:
+  - Redact PII from pino logs
+  - Redact PII from winston logs
+  - Mask NDJSON log lines before they reach a file or stdout
+  covers:
+  - pinoMask
+  - maskedDestination
+  - winstonMask
+  type: core
+  failure_modes:
+  - mistake: using only formatters.log with pino
+    mechanism: pino never passes msg to formatters.log, so the message is written unmasked.
+    wrong_pattern: 'pino({ formatters: { log: (o) => masker.mask(o).result } })
+
+      '
+    correct_pattern: 'pino({ ...pinoMask({ mode: ''redact'' }) })
+
+      '
+    source: packages/core/src/skills/skills.test.ts
+    priority: CRITICAL
+    status: active
+  - mistake: relying on pinoMask for child bindings
+    mechanism: pino resets the bindings formatter for child loggers.
+    wrong_pattern: 'pino({ ...pinoMask() }).child({ email })
+
+      '
+    correct_pattern: 'pino({}, maskedDestination(process.stdout)).child({ email })
+
+      '
+    source: packages/core/src/integrations/integrations.test.ts
+    priority: HIGH
+    status: active
+  - mistake: passing maskedDestination as the only pino argument
+    mechanism: pino treats it as options and logs unmasked to stdout.
+    wrong_pattern: 'pino(maskedDestination(process.stdout))
+
+      '
+    correct_pattern: 'pino({}, maskedDestination(process.stdout))
+
+      '
+    source: packages/core/src/integrations/destination.ts
+    priority: HIGH
+    status: active
+- name: custom-detectors
+  slug: custom-detectors
+  domain: detection
+  description: 'Use when @pii-mask/core misses or over-masks a value: writing a custom PIIDetector (pattern,
+    find, prefilter, keyPattern), restricting detectors with only/disable/regions/keyNameOnly, or understanding
+    why a value was or was not detected.'
+  packages:
+  - '@pii-mask/core'
+  tasks:
+  - Add a detector for an organisation-specific ID format
+  - Tune which detectors run for a dataset
+  - Diagnose a false positive or false negative
+  covers:
+  - PIIDetector
+  - detectString
+  - extend
+  - only
+  - disable
+  - regions
+  - keyNameOnly
+  - getOrCreateToken
+  - getOrCreateLabel
+  - registry
+  type: core
+  failure_modes:
+  - mistake: returning a non-token value in tokenize mode
+    mechanism: restore() cannot map it back and sessions lose consistency.
+    wrong_pattern: 'mask: () => ''EMP-XXXXXX''
+
+      '
+    correct_pattern: 'mask: (v, mode, ctx) => mode === ''tokenize'' ? getOrCreateToken(v, ctx) : ''[REDACTED]''
+
+      '
+    source: packages/core/src/skills/skills.test.ts
+    priority: HIGH
+    status: active
+  - mistake: unanchored leading quantifier in pattern
+    mechanism: Retrying from every position makes scanning quadratic on long inputs.
+    wrong_pattern: 'pattern: /[a-z.]+@x/g
+
+      '
+    correct_pattern: 'pattern: /(?<![a-z.])[a-z.]+@x/g, prefilter: /@x/
+
+      '
+    source: packages/core/src/detectors/contact/email.ts
+    priority: HIGH
+    status: active
+- name: mask-files
+  slug: mask-files
+  domain: cli
+  description: Use when masking PII in CSV, JSON, JSONL/NDJSON or text files, or in a stdin/stdout pipeline
+    (including a running app's log output), from the command line with the pii-mask CLI (@pii-mask/cli),
+    or calling the CLI's runMask() from a script.
+  packages:
+  - '@pii-mask/cli'
+  tasks:
+  - Mask a CSV or JSON export from the shell
+  - Mask a log stream through a pipe
+  - Tokenize files and keep the token map for restoration
+  covers:
+  - pii-mask CLI
+  - runMask
+  - --token-map-out
+  - --config
+  - --report
+  type: core
+  failure_modes:
+  - mistake: committing token map files
+    mechanism: The map stores every original value in plain text.
+    wrong_pattern: 'git add tokens.json
+
+      '
+    correct_pattern: 'echo tokens.json >> .gitignore
+
+      '
+    source: packages/cli/src/utils/token-map.ts
+    priority: CRITICAL
+    status: active
+  - mistake: CSV on stdin without --format csv
+    mechanism: Stdin sniffing never selects CSV, so header-based detection is lost.
+    wrong_pattern: 'cat users.csv | pii-mask
+
+      '
+    correct_pattern: 'cat users.csv | pii-mask --format csv
+
+      '
+    source: packages/cli/src/skills.test.ts
+    priority: HIGH
+    status: active
+- name: mask-pii-react
+  slug: mask-pii-react
+  domain: react
+  description: 'Use when displaying masked PII in a React or Next.js UI with @pii-mask/react: the MaskPII
+    component, usePIIMask and usePIIMaskTable hooks, and reveal toggles. Covers why client-side masking
+    is not access control.'
+  packages:
+  - '@pii-mask/react'
+  tasks:
+  - Show a masked value with an admin reveal
+  - Mask columns of a data table
+  covers:
+  - MaskPII
+  - usePIIMask
+  - usePIIMaskTable
+  type: framework
+  failure_modes:
+  - mistake: using reveal or client masking as access control
+    mechanism: The raw value is already in the browser before React masks it.
+    wrong_pattern: '<MaskPII reveal={isAdmin}>{user.ssn}</MaskPII> // ssn sent to every viewer
+
+      '
+    correct_pattern: '// mask on the server with @pii-mask/core; send only masked data to non-admins
+
+      '
+    source: packages/react/src/MaskPII.tsx
+    priority: CRITICAL
+    status: active
+- name: detect-names-in-text
+  slug: detect-names-in-text
+  domain: nlp
+  description: Use when person names, places or organizations in free text (support tickets, chat logs,
+    LLM prompts or outputs, notes) must be masked with @pii-mask/nlp's compromise-based detectors alongside
+    @pii-mask/core, including adding custom lexicon terms.
+  packages:
+  - '@pii-mask/nlp'
+  tasks:
+  - Mask names and places in free-text fields
+  - Teach the detector names it misses
+  covers:
+  - buildCompromiseDetectors
+  - buildEntityDetector
+  - customLexicon
+  type: core
+  failure_modes:
+  - mistake: assuming NLP finds every name
+    mechanism: compromise is statistical and English-centric; many names are missed.
+    wrong_pattern: 'buildCompromiseDetectors()
+
+      '
+    correct_pattern: 'buildCompromiseDetectors({ customLexicon: { emeka: ''Person'' } })
+
+      '
+    source: packages/nlp/src/skills.test.ts
+    priority: HIGH
+    status: active
+  - mistake: extending compromise globally
+    mechanism: nlp.extend and nlp(text, lexicon) change compromise state for every later call.
+    wrong_pattern: 'nlp.extend({ words: { emeka: ''Person'' } })
+
+      '
+    correct_pattern: 'buildCompromiseDetectors({ customLexicon: { emeka: ''Person'' } })
+
+      '
+    source: packages/nlp/src/entity.ts
+    priority: MEDIUM
+    status: active
+gaps:
+- skill: mask-pii
+  question: Discovery and fresh-consumer evaluation have not been run.
+  context: Only deterministic task checks exist.
+  status: open
+tensions:
+- name: Recall versus false positives on digit runs
+  skills:
+  - mask-pii
+  - custom-detectors
+  description: Strict context rules avoid masking IDs and timestamps but miss unlabelled PII.
+  implication: Agents that pass values without keys see PII left unmasked; pass keys or add detectors.
+cross_references:
+- from: mask-logs
+  to: mask-pii
+  reason: Modes and detection rules are shared.
+- from: mask-files
+  to: custom-detectors
+  reason: Unmasked CSV columns are fixed with keys or custom detectors.
+- from: mask-pii-react
+  to: mask-pii
+  reason: Server-side masking is the access-control answer.
+- from: detect-names-in-text
+  to: mask-pii
+  reason: NLP detectors are added to a core masker via extend.

@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "baseline": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+  "items": {
+    "skill:packages/cli/skills/mask-files/SKILL.md": {
+      "fingerprint": "6b6e1cad208dbdb6a413e8862c8f0244e2f862fe05db850f49685d56656f5d17",
+      "snapshot": {
+        "packages/cli/README.md": "9e0e1d328dd2b6bc6cfe06aa274e8a7fb39405d086048d12847d81907d2d8327",
+        "packages/cli/skills/mask-files/SKILL.md": "8f43d054273f1b4f03d9a73fb2b74745505e16c6209d7d60563c53ebe35df742",
+        "packages/cli/src/adapters/csv.ts": "06e47ab98bf27d40f2eee08755921c56afc3f8fed95429f7bf7506f8a1a267ad",
+        "packages/cli/src/commands/mask.ts": "6138100ce0fe2ab7b25e8deac47fd0a6041a5aa6da220b43b493419c72eb1e73",
+        "packages/cli/src/run.ts": "5d851236ec834274a2e1376edec310221d5a81658183d9b5f74a91e00d81b84c",
+        "packages/cli/src/skills.test.ts": "d211ed732a229d5a2dc932bceadc4230d984fcb9d02d16126e313084fde6bf36"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "no-change",
+      "reason": "The only change to this skill's source README is a new 'Using with AI coding agents' section about enabling Intent; the package behavior and the guidance in the skill are unchanged.",
+      "evidence": [
+        "git diff of packages/cli/README.md shows only the added section",
+        "intent validate passes",
+        "turbo test: all packages pass (core 377, cli 42, react 27, nlp 60 tests)"
+      ]
+    },
+    "skill:packages/core/skills/custom-detectors/SKILL.md": {
+      "fingerprint": "64a86e39a7d6f3f175277ec7f441d152854a788d2f2736a534ddbc01beaa5ec3",
+      "snapshot": {
+        "packages/core/skills/custom-detectors/SKILL.md": "5ec734c34d2b3a7573d25a522aadb04c4ef844317636b34366ea90caee438fc2",
+        "packages/core/src/detectors/index.ts": "e07c9f7beb56158477801d65e4de905516ff2673c568932099bcad4592b8a7d9",
+        "packages/core/src/engine.ts": "a43f57652fbfc11708b12758637d76ea33d7e98147544622008f19b4d10e2151",
+        "packages/core/src/registry.ts": "af8a08597f7db4990136547bd02c8795e60d4c999af860b6384018c502a1b82d",
+        "packages/core/src/skills/skills.test.ts": "eebfb0b31d337644ea34a999b18f0a46668590784b90d8e62295241ed55eea73",
+        "packages/core/src/types.ts": "5d35403b980e04660dfd54cdd2abcf5cad97737e6ca1f34fc8a6c2937abb7723"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "updated",
+      "reason": "New skill custom-detectors authored in batch 1 from the current source of its package; TypeScript examples type-check under intent validate, the stated outputs of the core/NLP examples were checked by running them against the built packages, and the task checks exercise the remaining behavior.",
+      "evidence": [
+        "intent validate passed for packages/core/skills",
+        "task checks pass: packages/core/src/skills/skills.test.ts (skill: custom-detectors, 3 cases), including a failing check for the main warned-about mistake",
+        "fresh-consumer agent session and discovery prompts: not run (recorded as an open gap in skill_spec.md)"
+      ]
+    },
+    "skill:packages/core/skills/mask-logs/SKILL.md": {
+      "fingerprint": "06451aba97c7e3168f4507b2580fa2f998e0a5a595d83f2e66431349befc3b80",
+      "snapshot": {
+        "packages/core/skills/mask-logs/SKILL.md": "0c1ddd4774877694195a6973423054e118bd7f3362cc5810f4a561fee6f0b39f",
+        "packages/core/src/integrations/destination.ts": "c0849aba1b3c2dc9c0968cfe904c722e970e1b05062fa1b99cdcb0474ef1973d",
+        "packages/core/src/integrations/integrations.test.ts": "f53daf2b6ad48fe1dc623e58365689b8e9da8ae443dafd2a2e83c4707106784f",
+        "packages/core/src/integrations/pino.ts": "7a249635af8442033db9f962929c5fd1b58fc94a2bff030cd66638b0f11203f8",
+        "packages/core/src/integrations/winston.ts": "8502e8d3692f1752055295667c3958d8cb732022b4012dcccfc567f984efeaab",
+        "packages/core/src/skills/skills.test.ts": "eebfb0b31d337644ea34a999b18f0a46668590784b90d8e62295241ed55eea73"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "updated",
+      "reason": "New skill mask-logs authored in batch 1 from the current source of its package; TypeScript examples type-check under intent validate, the stated outputs of the core/NLP examples were checked by running them against the built packages, and the task checks exercise the remaining behavior.",
+      "evidence": [
+        "intent validate passed for packages/core/skills",
+        "task checks pass: packages/core/src/skills/skills.test.ts (skill: mask-logs, 3 cases, real pino 9), including a failing check for the main warned-about mistake",
+        "fresh-consumer agent session and discovery prompts: not run (recorded as an open gap in skill_spec.md)"
+      ]
+    },
+    "skill:packages/core/skills/mask-pii/SKILL.md": {
+      "fingerprint": "eeaf11014ecf47f4204fcfb63ac23018bf36be4ac7df069a64eeb2d6a1674d76",
+      "snapshot": {
+        "packages/core/README.md": "a68cf61142045d5479d973bf89b4f31ad8c1283fcf78c363503d04f35a107aec",
+        "packages/core/skills/mask-pii/SKILL.md": "c0c882a050d07305315b379f35fa822b3330bfde76a65bfb09ea9c395337ae66",
+        "packages/core/src/engine.ts": "a43f57652fbfc11708b12758637d76ea33d7e98147544622008f19b4d10e2151",
+        "packages/core/src/masker.ts": "757355b56e3303e61b4202595febaa8077810d8930106f3f3dafdf71c6349c70",
+        "packages/core/src/skills/skills.test.ts": "eebfb0b31d337644ea34a999b18f0a46668590784b90d8e62295241ed55eea73",
+        "packages/core/src/types.ts": "5d35403b980e04660dfd54cdd2abcf5cad97737e6ca1f34fc8a6c2937abb7723"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "no-change",
+      "reason": "The only change to this skill's source README is a new 'Using with AI coding agents' section about enabling Intent; the package behavior and the guidance in the skill are unchanged.",
+      "evidence": [
+        "git diff of packages/core/README.md shows only the added section",
+        "intent validate passes",
+        "turbo test: all packages pass (core 377, cli 42, react 27, nlp 60 tests)"
+      ]
+    },
+    "skill:packages/nlp/skills/detect-names-in-text/SKILL.md": {
+      "fingerprint": "5a812f53e28ef83e43b61ea7fed0c791c893f018937c94d2e808fb3f84f1eab8",
+      "snapshot": {
+        "packages/nlp/README.md": "36c757ebcfd1d699bc00dd1956b1d265ad8b66f59e4513c46a24632670672a43",
+        "packages/nlp/skills/detect-names-in-text/SKILL.md": "9a72698e39c4d486fc32fe0e85e05419095f7a9f25353b665f1487772c777f90",
+        "packages/nlp/src/compromise-adapter.test.ts": "273cab6bb5e2e7410da3365ca16b8f810e5a4f4f51428ef2667accb7b7f7d9b5",
+        "packages/nlp/src/compromise-adapter.ts": "c3d6d4b3b0e851d903ecf4048e93f2cfb551da11fe26398c87c566c8aa2c0913",
+        "packages/nlp/src/entity.ts": "1f7ce030a6f32a0237060bd08157b582a2ed3665df3d6e8a6ed0a4585d53bd86",
+        "packages/nlp/src/skills.test.ts": "8822e0d6aef66b6d72dd529cb0a9eef770b151c400b6d989ae4c900933520d90"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "no-change",
+      "reason": "The only change to this skill's source README is a new 'Using with AI coding agents' section about enabling Intent; the package behavior and the guidance in the skill are unchanged.",
+      "evidence": [
+        "git diff of packages/nlp/README.md shows only the added section",
+        "intent validate passes",
+        "turbo test: all packages pass (core 377, cli 42, react 27, nlp 60 tests)"
+      ]
+    },
+    "skill:packages/react/skills/mask-pii-react/SKILL.md": {
+      "fingerprint": "0ab4ffd16c4be32f27bb0e5b87049f7c27b06e19cab9262bcc0b5a9cb324364e",
+      "snapshot": {
+        "packages/react/README.md": "e791ed03d1c68ad483661b970be1343a299296e3a44aae07001caed925b68967",
+        "packages/react/skills/mask-pii-react/SKILL.md": "895b3b7f892d66c949135dcec69ce7007f1c706a4d2999f7af6d958683bcf924",
+        "packages/react/src/MaskPII.tsx": "51ac6091705b23a21eae5383a9b2826742675f57ffc149ba1ec1d49819bb19c2",
+        "packages/react/src/hooks/usePIIMask.ts": "b32d397a37bdf7445dbf2a071761e3a040e54d62beedece4d64d5072fd7e5155",
+        "packages/react/src/hooks/usePIIMaskTable.ts": "4ec0873c79b70306ae551e5a7a25a8e7ead8abc5c292e81c8892180418dc072c",
+        "packages/react/src/skills.test.tsx": "43d055278a4059238f1138bb2538656012e0f54f5feebe650f13348b2ce348b9"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "no-change",
+      "reason": "The only change to this skill's source README is a new 'Using with AI coding agents' section about enabling Intent; the package behavior and the guidance in the skill are unchanged.",
+      "evidence": [
+        "git diff of packages/react/README.md shows only the added section",
+        "intent validate passes",
+        "turbo test: all packages pass (core 377, cli 42, react 27, nlp 60 tests)"
+      ]
+    },
+    "planning:_artifacts": {
+      "fingerprint": "28e004537289e413477939761ca6c1cef70b67d08401fc79e1164cd836ff7c30",
+      "snapshot": {
+        "_artifacts/domain_map.yaml": "94f35e2ea8f63d10965bbcb2c313ec69c09d8e7d39310406fd301694c31d920a",
+        "_artifacts/skill_spec.md": "e5ff06bb8f5a4048ab34b63a5d4fd4cbb654d244fbd22019fcbde8fd56b9a162",
+        "_artifacts/skill_tree.yaml": "1bcaa85557945ee9e6d1c9f3ea54f7dfec0f90ac6042162c54c121fb11f0e2ee",
+        "packages/cli/README.md": "9e0e1d328dd2b6bc6cfe06aa274e8a7fb39405d086048d12847d81907d2d8327",
+        "packages/cli/skills/mask-files/SKILL.md": "8f43d054273f1b4f03d9a73fb2b74745505e16c6209d7d60563c53ebe35df742",
+        "packages/cli/src/adapters/csv.ts": "06e47ab98bf27d40f2eee08755921c56afc3f8fed95429f7bf7506f8a1a267ad",
+        "packages/cli/src/commands/mask.ts": "6138100ce0fe2ab7b25e8deac47fd0a6041a5aa6da220b43b493419c72eb1e73",
+        "packages/cli/src/run.ts": "5d851236ec834274a2e1376edec310221d5a81658183d9b5f74a91e00d81b84c",
+        "packages/cli/src/skills.test.ts": "d211ed732a229d5a2dc932bceadc4230d984fcb9d02d16126e313084fde6bf36",
+        "packages/core/README.md": "a68cf61142045d5479d973bf89b4f31ad8c1283fcf78c363503d04f35a107aec",
+        "packages/core/skills/custom-detectors/SKILL.md": "5ec734c34d2b3a7573d25a522aadb04c4ef844317636b34366ea90caee438fc2",
+        "packages/core/skills/mask-logs/SKILL.md": "0c1ddd4774877694195a6973423054e118bd7f3362cc5810f4a561fee6f0b39f",
+        "packages/core/skills/mask-pii/SKILL.md": "c0c882a050d07305315b379f35fa822b3330bfde76a65bfb09ea9c395337ae66",
+        "packages/core/src/detectors/index.ts": "e07c9f7beb56158477801d65e4de905516ff2673c568932099bcad4592b8a7d9",
+        "packages/core/src/engine.ts": "a43f57652fbfc11708b12758637d76ea33d7e98147544622008f19b4d10e2151",
+        "packages/core/src/integrations/destination.ts": "c0849aba1b3c2dc9c0968cfe904c722e970e1b05062fa1b99cdcb0474ef1973d",
+        "packages/core/src/integrations/integrations.test.ts": "f53daf2b6ad48fe1dc623e58365689b8e9da8ae443dafd2a2e83c4707106784f",
+        "packages/core/src/integrations/pino.ts": "7a249635af8442033db9f962929c5fd1b58fc94a2bff030cd66638b0f11203f8",
+        "packages/core/src/integrations/winston.ts": "8502e8d3692f1752055295667c3958d8cb732022b4012dcccfc567f984efeaab",
+        "packages/core/src/masker.ts": "757355b56e3303e61b4202595febaa8077810d8930106f3f3dafdf71c6349c70",
+        "packages/core/src/registry.ts": "af8a08597f7db4990136547bd02c8795e60d4c999af860b6384018c502a1b82d",
+        "packages/core/src/skills/skills.test.ts": "eebfb0b31d337644ea34a999b18f0a46668590784b90d8e62295241ed55eea73",
+        "packages/core/src/types.ts": "5d35403b980e04660dfd54cdd2abcf5cad97737e6ca1f34fc8a6c2937abb7723",
+        "packages/nlp/README.md": "36c757ebcfd1d699bc00dd1956b1d265ad8b66f59e4513c46a24632670672a43",
+        "packages/nlp/skills/detect-names-in-text/SKILL.md": "9a72698e39c4d486fc32fe0e85e05419095f7a9f25353b665f1487772c777f90",
+        "packages/nlp/src/compromise-adapter.test.ts": "273cab6bb5e2e7410da3365ca16b8f810e5a4f4f51428ef2667accb7b7f7d9b5",
+        "packages/nlp/src/compromise-adapter.ts": "c3d6d4b3b0e851d903ecf4048e93f2cfb551da11fe26398c87c566c8aa2c0913",
+        "packages/nlp/src/entity.ts": "1f7ce030a6f32a0237060bd08157b582a2ed3665df3d6e8a6ed0a4585d53bd86",
+        "packages/nlp/src/skills.test.ts": "8822e0d6aef66b6d72dd529cb0a9eef770b151c400b6d989ae4c900933520d90",
+        "packages/react/README.md": "e791ed03d1c68ad483661b970be1343a299296e3a44aae07001caed925b68967",
+        "packages/react/skills/mask-pii-react/SKILL.md": "895b3b7f892d66c949135dcec69ce7007f1c706a4d2999f7af6d958683bcf924",
+        "packages/react/src/MaskPII.tsx": "51ac6091705b23a21eae5383a9b2826742675f57ffc149ba1ec1d49819bb19c2",
+        "packages/react/src/hooks/usePIIMask.ts": "b32d397a37bdf7445dbf2a071761e3a040e54d62beedece4d64d5072fd7e5155",
+        "packages/react/src/hooks/usePIIMaskTable.ts": "4ec0873c79b70306ae551e5a7a25a8e7ead8abc5c292e81c8892180418dc072c",
+        "packages/react/src/skills.test.tsx": "43d055278a4059238f1138bb2538656012e0f54f5feebe650f13348b2ce348b9"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "no-change",
+      "reason": "skill_spec.md was only reformatted by Prettier (table alignment); domain_map.yaml and skill_tree.yaml are unchanged and all three still describe the six skills accurately. README edits add Intent setup instructions only.",
+      "evidence": [
+        "git diff _artifacts/skill_spec.md is whitespace/table formatting only",
+        "intent maintainer status: 0 authoring issues, 0 files to sync"
+      ]
+    },
+    "source:.changeset/intent-skills.md": {
+      "fingerprint": "9fdba73f58d39de86e683cd21fc91214b364dd829e2104c845eaa65efdbfe80a",
+      "snapshot": {
+        ".changeset/intent-skills.md": "d18c3f9a1bcd55af1730896477fa570e5d7a686742448917ea59e21624de3959"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "out-of-scope",
+      "reason": "Documentation and release notes for enabling the Intent skills and npm provenance; no library behavior that any skill describes.",
+      "evidence": [
+        "file is .changeset/intent-skills.md; contains setup prose only"
+      ]
+    },
+    "source:README.md": {
+      "fingerprint": "95972b2d8bf4516665106aaad49ed850b9e20bc0e7c5fd3208c4f4eacf186bc4",
+      "snapshot": {
+        "README.md": "58629363505f8bc7287164b5cc2c2027990af3cd8592f4b569db04204536846c"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "out-of-scope",
+      "reason": "Documentation and release notes for enabling the Intent skills and npm provenance; no library behavior that any skill describes.",
+      "evidence": [
+        "file is README.md; contains setup prose only"
+      ]
+    },
+    "source:apps/docs/content/docs/installation.mdx": {
+      "fingerprint": "3cb4fd148751e253c1ed42d8111395428debe9f495abb17e16c6cbfed084cfb1",
+      "snapshot": {
+        "apps/docs/content/docs/installation.mdx": "546f4bd7048d7eaf248412ede2f823edced9526a0cd2d2932247a9fe9dd06155"
+      },
+      "head": "8b9106e2cc8030551590bc50610d17eb206fc10c",
+      "outcome": "out-of-scope",
+      "reason": "Documentation and release notes for enabling the Intent skills and npm provenance; no library behavior that any skill describes.",
+      "evidence": [
+        "file is apps/docs/content/docs/installation.mdx; contains setup prose only"
+      ]
+    }
+  }
+}

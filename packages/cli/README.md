@@ -192,6 +192,10 @@ await runMask(
 );
 ```
 
+## Using with AI coding agents
+
+This package ships [TanStack Intent](https://tanstack.com/intent) skills (`mask-files`) that coding agents load on demand. Run `npx @tanstack/intent@latest install` once in your project to enable them.
+
 ## License
 
 MIT

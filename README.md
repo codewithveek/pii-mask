@@ -125,6 +125,23 @@ See [`@pii-mask/core`](./packages/core#logging-integrations) for `maskedDestinat
 - `github-pat` — GitHub personal access tokens
 - `platform-token` — Slack (xox\*) and Stripe (sk*/rk*) tokens
 
+## Using with AI coding agents
+
+Every package ships [TanStack Intent](https://tanstack.com/intent) skills — task guides that coding agents (Claude Code, Cursor, Copilot …) load on demand, versioned with the package you have installed. After installing the packages, run once in your project:
+
+```bash
+npx @tanstack/intent@latest install
+```
+
+This adds skill-loading guidance to your agent's config file (e.g. `AGENTS.md`). List or read the skills with `npx @tanstack/intent@latest list` and `npx @tanstack/intent@latest load @pii-mask/core#mask-pii`.
+
+| Package           | Skills                                      |
+| ----------------- | ------------------------------------------- |
+| `@pii-mask/core`  | `mask-pii`, `mask-logs`, `custom-detectors` |
+| `@pii-mask/cli`   | `mask-files`                                |
+| `@pii-mask/react` | `mask-pii-react`                            |
+| `@pii-mask/nlp`   | `detect-names-in-text`                      |
+
 ## Architecture
 
 ```
